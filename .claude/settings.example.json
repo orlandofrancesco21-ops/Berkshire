@@ -1,0 +1,16 @@
+{
+  "_comment": "Rename this file to settings.json and configure as needed. The MCP servers below are examples — uncomment and fill in as you set them up. Format may vary by Claude Code version; check the docs.",
+  "mcpServers": {
+    "_edgartools_example": {
+      "_comment": "EdgarTools MCP — free, no API key needed. See https://www.edgartools.io/edgartools-mcp-for-sec-filings/",
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["sec-edgar-mcp"]
+    },
+    "_sec_edgar_alternative": {
+      "_comment": "Alternative: edgar.tools hosted MCP, OAuth via Google. See https://www.edgar.tools/mcp",
+      "type": "http",
+      "url": "https://example.edgar.tools/mcp"
+    }
+  }
+}

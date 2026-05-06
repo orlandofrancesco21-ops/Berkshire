@@ -1,0 +1,40 @@
+# Sensitive
+.env
+.env.*
+*.key
+*.pem
+**/credentials.json
+**/secrets.json
+
+# Cache and ephemeral data
+__pycache__/
+*.pyc
+*.pyo
+.cache/
+data/cache/
+*.parquet.cache
+
+# Python venv
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code per-machine state
+.claude/state/
+.claude/cache/
+.claude/logs/
+
+# Local-only files (use this suffix for anything you don't want committed)
+*.local.md
+*.local.json
+*.local.py
