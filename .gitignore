@@ -25,6 +25,9 @@ env/
 *.swp
 *.swo
 
+# Obsidian vault config (themes, workspace layout, plugin state)
+.obsidian/
+
 # OS
 .DS_Store
 Thumbs.db
