@@ -24,7 +24,7 @@ This is the skill that prevents emotional trading. Trust the framework. If the f
 
 1. **Locate the company files.** Find `sectors/{sector}/companies/{TICKER}/thesis.md` and `valuation.md`. If they don't exist, stop — you can't valuation-check a name without prior analysis.
 
-2. **Check freshness.** Look at the "Last updated" date on `valuation.md`. If it's > 6 months old or there's been a major earnings release since, recommend running `company-deep-dive` to refresh before acting on the recommendation.
+2. **Check freshness.** Apply the canonical stale-thesis rule in `docs/build-plan.md` (Shared rules). If the thesis is stale by that definition, recommend `company-deep-dive` to refresh before acting on the recommendation — do not produce a price-based ADD or TRIM against a stale thesis.
 
 3. **Pull current data:**
    - Current price
@@ -78,3 +78,4 @@ If running across the portfolio: a table with one row per name, plus a summary o
 - "Price went up so trim" is fine. "Price went down so panic-sell" is not. The framework exists to prevent the second behavior.
 - If the recommendation feels uncomfortable (e.g. ADD on a name that has been falling), trust the system. Re-litigate the thesis if you must, but do it explicitly via `thesis-check`, not implicitly by ignoring the recommendation.
 - This skill is most useful precisely when emotions run high. That's when the framework is most valuable.
+- **If you act on a `valuation-check` recommendation outside of `portfolio-review`, run `decision-log` to capture the decision in the journal.** The thesis-log append from this skill is not a substitute for the decision log. Standalone valuation-checks don't write to `journal/` by design — keeping the skill lean — so the journal trail depends on you routing through `decision-log` when the result drives action.

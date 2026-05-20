@@ -1,0 +1,26 @@
+# compare-within-sector — DEFERRED
+
+> Filename ends in `.deferred` so Claude Code does not load this as an active skill. Rename to `SKILL.md` to enable.
+
+## When to build
+
+Build this skill when there's a real felt need — typically after 3+ `company-deep-dive`s have been run in a single sector and a single name needs to be picked. Not before. Pre-building it for the abstract case produces a generic comparator that won't match the specific decision the felt need is forcing.
+
+## What it will do (when built)
+
+Stack-rank multiple deep dives within the same sector to support a single-pick decision. Inputs: sector slug, list of tickers (default: all `sectors/{sector}/companies/*/thesis.md` files where the position is not yet held). Process: read each thesis + valuation, normalize the bull/bear cases against the shared sector framework, score each name against the framework's "what makes a great business" traits and KPIs, surface where they differ most. Output: a comparison matrix + a recommended ranking + the 2-3 questions that would tip the ranking if answered differently.
+
+## Why deferred
+
+The brief explicitly says *"Build when there's a real felt need — not before."* Three reasons:
+
+1. The right comparison axes are framework-specific and only legible after several deep-dives have been done in that framework. Pre-building locks in axes that may not be the right ones.
+2. The decision the skill supports (which one name to pick out of N candidates) is rare in this system's cadence — maybe once or twice a year. The opportunity cost of building it now vs. on first felt need is small.
+3. Premature abstraction is the most common way investing systems acquire dead weight.
+
+## Design intent (so it's recoverable when built)
+
+- Should read but not modify the per-company files.
+- Should write its output to `journal/{YYYY-MM-DD}-compare-{sector}.md` and reference it from each compared thesis's Update log.
+- Should distinguish "which name is best by current framework" from "which name has the most upside if the framework is wrong in a specific way" — these are different questions and a serious comparator answers both.
+- Should not produce a single numeric score. Rankings, yes; rolled-up scores, no — they hide the question the comparison is supposed to expose.

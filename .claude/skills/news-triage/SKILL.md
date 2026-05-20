@@ -59,6 +59,8 @@ This is the skill that defends your attention. Without it, you read 30 headlines
    - Cluster of 3+ analyst downgrades within two weeks
    - Any news that maps directly to a kill switch written in the name's `thesis.md`
 
+   **Exception — earnings reported in the window:** if the FLAG is "the company just reported earnings" (8-K Item 2.02 + transcript released), recommend `earnings-debrief`, *not* `thesis-check`. The two analyses cover the same event and running both creates duplicate thesis-log entries. `earnings-debrief` is the more specific tool for this case — it grades reality against the `earnings-prep` template — and will itself recommend `thesis-check` if its verdict warrants it.
+
 4. **Write the daily output** to `journal/{YYYY-MM-DD}-triage.md`. Format:
 
    ```
@@ -91,7 +93,19 @@ This is the skill that defends your attention. Without it, you read 30 headlines
 
    This is a common and correct output. Do not invent flags to justify the skill running.
 
-6. **Do not run `thesis-check` from here.** Recommend it. The user (or `portfolio-review`) runs `thesis-check` deliberately, not as a side effect of news scanning.
+6. **Update the shared flagged-tickers state file** at `journal/_flagged.md`. This file is how `news-triage` hands off to `portfolio-review` — it's the only shared state between the two skills.
+
+   For every FLAG produced in step 3, append (or update if the ticker is already listed) a line:
+
+   ```
+   - {TICKER}: flagged {YYYY-MM-DD} — {short reason} → next: {thesis-check | earnings-debrief}
+   ```
+
+   When a flag is resolved (either `thesis-check` returned a verdict or `earnings-debrief` ran), the resolving skill is responsible for removing or marking the line — not this skill. `news-triage` only writes; it never silently clears prior flags.
+
+   `journal/_flagged.md` is committed to the repo (it's not in `.claude/state/` which is gitignored) so the flag state travels with the system across machines.
+
+7. **Do not run `thesis-check` or `earnings-debrief` from here.** Recommend them — and record the recommendation in `journal/_flagged.md` per step 6. The user (or `portfolio-review`) runs the follow-on skills deliberately, not as a side effect of news scanning.
 
 ## Output
 

@@ -78,6 +78,14 @@ This is the skill that separates noise from signal. The whole point is to stress
 
 8. **Do not modify the thesis body.** Kill switches, bull case, bear case, conviction — these are the user's calls. If the recommendation is REVIEW, the user runs `company-deep-dive` and decides whether to rewrite. Never silently rewrite the thesis.
 
+9. **Resolve the flag, if any.** If `journal/_flagged.md` exists and this ticker has an active flag with `next: thesis-check`, mark it resolved. Update the line to:
+
+   ```
+   - {TICKER}: flagged {flag-date}, resolved {today} ({verdict}) — was: {short reason}
+   ```
+
+   Do not delete the line — keeping resolved entries in place preserves the calibration trail (which flags led to which verdicts over time).
+
 ## Output
 
 A single verdict block, in this exact shape:
@@ -110,4 +118,4 @@ If invoked from `portfolio-review`, return the same block — the caller will ag
 - One downgrade is noise. Three downgrades clustered in two weeks is a signal — usually that the sell-side is catching up to something operational. Investigate the something.
 - If you cannot find any material events in the lookback window, that itself is a finding. Note it explicitly ("no 8-Ks, no Form 4 activity, no material news, no analyst revisions") rather than producing a vague INTACT.
 - This skill does not change positions. It produces a verdict. Acting on REVIEW means running `company-deep-dive` first, *then* deciding. Acting on WATCH means doing nothing until the next event lands.
-- If the most recent Update log entry is > 6 months old, recommend a `company-deep-dive` refresh in parallel with this check — a stale thesis is hard to check against.
+- Apply the canonical stale-thesis rule in `docs/build-plan.md` (Shared rules). If the thesis is stale by that definition, recommend a `company-deep-dive` refresh in parallel with this check — a stale thesis is hard to check against.

@@ -26,6 +26,8 @@ This is the skill that turns the system from a research workbench into a portfol
 
 1. **Load the universe.** Read `portfolio.md`. Extract every position: ticker, sector folder, conviction level, position size, entry date. If a position lacks a `sectors/{sector}/companies/{TICKER}/thesis.md` file, flag it — every position must have a thesis on file or it shouldn't be a position.
 
+   Also read `journal/_flagged.md` (if present) — the shared state file `news-triage` writes to. Note any portfolio tickers with active flags, the date flagged, and the recommended follow-on skill. These are the names this review should prioritize, even if their `thesis-check` returns INTACT.
+
 2. **Run thesis-check on every position.** Use the `thesis-check` skill's full process for each name. For Claude Code: parallelize — one subagent per ticker. Collect each verdict (THESIS INTACT / WATCH / REVIEW).
 
 3. **Run valuation-check on every position.** Same pattern. Collect each recommendation (HOLD / TRIM / ADD / REVIEW / EXIT).
@@ -46,11 +48,12 @@ This is the skill that turns the system from a research workbench into a portfol
 
 5. **Rank by urgency.** Sort positions in this order:
    1. REVIEW combined verdicts (every one — these need a deep-dive refresh)
-   2. WATCH combined verdicts (every one — these are next quarter's REVIEWs)
-   3. ADD candidates with high conviction (4-5) — capital deployment opportunities
-   4. TRIM candidates — risk management
-   5. ADD candidates with lower conviction (1-3) — usually defer to higher-conviction ADDs
-   6. Plain HOLD (everything else) — collapse into a single line
+   2. Names with active flags in `journal/_flagged.md` even if INTACT (news-triage surfaced something; investigate before declaring no-action)
+   3. WATCH combined verdicts (every one — these are next quarter's REVIEWs)
+   4. ADD candidates with high conviction (4-5) — capital deployment opportunities
+   5. TRIM candidates — risk management
+   6. ADD candidates with lower conviction (1-3) — usually defer to higher-conviction ADDs
+   7. Plain HOLD (everything else) — collapse into a single line
 
 6. **Compute portfolio-level metrics.** Independent of name-by-name verdicts, report:
    - Total position count
@@ -58,11 +61,11 @@ This is the skill that turns the system from a research workbench into a portfol
    - Sector concentration (any > 35%?)
    - Currency exposure (any single non-base currency > 30%?)
    - Cash level
-   - Names where the most recent thesis update is > 6 months old (these are stale)
+   - Stale theses, per the canonical stale-thesis rule in `docs/build-plan.md` (Shared rules)
 
 7. **Write the digest** to `journal/{YYYY-MM-DD}-review.md`. Format below.
 
-8. **Do not modify any thesis or valuation files.** This skill aggregates; it does not write to per-company files. The per-company append already happened when `thesis-check` ran in step 2.
+8. **Do not modify any thesis or valuation files.** This skill aggregates; it does not write to per-company files. The per-company appends already happened when `thesis-check` and `valuation-check` ran in steps 2 and 3.
 
 ## Output
 
@@ -82,7 +85,7 @@ Portfolio metrics:
 - Sector concentration: {sector A X%, sector B Y%}
 - Currency exposure: {breakdown}
 - Cash: X%
-- Stale theses (> 6mo since update): {list or "none"}
+- Stale theses (per canonical rule): {list or "none"}
 
 Full sweep:
 | Ticker | Thesis | Valuation | Combined | Reason |
@@ -97,7 +100,7 @@ Stale-thesis flags:
 
 - The point of this skill is suppression. Most weeks, the action items section should be short — 0-2 names. If it's consistently 6+, either you own too many names, you're being too sensitive in `thesis-check`, or your kill switches are too tight.
 - Don't act on the digest the moment it lands. Sleep on REVIEW verdicts. The discipline is "the digest tells me where to focus this week," not "the digest tells me to trade today."
-- A stale thesis (> 6mo) is not automatically a REVIEW. It just means the next REVIEW or major event triggers a `company-deep-dive` refresh. Don't refresh every thesis on a calendar — refresh when something changed.
+- A stale thesis (per the canonical rule) is not automatically a REVIEW. It just means the next REVIEW or major event triggers a `company-deep-dive` refresh. Don't refresh every thesis on a calendar — refresh when something changed.
 - Sector concentration > 35% in one industry is fine if it's deliberate (a sector you've worked hard on). It's a problem if it's accidental drift. The skill flags; you decide.
 - If two consecutive reviews produce the same WATCH on the same name without new information, that's a signal the WATCH should either escalate to REVIEW or be downgraded to INTACT. Don't leave names parked in WATCH forever.
 - This skill is the right place to ask "do I own too many names?" If you can't recall each thesis from memory while reading the digest, you own too many.

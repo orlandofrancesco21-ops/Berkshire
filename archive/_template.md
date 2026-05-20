@@ -6,6 +6,9 @@
 **Ticker:** {TICKER}
 **Sector:** `../sectors/{sector}/primer.md`
 **Framework:** `../frameworks/{industry}.md`
+**Thesis source:** `../sectors/{sector}/companies/{TICKER}/thesis.md`
+**Valuation source:** `../sectors/{sector}/companies/{TICKER}/valuation.md`
+**Entry:** YYYY-MM
 **Entry date:** YYYY-MM-DD
 **Exit date:** YYYY-MM-DD
 **Holding period:** X months

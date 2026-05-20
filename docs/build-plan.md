@@ -47,7 +47,7 @@ Templates exist for: framework, sector (primer, value-chain, kpis, players), com
 - `portfolio.md` is a markdown table. Fine for now, but at 15+ positions migrate to `portfolio.yml` or `portfolio.csv` so concentration / sector / currency exposure checks can be programmatic.
 - The `watchlist.md` "Passed" section is great — add a quarterly skill that flags passed names where the original reason has materially changed (price dropped, ownership changed, etc.).
 - `company-deep-dive` should have an explicit final step writing back to `frameworks/{industry}.md`'s "What I've learned over time" section. Currently this is implicit; make it explicit.
-- Cross-reference paths in templates use relative paths like `../../primer.md`. When `thesis-check` and `portfolio-review` are added, verify these resolve correctly from each skill's working directory. Test with a real deep dive end-to-end before declaring done.
+- Cross-reference paths in templates use relative paths (e.g. `../../`-style climbs from a thesis file up to the sector primer or framework). When `thesis-check` and `portfolio-review` are added, verify these resolve correctly from each skill's working directory. Test with a real deep dive end-to-end before declaring done. Use `scripts/check-cross-references.py` to mechanically validate.
 
 ## MCPs needed for the monitoring skills
 
@@ -70,3 +70,17 @@ Match the existing four skills exactly. Frontmatter with `name` and `description
 ## Suggested order
 
 Start with `thesis-check`. Run it on a real holding end-to-end before moving on. Then `portfolio-review`. Then the archive post-mortem template. Then `news-triage`. Then earnings pair. Stop and use the system for a quarter before building anything else.
+
+## Shared rules
+
+Definitions that more than one skill depends on. Skills should reference these by name rather than restating slightly different versions — drift between versions is how subtle bugs are born.
+
+### Stale thesis (canonical)
+
+A thesis is **stale** if any of the following are true:
+
+- (a) The most recent dated entry in the Update log of `thesis.md` is more than **6 months** old.
+- (b) The company has reported earnings since the most recent thesis or valuation update (i.e. the most recent Update log entry predates the most recent earnings release).
+- (c) A prior `thesis-check` returned **REVIEW** within the last **90 days** and no `company-deep-dive` refresh has run since.
+
+Skills that depend on this rule: `valuation-check` (step 2), `thesis-check` (step 7), `portfolio-review` (step 6). When any of these skills detect a stale thesis, the recommendation is `company-deep-dive` refresh — *not* a price-based action.

@@ -22,7 +22,15 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
 
 1. **Confirm context exists.** Check that `sectors/{sector}/` and `frameworks/{industry}.md` both exist. If not, stop and ask the user to run the appropriate prior skill.
 
-2. **Load the lens.** Read both `frameworks/{industry}.md` and `sectors/{sector}/primer.md` before doing anything else. The framework determines what questions matter for this company. Don't apply a generic deep-dive template.
+1b. **Check whether the framework is an umbrella.** If `frameworks/{industry}.md` contains a section titled **"Sub-sector navigator"**, this is an umbrella framework and is *explicitly* not decision-grade — the framework itself will say so. Do not proceed using the umbrella alone:
+   - Identify which sub-sector this company belongs to from the navigator table (e.g. ASML.AS in the semis umbrella is "semiconductor equipment"; CEG in the energy umbrella is "Nuclear IPP").
+   - Check whether `frameworks/{sub-sector-slug}.md` exists.
+   - If yes: use the sub-framework as the **primary** lens for this deep-dive. The umbrella stays as supplementary context (cross-cutting principles, cycle position, regulatory backdrop).
+   - If no: stop and recommend `framework-bootstrap {sub-sector-slug}` first. Do not attempt to deep-dive against an umbrella alone — the result will be a generic analysis, not framework-grounded.
+
+   This enforces the discipline that umbrella frameworks aren't decision-grade. They're navigators.
+
+2. **Load the lens.** Read both the operative framework (sub-framework if step 1b applied, otherwise the single industry framework) and `sectors/{sector}/primer.md` before doing anything else. The framework determines what questions matter for this company. Don't apply a generic deep-dive template.
 
 3. **Pull the data:**
    - Latest 10-K and last 4 10-Qs (or 20-F / annual reports for non-US issuers)
@@ -61,12 +69,21 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
 9. **Write back to the framework.** Append a dated entry to `frameworks/{industry}.md` under "What I've learned over time" with anything this deep-dive surfaced that *wasn't already in the framework*. The framework is the IP that compounds — every deep-dive should leave it richer than it found it. Format:
 
    ```
-   - YYYY-MM-DD ({TICKER}): {one or two sentences on what was new — a metric the framework hadn't named, a red flag pattern not previously captured, a valuation quirk specific to this archetype, etc.}
+   - YYYY-MM-DD ({TICKER} deep-dive): {one or two sentences on what was new — a metric the framework hadn't named, a red flag pattern not previously captured, a valuation quirk specific to this archetype, etc.}
    ```
 
-   If the deep-dive surfaced nothing new beyond the existing framework, write that explicitly: `- YYYY-MM-DD ({TICKER}): no framework-level updates — existing framework captured everything material.` Honest negatives are also calibration data.
+   The ` deep-dive` source tag distinguishes these from `post-mortem` entries, which are higher-signal (calibrated by actual returns). Future-you reading the log should be able to weight them differently.
+
+   If the deep-dive surfaced nothing new beyond the existing framework, write that explicitly: `- YYYY-MM-DD ({TICKER} deep-dive): no framework-level updates — existing framework captured everything material.` Honest negatives are also calibration data.
 
    Do not silently rewrite other parts of the framework. New insights go in this append-only section. Restructuring the framework body is a separate, deliberate decision.
+
+10. **If the conclusion is PASS, route the analysis to the watchlist.** A deep-dive that ends in "not confident enough to recommend" is a valid output — but the work has value and the name belongs on `watchlist.md`.
+
+    - Append the company to `watchlist.md` under **"Passed (with reason)"** with today's date and a one-line reason (the specific bear-case or framework gap that drove the pass).
+    - Do **not** delete `thesis.md` or `valuation.md` from `sectors/{sector}/companies/{TICKER}/` — they remain the source material for any future re-evaluation by `watchlist-revisit` (the quarterly re-evaluation skill).
+    - Append a note to the company's `thesis.md` Update log: `PASSED YYYY-MM-DD — see watchlist.md. Reason: {short reason}.`
+    - The next `watchlist-revisit` sweep will check whether the reason for passing has materially changed.
 
 ## Output
 

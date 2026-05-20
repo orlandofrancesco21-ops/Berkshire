@@ -2,7 +2,7 @@
   "_comment": "Rename this file to settings.json and configure as needed. The MCP servers below are examples — uncomment and fill in as you set them up. Format may vary by Claude Code version; check the docs.",
   "mcpServers": {
     "_edgartools_example": {
-      "_comment": "EdgarTools MCP — free, no API key needed. See https://www.edgartools.io/edgartools-mcp-for-sec-filings/",
+      "_comment": "EdgarTools MCP — free, no API key needed. Required for reliable US 10-K/10-Q/8-K/Form 4 access in thesis-check, news-triage, earnings-debrief. See https://www.edgartools.io/edgartools-mcp-for-sec-filings/",
       "type": "stdio",
       "command": "uvx",
       "args": ["sec-edgar-mcp"]
@@ -11,6 +11,32 @@
       "_comment": "Alternative: edgar.tools hosted MCP, OAuth via Google. See https://www.edgar.tools/mcp",
       "type": "http",
       "url": "https://example.edgar.tools/mcp"
+    },
+    "_transcripts_placeholder": {
+      "_comment": "Earnings transcripts. No clean free MCP exists at this writing — earnings-debrief currently falls back to web search (IR pages, Motley Fool / Seeking Alpha public previews, company-hosted PDFs). Replace with a real transcript MCP when one becomes available.",
+      "type": "stdio",
+      "command": "TODO",
+      "args": []
+    },
+    "_news_placeholder": {
+      "_comment": "Premium news (Bloomberg/Reuters/FT-grade). Web search is sufficient for default news-triage cadence; this would be a future upgrade for tighter coverage windows on flagged names.",
+      "type": "http",
+      "url": "TODO"
+    },
+    "_uk_companies_house_placeholder": {
+      "_comment": "UK Companies House — filings + ownership. Add when covering UK-listed names seriously. https://find-and-update.company-information.service.gov.uk/",
+      "type": "http",
+      "url": "TODO"
+    },
+    "_eu_filings_placeholder": {
+      "_comment": "EU filings — ESMA-registered storage portals per jurisdiction (BaFin Germany, AMF France, CONSOB Italy, CNMV Spain). Add per-country MCPs as coverage expands.",
+      "type": "http",
+      "url": "TODO"
+    },
+    "_canada_sedar_placeholder": {
+      "_comment": "SEDAR+ for Canadian filings. https://www.sedarplus.ca/",
+      "type": "http",
+      "url": "TODO"
     }
   }
 }

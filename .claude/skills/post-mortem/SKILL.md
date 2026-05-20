@@ -56,21 +56,35 @@ The hardest cases to write are wins. Losses force introspection; wins encourage 
 
 8. **Distill 1-3 lessons.** These are the artifacts that compound. Each lesson should be (a) concrete, (b) generalizable beyond this one name, (c) actionable in the framework. Example: "Capital allocators with a buyback-at-any-price habit destroy value in cyclicals" is a lesson. "I should be more careful" is not.
 
-9. **Update the framework.** Append every lesson to `frameworks/{industry}.md` "What I've learned over time" section with the date and TICKER citation. Also consider:
+9. **Update the framework.** Append every lesson to `frameworks/{industry}.md` "What I've learned over time" section. Use the post-mortem source tag — these entries are higher-signal than deep-dive entries (calibrated by actual returns) and the tag preserves that distinction in the log. Format:
+
+   ```
+   - YYYY-MM-DD ({TICKER} post-mortem, {WIN/LOSS/NEUTRAL}): {lesson — one or two sentences}
+   ```
+
+   Also consider:
    - Should a new kill switch be added to the framework's red flags section?
    - Should "what good looks like" be revised for any KPI?
    - Should the historical valuation range be revised?
 
    Make those edits in `frameworks/{industry}.md` and note them in the post-mortem's "Framework updates triggered" section.
 
-10. **Write the post-mortem** to `archive/{YYYY-MM}-{TICKER}.md`. Filename uses entry-year-month format so the archive sorts chronologically.
+10. **Write the post-mortem** to `archive/{exit-YYYY-MM}-{TICKER}.md`. Filename uses **exit** year-month so the archive sorts by when the lesson was learned, not by when the position was opened. The `Entry: YYYY-MM` field in the frontmatter preserves the original entry context for sequencing.
 
 11. **Remove the position from `portfolio.md`.** Do not delete the thesis or valuation files — they stay in `sectors/{sector}/companies/{TICKER}/` as the source material for the post-mortem and for future re-evaluation. Append a note to the company's `thesis.md` Update log: "EXITED YYYY-MM-DD — see archive/{filename}.md".
+
+12. **Write a `CLOSED.md` marker.** Create `sectors/{sector}/companies/{TICKER}/CLOSED.md` with a single line:
+
+    ```
+    Closed: YYYY-MM-DD. See archive/{exit-YYYY-MM}-{TICKER}.md
+    ```
+
+    The marker means future browsing of the sector folder (in `ls`, Obsidian, GitHub) immediately distinguishes live positions from closed ones without having to open `thesis.md` to find the EXITED note.
 
 ## Output
 
 Confirmation of:
-- File written: `archive/{YYYY-MM}-{TICKER}.md`
+- File written: `archive/{exit-YYYY-MM}-{TICKER}.md`
 - Framework updated: `frameworks/{industry}.md` ({N lessons appended, M kill switches added})
 - Portfolio updated: position removed from `portfolio.md`
 - Thesis log updated: exit note appended
@@ -82,6 +96,6 @@ Plus the 1-3 lessons, restated, so they land at the top of the user's attention 
 - The post-mortem on a winner is the harder skill. Wins generate "I knew it" narrative; the work is to identify the *specific* reason it worked, not the comforting story. Reread the original thesis word-by-word — most "I knew" claims aren't actually in the thesis.
 - Do not write a post-mortem in the same week you exit a hot loser. You'll be too angry to be useful. Wait two weeks, write then.
 - If the lesson is "this name was idiosyncratic, no framework update needed," that's a valid conclusion — but be honest about it. Most losses contain at least one framework-level lesson.
-- Filename convention is `{YYYY-MM}-{TICKER}.md` (entry-year-month, not exit date) so post-mortems sort with the original entry context.
+- Filename convention is `{exit-YYYY-MM}-{TICKER}.md` (exit-year-month) so the archive sorts by when the lesson was learned. The frontmatter `Entry: YYYY-MM` field preserves entry-context for sequencing.
 - If you find yourself unwilling to write the post-mortem, that's a signal — usually that the loss was discipline-related (you knew, you didn't act). Write it anyway. Especially that one.
 - The lessons section is where the entire system pays for itself. A 5-year journal of these is the real IP. Treat it accordingly.

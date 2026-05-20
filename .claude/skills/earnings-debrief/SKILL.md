@@ -99,6 +99,14 @@ Within 48 hours of every print for every position. Common phrasings:
 
 10. **Do not modify the thesis body.** Even if the print clearly broke the thesis, this skill only grades and recommends. The actual re-write happens in `company-deep-dive`.
 
+11. **Resolve the flag, if any.** If `journal/_flagged.md` exists and this ticker has an active flag with `next: earnings-debrief`, mark it resolved. Update the line to:
+
+    ```
+    - {TICKER}: flagged {flag-date}, resolved {today} ({verdict}) — was: {short reason}
+    ```
+
+    Do not delete the line — resolved entries preserve the calibration trail.
+
 ## Output
 
 The verdict block, restated to the chat so it lands before the conversation closes:
