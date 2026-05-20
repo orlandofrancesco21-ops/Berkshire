@@ -4,6 +4,7 @@ What each skill needs before it can run, what optional inputs it consumes, and w
 
 | Skill | Requires | Optional input from | Triggers / recommends |
 |---|---|---|---|
+| `evaluate` | nothing — checks and bootstraps prerequisites internally | — | runs `framework-bootstrap` (if missing) + `sector-primer` (if missing) + `company-deep-dive` end-to-end. Recommends hand-edit pass on auto-generated framework. |
 | `framework-bootstrap` | — (creates `frameworks/{industry}.md` from `_template.md`) | — | `sector-primer` |
 | `sector-primer` | `frameworks/{industry}.md` exists | — | `company-deep-dive` on top candidates |
 | `company-deep-dive` | `frameworks/{industry}.md` + `sectors/{sector}/primer.md`. If framework has a "Sub-sector navigator" section, also requires `frameworks/{sub-sector}.md` (umbrellas aren't decision-grade) | — | writes thesis + valuation; on PASS appends to `watchlist.md`; appends to framework's "What I've learned" |

@@ -33,6 +33,7 @@ A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific e
 │   └── build-plan.md        # handoff brief; gap list; rationale
 └── .claude/
     └── skills/              # reusable Claude skills that read/write the above
+        ├── evaluate/            # single-entry-point for "look at TICKER" (chains the three below)
         ├── framework-bootstrap/
         ├── sector-primer/
         ├── company-deep-dive/
@@ -42,6 +43,8 @@ A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific e
         ├── news-triage/
         ├── earnings-prep/
         ├── earnings-debrief/
+        ├── decision-log/
+        ├── watchlist-revisit/
         └── post-mortem/
 ```
 
@@ -82,9 +85,10 @@ A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific e
 
 Each skill lives in `.claude/skills/{skill-name}/SKILL.md`. The full set:
 
+- `evaluate` — single-entry-point for "I want to look at TICKER" — chains framework-bootstrap → sector-primer → company-deep-dive automatically if prerequisites are missing. Use this when you don't want to orchestrate the three-step prereq chain yourself.
 - `framework-bootstrap` — generates a new industry framework from `frameworks/_template.md`.
 - `sector-primer` — produces a structured sector primer with supporting files.
-- `company-deep-dive` — full company analysis grounded in the relevant framework + sector primer; writes `thesis.md` and `valuation.md`.
+- `company-deep-dive` — full company analysis grounded in the relevant framework + sector primer; writes `thesis.md` and `valuation.md`. Stops if prerequisites are missing — for the auto-bootstrapping convenience path, use `evaluate`.
 - `valuation-check` — current price vs fair value band; HOLD / TRIM / ADD / REVIEW / EXIT recommendation.
 - `thesis-check` — pulls material events since last thesis update; verdict against written kill switches (THESIS INTACT / WATCH / REVIEW).
 - `portfolio-review` — sweeps every position; runs the per-name skills; produces a ranked weekly digest.
