@@ -58,6 +58,16 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
 
 8. **Date the thesis entry.** First entry under "Update log" should be dated today and summarize the initial write-up.
 
+9. **Write back to the framework.** Append a dated entry to `frameworks/{industry}.md` under "What I've learned over time" with anything this deep-dive surfaced that *wasn't already in the framework*. The framework is the IP that compounds — every deep-dive should leave it richer than it found it. Format:
+
+   ```
+   - YYYY-MM-DD ({TICKER}): {one or two sentences on what was new — a metric the framework hadn't named, a red flag pattern not previously captured, a valuation quirk specific to this archetype, etc.}
+   ```
+
+   If the deep-dive surfaced nothing new beyond the existing framework, write that explicitly: `- YYYY-MM-DD ({TICKER}): no framework-level updates — existing framework captured everything material.` Honest negatives are also calibration data.
+
+   Do not silently rewrite other parts of the framework. New insights go in this append-only section. Restructuring the framework body is a separate, deliberate decision.
+
 ## Output
 
 Files written, plus a verbal summary:
