@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "edgartools": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["sec-edgar-mcp"]
+    }
+  }
+}
