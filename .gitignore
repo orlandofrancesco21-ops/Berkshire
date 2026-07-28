@@ -41,3 +41,12 @@ Thumbs.db
 *.local.md
 *.local.json
 *.local.py
+
+# Raw absorbed sources — never committed. Third-party material (investor letters,
+# paid transcripts, report PDFs) carries copyright, and the extracted text is bulky.
+# The DISTILLED library entry is the committed record; durability of the raw source
+# comes from the off-machine mirror (scripts/mirror-sources.py), not from git.
+# Also add both of these to Obsidian: Settings > Files & Links > Excluded files —
+# gitignore hides them from git, not from the quick switcher, search, or graph.
+library/_inbox/
+library/sources/

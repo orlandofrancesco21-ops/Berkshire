@@ -1,14 +1,20 @@
 #!/bin/sh
-# Pre-commit: verify all markdown cross-references resolve.
+# Pre-commit: repo integrity gate for the berkshire vault.
 # Installed via: git config core.hooksPath .githooks
 # Bypass in an emergency with: git commit --no-verify
+#
+# --staged is deliberate: the gate checks what is ABOUT TO BE COMMITTED, read from
+# the index, not the working tree. Linting the working tree at commit time means
+# unrelated half-written work blocks commits it has nothing to do with — which is
+# how a gate teaches people to bypass it, and how `absorb` would strand its own
+# writes when a draft thesis is open elsewhere.
 
-echo "pre-commit: checking markdown cross-references..."
-python "$(git rev-parse --show-toplevel)/scripts/check-cross-references.py"
+echo "pre-commit: checking repo integrity (references, IDs, schemas, append-only)..."
+python "$(git rev-parse --show-toplevel)/scripts/check-cross-references.py" --staged
 status=$?
 if [ $status -ne 0 ]; then
     echo ""
-    echo "pre-commit: broken cross-references — commit blocked."
-    echo "Fix the links above, or bypass once with: git commit --no-verify"
+    echo "pre-commit: integrity check failed — commit blocked."
+    echo "Fix the problems above, or bypass once with: git commit --no-verify"
 fi
 exit $status
