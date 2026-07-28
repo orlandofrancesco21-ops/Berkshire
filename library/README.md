@@ -18,8 +18,9 @@ One source per run, end to end. Never batched: a batch is where the completeness
 
 | Entry | Type | Author | Published | Themes | One-line |
 |---|---|---|---|---|---|
+| [Is It a Bubble?](marks-2025-12-is-it-a-bubble.md) | memo | Howard Marks (Oaktree) | 2025-12-09 | NARC, VAL, CAPA, MOAT, ASYM | A cycle specialist's anatomy of how bubbles form, why the good ones are still bubbles, and why a transformative technology and a profitable investment are different questions. |
 
-*(empty — first entry lands with the first absorb. Every entry needs exactly one row here and vice versa; the lint enforces the bijection, so a hand-added row pointing nowhere blocks the commit.)*
+Every entry needs exactly one row here and vice versa; the lint enforces the bijection, so a hand-added row pointing nowhere blocks the commit.
 
 ## Verification labels
 

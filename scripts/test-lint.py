@@ -193,6 +193,29 @@ COMMENTED_CHECK = """## Principles check
 - **TENSION VAL-P1** (self, 2026): fair value stated as a point here, not a range.
 """
 
+# The library template's own prescribed shape: an indented `*Texture:*` sub-bullet
+# under a takeaway, and a verification tag carrying a qualifier inside the bracket.
+# Both were once lint failures — the gate contradicted the template it enforces.
+TEMPLATE_SHAPED_ENTRY = """---
+title: A Memo
+type: memo
+author: Howard Marks
+published: 2026-01
+retrieved-from: https://example.com/memo
+tags: [valuation-discipline]
+archive: sources/marks-memo.txt
+---
+**One-line:** Cheapness on fear differs from cheapness on impairment.
+
+## Takeaways
+- Distinguish price falling on sentiment from price falling on earnings power (p. 3) [verified]
+  - *Texture:* the 1973 case, where both happened to the same names nine months apart
+- A relayed claim caps at partial however confident the speaker (p. 7) [partial - relayed via a newsletter; origin in Cites]
+
+## Not captured
+- Closing anecdote (pp. 8-9) — colour, no transferable rule
+"""
+
 PODCAST_TIMED = """---
 title: An Episode
 type: podcast
@@ -250,6 +273,13 @@ CASES = [
          replace("library/marks-memo.md", "archive: sources/marks-memo.txt",
                  "archive: sources/some-other-name.txt"),
          expect_fail=True, needle="does not share the entry slug"),
+
+    case("template-shaped entry passes: indented texture, qualified tag",
+         edit("library/marks-memo.md", TEMPLATE_SHAPED_ENTRY), expect_fail=False),
+    case("an untagged TOP-LEVEL takeaway is still caught",
+         edit("library/marks-memo.md",
+              TEMPLATE_SHAPED_ENTRY.replace("(p. 3) [verified]", "(p. 3)")),
+         expect_fail=True, needle="verification tag"),
 
     # -- 4. gap partition ---------------------------------------------------
     # These three share an indexed ep.md so the ONLY possible error is the gap
@@ -354,16 +384,36 @@ CASES = [
          expect_fail=True, needle="append-only", staged=True, commit_first=True),
 
     # -- 8. evidence tags ---------------------------------------------------
+    # BOTH directions, deliberately. A regex bug once made these two negative cases
+    # pass for the wrong reason: the voice-line pattern matched nothing at all, so
+    # every block counted zero voices. Rejecting correctly while also rejecting
+    # everything valid is indistinguishable from working, unless the positive case
+    # is asserted too.
     case("well-supported without three voices",
          replace("principles/valuation-discipline.md",
                  "[evidence: emerging | my record: untested]",
                  "[evidence: well-supported | my record: untested]"),
          expect_fail=True, needle="well-supported"),
+    case("well-supported WITH three voices and a verified source passes",
+         replace("principles/valuation-discipline.md",
+                 "`[evidence: emerging | my record: untested]` (as-of 2026-07-28)\n"
+                 "- **Voices:** **agrees** — Owner, self, 2026 [unverified]: written into the vault's canon (holds when: always)",
+                 "`[evidence: well-supported | my record: untested]` (as-of 2026-07-28)\n"
+                 "- **Voices:** **agrees** — Howard Marks, Oaktree memo, 2025 [verified]: scenario ranges over points (holds when: outcomes are genuinely distributional)\n"
+                 "- **Voices:** **agrees** — Owner, self, 2026 [unverified]: written into the vault's canon (holds when: always)\n"
+                 "- **Voices:** **qualifies** — Aswath Damodaran, blog, 2024 [partial]: a range wide enough to be safe can be too wide to act on (holds when: the range spans the decision threshold)"),
+         expect_fail=False),
     case("contested without a dissenting voice",
          replace("principles/valuation-discipline.md",
                  "[evidence: emerging | my record: untested]",
                  "[evidence: contested | my record: untested]"),
          expect_fail=True, needle="diverges"),
+    case("contested WITH a dissenting voice passes",
+         replace("principles/valuation-discipline.md",
+                 "`[evidence: emerging | my record: untested]` (as-of 2026-07-28)",
+                 "`[evidence: contested | my record: untested]` (as-of 2026-07-28)\n"
+                 "- **Voices:** **diverges** — Some Practitioner, letter, 2024 [unverified]: a point estimate forces a decision a range lets you dodge (holds when: the mandate requires a single number)"),
+         expect_fail=False),
     case("block without an evidence tag",
          replace("principles/valuation-discipline.md",
                  "`[evidence: emerging | my record: untested]` (as-of 2026-07-28)\n", ""),

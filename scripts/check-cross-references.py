@@ -354,7 +354,11 @@ def check_ids(corpus: Corpus, errors: list[str]) -> int:
 
 # ------------------------------------------------- checks 3+4: library entries
 LOCATOR_RE = re.compile(r"\((?:p\.?\s*\d+(?:\s*-\s*\d+)?|pp\.?\s*\d+\s*-\s*\d+|\d{1,2}:\d{2}(?::\d{2})?(?:\s*-\s*\d{1,2}:\d{2}(?::\d{2})?)?|§[^)]+|para\.?\s*\d+|[^)]*\bsec(?:tion)?\.?\s*[\w.]+)\)", re.IGNORECASE)
-TAG_RE = re.compile(r"\[(" + "|".join(VERIFICATION_TAGS) + r")\]")
+# A tag may carry a qualifier inside the bracket — `[partial — relayed from X, origin
+# in Cites]` is better writing than a bare `[partial]` with the reason stranded in
+# prose, and the tag stays machine-readable either way. Requiring the bracket to hold
+# nothing but the word made the honest form of the label a lint failure.
+TAG_RE = re.compile(r"\[(" + "|".join(VERIFICATION_TAGS) + r")(?:\s*[—\-–][^\]]*)?\]")
 TIME_RE = re.compile(r"(\d{1,2}):(\d{2})(?::(\d{2}))?")
 
 
@@ -371,8 +375,21 @@ def to_seconds(stamp: str) -> int | None:
 HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 
 
+def top_level_bullets(body: str) -> list[str]:
+    """Unindented bullets only, HTML comments stripped.
+
+    A nested bullet belongs to the takeaway above it (the template's `*Texture:*`
+    line), so it is not an independent claim needing its own locator and tag.
+    """
+    visible = HTML_COMMENT_RE.sub("", body)
+    return [
+        ln for ln in visible.splitlines()
+        if ln[:1] in ("-", "*") and ln.strip() not in ("-", "*")
+    ]
+
+
 def bullet_lines(body: str) -> list[str]:
-    """Bullets, with HTML comments stripped first.
+    """Bullets at any indent, with HTML comments stripped first.
 
     Templates and theses legitimately carry explanatory comments, and those
     comments contain dashed lists. Counting them as content made the Principles
@@ -406,14 +423,19 @@ def check_library(corpus: Corpus, errors: list[str]) -> int:
         if takeaways is None:
             errors.append(f"{rel}: missing `{TAKEAWAYS_HEADING}`")
         else:
-            bullets = bullet_lines(takeaways)
+            # TOP-LEVEL bullets only. An indented sub-bullet is a continuation of its
+            # parent takeaway — library/_template.md prescribes exactly that shape for
+            # the required `*Texture:*` line — so demanding its own locator and tag made
+            # the template's own form unlintable, and would have pushed authors to drop
+            # the texture line rather than fight the gate.
+            bullets = top_level_bullets(takeaways)
             if not bullets:
                 errors.append(f"{rel}: `{TAKEAWAYS_HEADING}` is empty")
             for b in bullets:
                 if not LOCATOR_RE.search(b):
-                    errors.append(f"{rel}: takeaway lacks a locator: {b[:70]}")
+                    errors.append(f"{rel}: takeaway lacks a locator: {b.strip()[:70]}")
                 if not TAG_RE.search(b):
-                    errors.append(f"{rel}: takeaway lacks a verification tag: {b[:70]}")
+                    errors.append(f"{rel}: takeaway lacks a verification tag: {b.strip()[:70]}")
 
         leftovers = section(text, NOT_CAPTURED_HEADING)
         if leftovers is None:
@@ -653,7 +675,18 @@ def check_append_only(corpus: Corpus, errors: list[str]) -> None:
 EVIDENCE_TAG_RE = re.compile(
     r"\[\s*evidence:\s*([a-z-]+)\s*\|\s*my record:\s*([a-z-]+)\s*\]", re.IGNORECASE
 )
-VOICE_LINE_RE = re.compile(r"^\s*-\s+\*\*(agrees|diverges|qualifies)\*\*", re.IGNORECASE | re.MULTILINE)
+# The template's prescribed shape is `- **Voices:** **diverges** — ...`, so the mood
+# marker is the SECOND bold token. An earlier version of this regex required it to be
+# the first, and therefore matched zero voice lines in every correctly-formatted block:
+# `contested` became impossible to claim, and the `well-supported` gate counted 0 voices
+# for everything, so it would have fired on any legitimate promotion. Both directions
+# wrong, and both invisible — the self-test's negative cases still passed, for the wrong
+# reason. That is why test-lint.py now asserts the POSITIVE direction too: a check that
+# only ever rejects is indistinguishable from a check that rejects everything.
+VOICE_LINE_RE = re.compile(
+    r"^\s*-\s+(?:\*\*Voices:?\*\*\s*)?\*\*(agrees|diverges|qualifies)\*\*",
+    re.IGNORECASE | re.MULTILINE,
+)
 
 
 def check_evidence_tags(corpus: Corpus, errors: list[str]) -> None:
