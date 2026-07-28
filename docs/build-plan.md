@@ -2,6 +2,35 @@
 
 > Handoff brief written 2026-05. Captures the design intent, what's built, what's still to build, and in what order. If you (future Francesco, or a future Claude session) wonder *why* something was built or skipped, this is the answer.
 
+## Status as of 2026-07-28 — the knowledge layer
+
+Two tiers, two skills, one enforcement layer. The vault could produce knowledge and had nowhere to put knowledge that came from outside it; dropping an investor letter on it did nothing, and lessons that spanned industries had no home because `frameworks/` is industry-scoped.
+
+**Built:**
+
+- **`principles/`** — cross-industry investment principles, 48 items across six themes (VAL, ASYM, MOAT, CAPA, NARC, PROD), each with a permanent citable ID, attributed **Voices** (who agrees, who diverges, and the conditions each holds under), and two independent tags: `evidence:` (what the field supports) and `my record:` (what my own results show). Seeded from 41 candidates already latent in the frameworks, theses and the 2026-07-17 audit — every item carries a locator proving it was not invented.
+- **`library/`** + **`sources.md`** — one distilled entry per absorbed source, locator-addressed and verification-labelled, with a mandatory non-empty `## Not captured` so silent truncation cannot read as full coverage. Raw sources archived to `library/sources/` (gitignored, mirrored off-machine).
+- **`absorb`** and **`consult`** — the path in and the path out. Drop a file in `library/_inbox/` or paste a URL; absorb resolves, retrieves down a per-type ladder, passes a grounding gate, distills, fans out to the themes it genuinely touches, flags collisions with open theses, and commits. `consult` answers "what do big investors say about this kind of situation" from the stored corpus, with citations, and queues the gap rather than guessing when the corpus is silent.
+- **Grafts into seven skills.** `company-deep-dive` gained the Principles check (in the thesis *and rendered in the chat output* — a section that only lands on disk does not answer the question while you are reading). `thesis-check` treats a principle tension as WATCH-max. `decision-log` carries the reliance stamp and a mirror checklist row. `post-mortem` grades the check against the realized outcome and owns `My record:`. Six skills were deliberately left untouched.
+- **Enforcement.** `check-cross-references.py` now runs eight check classes against *staged* content; `test-lint.py` holds 37 planted-violation cases proving each fires; `check-cadence.py` is the clock, silent when healthy, wired at vault and user level.
+
+**What the build actually taught, worth keeping:**
+
+Five bugs were found in the enforcement layer itself, every one the same shape — **the gate contradicting the thing it was supposed to enforce.** A Type-column value read as a filename. A routing table read as an index. HTML-comment bullets counted toward a line cap. The template's own `*Texture:*` sub-bullet demanding its own locator. And the worst: `VOICE_LINE_RE` required the mood marker to be the first bold token while the template prescribes `- **Voices:** **diverges** —`, so it matched **zero** voice lines in every correctly-formatted block — making `contested` unreachable *and* `well-supported` unachievable, with the self-test's negative cases passing for the wrong reason.
+
+That last one is the lesson: **a check that only ever rejects is indistinguishable from a check that rejects everything.** The evidence-tag cases now assert both directions, and every fix shipped with the regression case that would have caught it. It was found not by the lint or the tests but by a subagent that had formatted its file correctly, could not tag a dissent it had legitimately recorded, and wrote the reason into its Log rather than quietly downgrading its own work.
+
+The corollary for the vault's own discipline: `scripts/test-lint.py` is not optional maintenance. Run it after touching the lint. A gate nobody has proven fires is a gate nobody should trust.
+
+**Still open, deliberately:**
+
+- **Fan-out of the first absorbed source.** The Marks memo is distilled and committed but changed no principle — the tier was being audit-corrected the same day, and interleaving new external voices with in-flight structural fixes would have muddied whether an item's support came from a primary source or its own earlier prose. Queued in `sources.md` with priority order.
+- **Zero primary external sources in the tier.** Every Voices line but one is the owner's own analysis citing another file the owner wrote, so an `agrees` line is currently architectural rather than evidential. The files disclose this in their Open questions. `emerging` across the tier is an honest statement about what this vault has READ, not about what the field supports — and nothing promotes above it until primaries are absorbed (Buffett letters are first in the queue).
+- **The interleaved-miss shape in distillation.** The unaccounted-span gap is closed structurally by interval math; a method dropped from *within* a segment that also produced a takeaway leaves no gap to detect. That is the independent second read's job, and its own limit is that nothing verifies the read was genuinely independent.
+- **Autonomous scheduled runs.** Not built. The watchdog is the floor; the written trigger is rituals slipping twice inside six weeks despite nags firing.
+- **`portfolio.md` TBD trade details** — owner-only, from brokerage records. Nags until filled.
+- Deferred with written triggers: `spar`, `source-sweep` and its honesty probe, the full schema-lint port, generated indexes, a standalone glossary, `park`, a `projects/` tier, RAG.
+
 ## Status as of 2026-07-17
 
 Everything in "Gaps to fill" 1-5 below is **built**: `thesis-check`, `portfolio-review`, `post-mortem` + `archive/_template.md`, `news-triage`, and the `earnings-prep`/`earnings-debrief` pair all exist in `.claude/skills/`. Two skills were added that this plan never listed: `evaluate` (single entry point chaining framework-bootstrap → sector-primer → company-deep-dive) and `decision-log` (same-day structured record of every position change). Gap 6 (`compare-within-sector`) remains deliberately deferred — its precondition (3+ deep dives in one sector) is unmet.
