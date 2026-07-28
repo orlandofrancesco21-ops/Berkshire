@@ -195,7 +195,15 @@ Autonomous scheduled runs — having Claude execute news-triage and the Monday r
 ### Restore on a new machine
 
 1. `git config core.hooksPath .githooks` — otherwise the pre-commit gate is silently off. (`check-cadence.py` detects and nags about this.)
-2. `setx BERKSHIRE_SOURCE_MIRROR "<a personal path>"` — the off-machine backup for `library/sources/`. It must **not** be the Synera OneDrive; there is deliberately no default, so an unset mirror fails loudly instead of leaking a private archive into company storage.
+2. Set `BERKSHIRE_SOURCE_MIRROR` — the backup target for `library/sources/`. It must **not** be the Synera OneDrive; there is deliberately no default, so an unset mirror fails loudly instead of quietly leaking a private archive into company storage. Currently `C:\Users\FrancescoOrlando\Repo\Berkshire-source-archive`.
+
+   Use PowerShell, **not** `setx`: `setx VAR "C:\path"` stores the quote characters as part of the value, and the script then hunts for a directory literally named `"C:\path"`. That is not hypothetical — it failed exactly that way here on the first attempt.
+
+   ```powershell
+   [Environment]::SetEnvironmentVariable('BERKSHIRE_SOURCE_MIRROR', 'C:\your\path', 'User')
+   ```
+
+   Be honest about what the current location buys: a local folder protects the archive against loss *from the vault* — a bad `git clean`, a deleted working copy, a re-clone — but **not** against disk failure or losing the machine. Point it at something replicated when convenient. The raw sources are the one artifact here that git does not protect, which is the whole reason this step exists.
 3. In Obsidian: Settings → Files & Links → Excluded files → add `library/_inbox/` and `library/sources/`. Gitignore hides them from git, not from the quick switcher, search, or graph.
 4. `pip install pymupdf yfinance` if absent, and confirm `uvx` is available for the `edgartools` MCP.
 5. Sanity check: `python scripts/test-lint.py` (expect all cases passing) and `python scripts/check-cadence.py`.

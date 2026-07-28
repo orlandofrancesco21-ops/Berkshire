@@ -1,0 +1,116 @@
+---
+theme: valuation-discipline
+prefix: VAL
+updated: 2026-07-28
+---
+# Valuation discipline
+
+**Scope:** How a price becomes a decision-usable judgment — scenario ranges instead of point estimates, choosing the multiple that fits the business's economics, normalizing a distorted denominator, requiring independent cross-checks to cluster, telling cyclical compression from structural, and keeping one canonical set of scenario numbers per name. Not here: whether the asymmetry justifies buying or sizing (that is the asymmetry/entry/exit theme), and not why the market believes the low multiple (that is the narrative/cycle theme).
+
+## Principles
+
+### VAL-P1 — Fair value is a range, never a point
+
+**VAL-P1** — State fair value as a probability-weighted bear/base/bull range and act on the range, not on a single number; a point estimate is fake precision and it hides which assumption the decision actually rests on.
+`[evidence: emerging | my record: untested]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `docs/build-plan.md` "Design rules that are non-negotiable" 2026-05 [unverified]: written as a non-negotiable design rule of the vault — fair value is always a range, point estimates are fake precision (holds when: the scenarios differ by named, separately-checkable drivers; three cases that differ only by a multiplier on one base case are a point estimate wearing three hats)
+- **Voices:** **qualifies** — Owner's own analysis, `sectors/branded-athletic-footwear-and-apparel/companies/NKE/valuation.md` Update log 2026-07-17 [unverified]: stating a range is not enough — the audit found two wrong upside/downside percentages derived off a correct scenario table, so every figure quoted against the range must be recomputed at write time, not carried forward (holds when: the prose restates the range in percentage terms, which is where the arithmetic drifts)
+- **My record:** 2026-07-28 — no closed position tests this. All three names in the vault carry a bear/base/bull table, so the rule has never been tested against the temptation to quote one number; the only documented failure so far is in the arithmetic derived off a range, not in the range itself.
+- **Log:**
+  - 2026-07-28 — minted from `docs/build-plan.md` "Design rules that are non-negotiable" and README.md "Conventions"; the three `valuation.md` "Fair value range" sections are the applied instances.
+
+### VAL-P2 — The multiple follows the business, not the sector label
+
+**VAL-P2** — Pick the primary multiple from what the denominator actually means for that business model — cash conversion, capital intensity, where the value sits — rather than from the sector the name is filed under; the wrong multiple on the wrong business is wrong before the first number is entered.
+`[evidence: emerging | my record: untested]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `frameworks/energy-and-cleantech.md` "Valuation framework" 2026-05-08 [unverified]: named the single most important rule of that framework — the same multiple that flatters a commodity processor at peak spreads is meaningless on an asset whose value is rate-base growth (holds when: sub-segments inside one sector differ in capital intensity or cash conversion; in a genuinely homogeneous sector the sector multiple and the right multiple coincide, and insisting on a bespoke lens only adds error)
+- **Voices:** **qualifies** — Owner's own analysis, `sectors/branded-athletic-footwear-and-apparel/companies/NKE/valuation.md` "Primary valuation framework" 2026-05-20 [unverified]: the choice is only defensible if it also says which generic lenses are deliberately second-order and why — there, capital intensity low enough that cash and EBITDA do not diverge, and no separable asset to sum (holds when: the reason is a stated property of the business, not a preference for the lens that gives the friendlier answer)
+- **My record:** 2026-07-28 — untested. Applied in all three deep dives; no closed position yet shows whether the chosen lens was the one that mattered.
+- **Log:**
+  - 2026-07-28 — minted from `frameworks/energy-and-cleantech.md` "Valuation framework" (opening rule) and its "Sub-sector navigator".
+
+### VAL-P3 — Independent cross-checks must cluster, and divergence gets reconciled
+
+**VAL-P3** — Run three or more genuinely independent valuation lenses (owner's own framework, 2026-05, unverified) and require them to cluster before acting, where clustered means the highest output sits no more than roughly a third above the lowest (provisional tolerance minted here 2026-07-28, no external basis, unverified — stated so the requirement can fail, and to be replaced the first time a real case argues for a different width). A wider spread is a failed cluster: that does not forbid acting, but it forbids calling the lenses agreed — name which lens is the conservative one and why, rather than averaging the disagreement away.
+`[evidence: emerging | my record: untested]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `sectors/creative-and-design-software/companies/ADBE/valuation.md` "Cross-checks" 2026-05-20 [unverified]: an FCF-yield lens and an earnings-multiple lens came out mutually inconsistent, and the reconciliation named the earnings-multiple case the conservative one — the gap itself was diagnosed as the implied multiple rather than split down the middle (holds when: the lenses are actually independent; a discounted cash flow, an FCF yield and an EBITDA multiple all driven off one revenue-and-margin forecast are one lens counted three times)
+- **Voices:** **qualifies** — Owner's own analysis, `sectors/creative-and-design-software/companies/ADBE/valuation.md` "Cross-checks" 2026-05-20 [unverified]: the same section that demonstrates the reconciliation also violates the item's other two requirements, so the vault's only worked instance is evidence on both sides. It averages — one bullet resolves a gap by noting that the average of the cross-checks centres in a single range — and its four lenses (an FCF-yield lens, an EBITDA multiple, a buyback-adjusted earnings lens, a sum-of-parts) all run off one out-year revenue-and-margin forecast, which is exactly the one-lens-counted-several-times failure the holds-when above names. Against the stated tolerance the set does not cluster: the most generous lens sits nearly double the primary one, while the section's summary still reads that the cross-checks broadly agree (holds when: the lenses share a forecast, which is the default inside a single-model deep dive; then the cluster corroborates the forecast rather than the valuation, and only a lens interrogating a different input — asset or parts value, a market-implied multiple, a transaction or insider price — adds independent evidence)
+- **Voices:** **qualifies** — Owner's own analysis, `frameworks/energy-and-cleantech.md` "Valuation framework" 2026-05-08 [unverified]: what counts as independent is industry-specific, and the framework prescribes which two secondary checks to always run per sub-segment (holds when: the cross-check interrogates a different input — asset or reserve value against an earnings multiple, not two earnings multiples)
+- **My record:** 2026-07-28 — untested. Practised in all three `valuation.md` files; the ADBE reconciliation shows the rule doing real work (it changed which number was treated as the base), but no closed position grades the outcome.
+- **Log:**
+  - 2026-07-28 — minted from the "Cross-checks" sections of ADBE, UNH and NKE `valuation.md`; three near-identical statements merged into this one canonical item.
+  - 2026-07-28 — counter-evidence added off the locator that was already cited in support (audit finding). Re-read `sectors/creative-and-design-software/companies/ADBE/valuation.md` "Cross-checks": the reconciliation quoted in the agrees line is verbatim accurate ("the gap is the implied multiple", the earnings-multiple case named the conservative one), and the same four bullets also average the cross-checks into one centred range and derive every lens from the same out-year revenue and margin. The demonstration and the violation share a section, and only the demonstration was cited — the missing half is now a **qualifies** line so the item carries its own counter-instance.
+  - 2026-07-28 — "cluster" given a stated tolerance (audit finding): as written the requirement could not be violated, which the file's own Open questions already conceded. Tolerance is provisional and labelled as such — no external source supports a specific width, and the first case that argues for a different one should replace it rather than work around it. Consequence recorded honestly: the vault's one worked instance fails the tolerance on its most generous lens.
+
+### VAL-P4 — Move causally linked drivers together when building the range
+
+**VAL-P4** — When the dominant value drivers are causally linked — the growth path and the exit multiple that path earns are the standard case — move them together across bear/base/bull; varying them independently produces a bear case that is too mild and a bull case that is too tame, which quietly understates the true spread of outcomes.
+`[evidence: emerging | my record: untested]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `sectors/creative-and-design-software/companies/ADBE/valuation.md` "Sensitivity" and "Fair value range" 2026-05-20 [unverified]: "Sensitivity" named revenue trajectory and exit multiple as the two dominant variables and stated they are correlated; "Fair value range" built the scenario table so each case moves earnings power and multiple in the same direction — the narrative-fundamentals feedback loop was called the single biggest source of variance in the outcome (holds when: the link is mechanical or narrative-driven; forcing correlation onto genuinely independent drivers manufactures a false tail)
+- **Voices:** **qualifies** — Owner's own analysis, `sectors/creative-and-design-software/companies/ADBE/thesis.md` Update log 2026-07-17 [unverified]: the correlation is a multi-year relationship, not a quarterly one — a print where growth held and the multiple compressed anyway is inside the range, not evidence against it (holds when: judged over the intended holding period; do not re-cut the scenarios off one quarter's divergence)
+- **My record:** 2026-07-28 — untested. No closed position; the one live case where the two drivers moved apart is a single quarter, which is too short to grade the rule.
+- **Log:**
+  - 2026-07-28 — minted from `sectors/creative-and-design-software/companies/ADBE/valuation.md` "Fair value range" (the correlated-drivers paragraph and the scenario table's construction). Not in the seed brief — added because it governs how the range VAL-P1 requires is actually built, which VAL-P1 itself does not say.
+  - 2026-07-28 — locator split across the two sections that actually carry it: the correlated-drivers statement and the narrative-fundamentals-feedback claim are in "Sensitivity", not "Fair value range"; "Fair value range" carries the scenario table that applies them (each case moving earnings power and multiple the same way) and the line that the valuation hinges on out-year earnings power and the exit multiple. Item itself unchanged — the support is there, it was addressed to the wrong section.
+
+### VAL-P5 — One canonical set of scenario numbers per name
+
+**VAL-P5** — Exactly one artifact holds the governing bear/base/bull numbers for a name — the valuation file's scenario table — and any range stated elsewhere must either reconcile to it or declare itself a different object; two live sets of numbers is a bug, because nobody can later tell which set a decision rested on.
+`[evidence: emerging | my record: validated]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `sectors/branded-athletic-footwear-and-apparel/companies/NKE/thesis.md` Update log 2026-07-17 "scenario-number reconciliation note" [unverified]: the audit found a conviction paragraph carrying softer upside and downside ranges than the scenario table, and resolved it by declaring the valuation file canonical — it is what the price-triggered check mechanically reads (holds when: one artifact is the one a tool actually reads; where no tool reads either, duplication costs less and the fix can wait for the next refresh)
+- **Voices:** **qualifies** — Owner's own analysis, `sectors/us-managed-care-and-health-services/companies/UNH/thesis.md` Update log 2026-07-17 kill-switch maintenance [unverified]: probability-weighted mid-scenarios and scenario endpoints are legitimately different objects, so the requirement is that the difference be labelled, not that the numbers match (holds when: the label says which object it is — an unlabelled second range is indistinguishable from a contradiction)
+- **My record:** 2026-07-28 — validated by documented failure: the 2026-07-17 system audit found two live sets of scenario numbers in both the NKE and the UNH thesis files, each unnoticed until an explicit audit went looking. The rule costs nothing to state and was still violated in the vault's first two names, which is why it is stored here rather than assumed.
+- **Log:**
+  - 2026-07-28 — minted from `sectors/branded-athletic-footwear-and-apparel/companies/NKE/thesis.md` Update log 2026-07-17 "scenario-number reconciliation note" and `sectors/us-managed-care-and-health-services/companies/UNH/thesis.md` Update log 2026-07-17 kill-switch maintenance (final paragraph). Process-flavoured but kept here: the failure mode is valuation integrity, not cadence — the cadence and logging side of the same audit lives in the process-discipline theme (PROD).
+
+## Mental models
+
+### VAL-M1 — Value the normalized out-year, and say what normal means
+
+**VAL-M1** — When earnings are at a cyclical trough or mid-turnaround, value off a forward year far enough out that the recovery is priced — the vault's default is forward two-year normalized earnings (owner's own framework, 2026-05, unverified) — and write down what "normal" is assumed to be, because that assumption is the valuation.
+`[evidence: emerging | my record: untested]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `sectors/us-managed-care-and-health-services/companies/UNH/valuation.md` "Primary valuation framework" 2026-05-21 [unverified]: with the guided year itself at trough, forward-one-year earnings understate intrinsic value, so the primary lens was moved to a normalized out-year with yield-based cross-checks behind it (holds when: the depression is cyclical, or self-inflicted and fixable, and there is a named mechanism for the recovery; when the decline is structural, normalizing back to the old level just imports the bull case into the denominator)
+- **Voices:** **qualifies** — Owner's own analysis, `sectors/branded-athletic-footwear-and-apparel/companies/NKE/valuation.md` "Primary valuation framework" 2026-05-20 [unverified]: the same lens applied to a turnaround rather than a cycle, where trailing earnings are at a turnaround low rather than a cycle low (holds when: the recovery drivers are named and observable before the normalized year arrives — otherwise the out-year is unfalsifiable until it is too late to act on)
+- **My record:** 2026-07-28 — untested. Used as the primary lens on both cyclically depressed names in the vault; neither has reached its normalized year, so the denominator choice is unresolved.
+- **Log:**
+  - 2026-07-28 — minted from the "Primary valuation framework" sections of `sectors/us-managed-care-and-health-services/companies/UNH/valuation.md` and `sectors/branded-athletic-footwear-and-apparel/companies/NKE/valuation.md`.
+
+## Traps
+
+### VAL-T1 — Cheap on a distorted denominator
+
+**VAL-T1** — A stock is not cheap until the denominator is normalized: a low multiple on peak earnings and a high multiple on trough earnings are the same mistake, and trailing figures mislead in both directions. The trap fires whenever the multiple is the first thing you look at.
+`[evidence: emerging | my record: untested]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `frameworks/branded-athletic-footwear-and-apparel.md` "When does the multiple lie?" 2026-05-20 [unverified]: these businesses look cheapest in the year they last earned through-cycle margins, and the bear case is that those margins were the peak (holds when: the business has an identifiable cycle; where there is no cycle, trailing earnings are the honest denominator and forcing a normalization invents one)
+- **Voices:** **qualifies** — Owner's own analysis, `frameworks/us-managed-care-and-health-services.md` "When does the multiple lie?" 2026-05-20 [unverified]: earnings and the multiple can compress concurrently, so the ratio looks unremarkable while both terms are distorted — the apparent valuation reads reasonable on trailing figures when the right denominator is normalized (holds when: reading a multiple against its own history rather than against a normalized denominator)
+- **Voices:** **qualifies** — Owner's own analysis, `frameworks/creative-and-design-software.md` "When does the multiple lie?" 2026-05-20 [unverified]: the denominator can be distorted by definition rather than by cycle — a multiple that looks reasonable on an adjusted earnings figure and falls apart on the reported one (holds when: the adjustment is structural and recurring, not genuinely one-off; a real one-off exclusion is not a distortion)
+- **My record:** 2026-07-28 — untested. No closed position; the two names bought on normalized denominators have not reached the normalized year.
+- **Log:**
+  - 2026-07-28 — minted from the "When does the multiple lie?" sections of `frameworks/branded-athletic-footwear-and-apparel.md`, `frameworks/us-managed-care-and-health-services.md` and `frameworks/creative-and-design-software.md`, plus `sectors/us-managed-care-and-health-services/companies/UNH/valuation.md` "Primary valuation framework". Trough-on-peak and trough-on-trough merged into one item; the adjusted-versus-reported distortion folded in as a condition rather than shipped as a second trap.
+
+### VAL-T2 — Cyclically cheap read as the same thing as structurally cheap
+
+**VAL-T2** — Before treating multiple compression as an opportunity, name its cause: compression on macro or operating-cycle fear mean-reverts, compression on an architecture shift or a regime change in regulation need not, and the two are indistinguishable on a screen.
+`[evidence: emerging | my record: untested]` (as-of 2026-07-28)
+
+- **Voices:** **agrees** — Owner's own analysis, `frameworks/creative-and-design-software.md` "Mental-model crossover risks" 2026-05-20 [unverified]: compression on fear is the buying opportunity, compression on structural disruption is the value trap, and the compressed state can persist for years while the disruption narrative holds (holds when: you can name the disrupting mechanism and an observable that would disconfirm it; without both, "structural" is a mood, not a diagnosis)
+- **Voices:** **qualifies** — Owner's own analysis, `frameworks/us-managed-care-and-health-services.md` "Mental-model crossover risks" 2026-05-20 [unverified]: regulatory compression does not mean-revert on the timeline that operating-cycle compression does, so a mean-reversion call needs a named catalyst and date rather than a historical average (holds when: the regulatory change alters earning power, not just sentiment — and note the harder case, where the fear is partly justified by real change)
+- **Voices:** **qualifies** — Clayton Christensen / disruption theory, as cited in `frameworks/creative-and-design-software.md` "Mental-model crossover risks" 2026-05-20 [unverified]: the vault's own note is that the clean bottom-up playbook did not fit the case it was applied to — pressure arrived at the low end and the high end simultaneously (holds when: deciding what "structural" means in a specific case; nobody here has read the primary source, so this is a pointer to a framework worth absorbing, not an endorsement of a position)
+- **My record:** 2026-07-28 — untested. No position taken on a structural-versus-cyclical call has been closed. The one live case — a compressed multiple with fundamentals still confirming as of the 2026-07-17 earnings debrief — is unresolved evidence, not a verdict.
+- **Log:**
+  - 2026-07-28 — minted from the "Mental-model crossover risks" sections of `frameworks/creative-and-design-software.md` (cyclically-cheap bullet) and `frameworks/us-managed-care-and-health-services.md` (last two bullets).
+
+## Open questions
+
+- Where is the line between a normalized out-year that legitimately prices a recovery and one that has quietly imported the bull case into the denominator? VAL-M1 states the condition ("a named recovery mechanism") but nothing tests it yet.
+- Is VAL-P3's provisional cluster tolerance (highest no more than roughly a third above the lowest, set 2026-07-28 with no external basis) the right width? It exists so the rule can fail, and it is not validated: the vault's one worked cross-check set fails it on its most generous lens while that file's own summary calls the lenses broadly agreed. Either the tolerance is too tight or that summary was too generous, and one worked instance cannot say which.
+- What counts as an independent cross-check when every lens is ultimately fed by one revenue-and-margin forecast? The current answer — interrogate a different input — is a heuristic, not a test. There is now one worked instance to argue against: the ADBE "Cross-checks" set, where four differently-named lenses share a single out-year revenue and margin (recorded as the **qualifies** line on VAL-P3).
+- Is there a defensible default timeline for a "compression mean-reverts" call, or does every case need its own named catalyst and date (VAL-T2)? No external voice on this exists in the vault yet: no absorbed memo or letter from anyone with a public record on cycle-versus-structure diagnosis.
+- Does the correlated-driver construction in VAL-P4 belong to valuation or to the narrative/cycle theme? It is stored here because it changes how the scenario table is built, but its mechanism is narrative feedback, and a second instance may argue for moving it.
