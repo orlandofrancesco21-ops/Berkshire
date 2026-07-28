@@ -1,6 +1,6 @@
 ---
 name: evaluate
-description: Single-entry-point skill for "I want to look at TICKER" without orchestrating the three-step prerequisite chain manually. Determines the relevant industry and sector for the ticker, checks whether frameworks/{industry}.md and sectors/{sector}/primer.md already exist, runs framework-bootstrap and/or sector-primer inline if missing, then runs company-deep-dive. User-facing output is the deep-dive; intermediate artifacts (framework, primer) are written to disk for later refinement. Use when you want to evaluate a name and don't want to orchestrate the framework → primer → deep-dive sequence yourself. Triggered by "evaluate X", "look at X", "let's look at X", "what about X", "I'm curious about X".
+description: Single-entry-point skill for "I want to look at TICKER" without orchestrating the three-step prerequisite chain manually. Determines the relevant industry and sector for the ticker, checks whether frameworks/{industry}.md and sectors/{sector}/primer.md already exist, runs framework-bootstrap and/or sector-primer inline if missing, then runs company-deep-dive. User-facing output is the deep-dive; intermediate artifacts (framework, primer) are written to disk for later refinement. Use when you want to evaluate a name and don't want to orchestrate the framework → primer → deep-dive sequence yourself. Triggered by "evaluate X", "look at X", "let's look at X", "what about {TICKER}" (a ticker, not a general question), "I'm curious about X".
 ---
 
 # evaluate
@@ -32,13 +32,13 @@ This skill is a convenience wrapper. It does not replace the discipline of hand-
 2. **Check for an existing framework.** Look for `frameworks/{industry-slug}.md`. Four cases:
 
    - **Exact match exists.** Use it as the lens. Continue to step 3.
-   - **Umbrella framework exists (has a "Sub-sector navigator" section).** Identify the sub-sector this ticker belongs to from the navigator table. Then check whether the sub-framework exists. If yes, use it. If no, run `framework-bootstrap {sub-sector-slug}` inline.
+   - **Umbrella framework exists (marker line `**Umbrella framework:** yes` at the top of the file — a Sub-sector navigator section alone does NOT make it an umbrella).** Identify the sub-sector this ticker belongs to from the navigator table. Then check whether the sub-framework exists. If yes, use it. If no, run `framework-bootstrap {sub-sector-slug}` inline.
    - **Related but not exact match exists** (e.g. you have `branded-consumer-apparel.md` but the ticker is athletic-specific). Use judgment — if the existing framework's lens fits, use it; if not, run `framework-bootstrap` for the narrower scope.
    - **Nothing exists.** Run `framework-bootstrap {industry-slug}` inline. The output is a v1 draft.
 
 3. **Check for an existing sector primer.** Look for `sectors/{sector-slug}/primer.md`. If missing, run `sector-primer {sector-slug}` inline.
 
-4. **Run `company-deep-dive`** on the ticker using the framework (or sub-framework, if step 2 went through the umbrella path) and primer just confirmed or created. The deep-dive's step 1b will pass because the framework now exists.
+4. **Run `company-deep-dive`** on the ticker using the framework (or sub-framework, if step 2 went through the umbrella path) and primer just confirmed or created. The deep-dive's step 1 (existence check) and step 1b (umbrella check) will both pass, because a decision-grade framework now exists.
 
 5. **In the user-facing output, lead with the deep-dive.** The framework and primer that were created (if any) are mentioned briefly but not foregrounded — the user asked about a company, not about infrastructure. Format:
 

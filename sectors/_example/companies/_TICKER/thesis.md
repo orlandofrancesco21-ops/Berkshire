@@ -6,7 +6,7 @@
 **Created:** YYYY-MM-DD
 **Last updated:** YYYY-MM-DD
 **Sector:** `../../primer.md`
-**Framework:** `../../../frameworks/{industry}.md`
+**Framework:** `../../../../frameworks/{industry}.md`
 
 ---
 

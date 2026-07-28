@@ -78,7 +78,7 @@ This is the skill that defends your attention. Without it, you read 30 headlines
    - {TICKER}: {one-line summary}
 
    ## IGNORED — {count} headlines suppressed
-   ({short note on whether anything seemed borderline}
+   ({short note on whether anything seemed borderline})
 
    ## Nothing on
    {tickers with no news activity — confirms the silence is real, not a data gap}
@@ -101,7 +101,7 @@ This is the skill that defends your attention. Without it, you read 30 headlines
    - {TICKER}: flagged {YYYY-MM-DD} — {short reason} → next: {thesis-check | earnings-debrief}
    ```
 
-   When a flag is resolved (either `thesis-check` returned a verdict or `earnings-debrief` ran), the resolving skill is responsible for removing or marking the line — not this skill. `news-triage` only writes; it never silently clears prior flags.
+   When a flag is resolved (either `thesis-check` returned a verdict or `earnings-debrief` ran), the resolving skill is responsible for marking the line resolved — never deleting it (resolved entries preserve the calibration trail). `news-triage` only writes; it never silently clears prior flags.
 
    `journal/_flagged.md` is committed to the repo (it's not in `.claude/state/` which is gitignored) so the flag state travels with the system across machines.
 

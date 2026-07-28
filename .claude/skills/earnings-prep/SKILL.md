@@ -1,6 +1,6 @@
 ---
 name: earnings-prep
-description: 5-7 days before a portfolio holding reports, read thesis.md and valuation.md to produce a one-page earnings preview — what each kill switch would look like at this print, what each bull/bear case point needs to confirm or refute, where last quarter's guidance vs consensus sits, and the 3 questions to listen for in Q&A. The point is to walk into the call with prepared answers rather than reactive emotion. Reads thesis.md, valuation.md, and the relevant industry framework. Output is a one-pager appended to the thesis log under a draft heading. Use proactively before every print for every position. Triggered by "earnings-prep X", "X reports next week — prep me", "earnings-prep all".
+description: 5-7 days before a portfolio holding reports, read thesis.md and valuation.md to produce a one-page earnings preview — what each kill switch would look like at this print, what each bull/bear case point needs to confirm or refute, where last quarter's guidance vs consensus sits, and the 3 questions to listen for in Q&A. The point is to walk into the call with prepared answers rather than reactive emotion. Reads thesis.md, valuation.md, and the relevant industry framework. Output is a one-pager appended to the thesis Update log as a dated entry. Use proactively before every print for every position. Triggered by "earnings-prep X", "X reports next week — prep me", "earnings-prep all".
 ---
 
 # earnings-prep

@@ -28,7 +28,15 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 LINK_PATTERN = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 BACKTICK_PATH_PATTERN = re.compile(r"`(\.{1,2}/[^`]+\.md|[a-zA-Z0-9_\-./]+/[a-zA-Z0-9_\-./]+\.md)`")
 
-SKIP_DIRS = {".git", ".obsidian", "state", "cache", "logs"}
+# Path prefixes (relative to repo root) to skip entirely. Full prefixes, not
+# bare directory names — a future sectors/{x}/logs/ must NOT be skipped.
+SKIP_PREFIXES = (
+    (".git",),
+    (".obsidian",),
+    (".claude", "state"),
+    (".claude", "cache"),
+    (".claude", "logs"),
+)
 
 
 def is_skippable_target(target: str) -> bool:
@@ -45,7 +53,8 @@ def is_skippable_target(target: str) -> bool:
 
 def iter_markdown_files(root: Path):
     for path in root.rglob("*.md"):
-        if any(part in SKIP_DIRS for part in path.parts):
+        rel_parts = path.relative_to(root).parts
+        if any(rel_parts[: len(p)] == p for p in SKIP_PREFIXES):
             continue
         yield path
 

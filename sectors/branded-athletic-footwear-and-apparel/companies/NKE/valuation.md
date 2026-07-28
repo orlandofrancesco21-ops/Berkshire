@@ -49,7 +49,7 @@ The valuation hinges on what FY28 (fiscal year ending May 2028) normalized earni
 
 **Probability-weighted fair value:** ~$60.75 (0.25 × $28 + 0.50 × $62 + 0.25 × $91)
 
-**Current price vs range:** $43 is ~31% below the probability-weighted fair value, and ~12% above the bear-case fair value.
+**Current price vs range:** $43 is ~29% below the probability-weighted fair value ($60.75), and ~54% above the bear-case fair value ($28) — i.e. ~35% downside to bear.
 
 ## Sensitivity
 
@@ -81,7 +81,7 @@ This is the table `valuation-check` reads on price moves.
 
 | Action | Price band | Reasoning |
 |---|---|---|
-| ADD | < $38 | Approaches bear-case fair value; asymmetry becomes very favourable (5-7% downside vs 60%+ upside to base) |
+| ADD | < $38 | Approaches bear-case fair value; asymmetry becomes very favourable (~26% downside to bear vs ~63% upside to base — >2.4:1) |
 | HOLD | $38 – $65 | Within fair value range; let thesis play out |
 | TRIM | $65 – $80 | Approaching/exceeding base-case FV; partial profit-taking warranted unless thesis has strengthened |
 | EXIT consideration | > $85 | At/above bull-case FV; requires bull case to be confirmed-in-reality, not just narrative |
@@ -92,3 +92,7 @@ This is the table `valuation-check` reads on price moves.
 ### 2026-05-20 — initial valuation
 
 Stock at $43. Probability-weighted FV ~$60.75. Base case $62 implies +44% upside over 2-3y as turnaround validates and multiple expands from 19x forward FY27 to 20x forward FY28; bear case $28 implies -35% on persistent brand erosion; bull case $91 implies +112%. Asymmetry ~2:1 reward-to-risk, supportive of starting position but not exceptional. Most sensitive to FY28 gross margin trajectory and exit multiple — both driven by the same underlying narrative about brand health. Key data points to track: Q4 FY26 print (late June 2026) for full-year wholesale data; Q1 FY27 print (Sep 2026) for the cleanest first quarter under the "Win Now" plan.
+
+### 2026-07-17 — arithmetic corrections (system audit)
+
+Two arithmetic errors fixed in the body, no change to the scenario values themselves: (1) "Fair value range" section claimed $43 is "~12% above the bear-case fair value" — $43 vs $28 is ~54% above (~35% downside to bear, consistent with what this log's initial entry already said); (2) the ADD band's parenthetical claimed "5-7% downside" at <$38 — downside from $38 to the $28 bear FV is ~26% (vs ~63% upside to base — the asymmetry claim survives, the numbers were wrong).

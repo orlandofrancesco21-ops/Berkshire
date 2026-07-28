@@ -26,7 +26,7 @@ This is the skill that prevents emotional trading. Trust the framework. If the f
 
 2. **Check freshness.** Apply the canonical stale-thesis rule in `docs/build-plan.md` (Shared rules). If the thesis is stale by that definition, recommend `company-deep-dive` to refresh before acting on the recommendation — do not produce a price-based ADD or TRIM against a stale thesis.
 
-3. **Pull current data:**
+3. **Pull current data** (per the canonical price-sourcing rule in `docs/build-plan.md` Shared rules — yfinance, snapshot date + currency):
    - Current price
    - Last 30 days price action
    - Current value of the multiples specified in `valuation.md` (the primary multiple plus cross-checks)
@@ -48,13 +48,15 @@ This is the skill that prevents emotional trading. Trust the framework. If the f
 
 7. **Append a dated note to `thesis.md`** under the Update log:
    ```
-   ### YYYY-MM-DD — valuation check
-   - Current price: $X
+   ### YYYY-MM-DD — valuation-check
+   - Current price: $X ({currency}, pulled {date} via yfinance)
    - Fair value range: $Y – $Z (last updated: {date})
    - Position vs midpoint: {X}%
-   - Recommendation: {HOLD/TRIM/ADD/REVIEW}
+   - Recommendation: {HOLD/TRIM/ADD/REVIEW/EXIT}
    - Reasoning: {one sentence}
    ```
+
+   The heading token is the hyphenated skill name (`— valuation-check`), matching every other skill's Update-log convention — `decision-log` extracts "most recent valuation-check verdict" by that token.
 
 8. **Do not overwrite** any prior entries in the thesis. Append only.
 

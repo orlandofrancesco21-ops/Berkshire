@@ -71,7 +71,7 @@ The hardest cases to write are wins. Losses force introspection; wins encourage 
 
 10. **Write the post-mortem** to `archive/{exit-YYYY-MM}-{TICKER}.md`. Filename uses **exit** year-month so the archive sorts by when the lesson was learned, not by when the position was opened. The `Entry: YYYY-MM` field in the frontmatter preserves the original entry context for sequencing.
 
-11. **Remove the position from `portfolio.md`.** Do not delete the thesis or valuation files — they stay in `sectors/{sector}/companies/{TICKER}/` as the source material for the post-mortem and for future re-evaluation. Append a note to the company's `thesis.md` Update log: "EXITED YYYY-MM-DD — see archive/{filename}.md".
+11. **Remove the position from `portfolio.md`.** Do not delete the thesis or valuation files — they stay in `sectors/{sector}/companies/{TICKER}/` as the source material for the post-mortem and for future re-evaluation. Append a dated entry to the company's `thesis.md` Update log: `### YYYY-MM-DD — EXIT` followed by `See archive/{filename}.md.` (dated-heading format, same convention as every other Update-log entry).
 
 12. **Write a `CLOSED.md` marker.** Create `sectors/{sector}/companies/{TICKER}/CLOSED.md` with a single line:
 

@@ -30,7 +30,12 @@ A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific e
 ├── archive/                 # closed positions — post-mortems
 │   └── _template.md         # post-mortem template
 ├── docs/                    # design notes
-│   └── build-plan.md        # handoff brief; gap list; rationale
+│   ├── build-plan.md        # handoff brief; build history; rationale
+│   ├── skill-dependency-map.md  # which skill reads/writes which file
+│   └── README.md            # docs index
+├── scripts/
+│   └── check-cross-references.py  # validates markdown links resolve
+├── .mcp.json                # project MCP servers (edgartools)
 └── .claude/
     └── skills/              # reusable Claude skills that read/write the above
         ├── evaluate/            # single-entry-point for "look at TICKER" (chains the three below)
@@ -71,6 +76,8 @@ A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific e
 | 5-7d before each holding's print | `earnings-prep` | Translates each kill switch into a specific print observable and each bull/bear point into a "confirms if / refutes if" binary — committed *before* the print. |
 | Within 48h after each print | `earnings-debrief` | Grades reality against the prep. Verdict drives whether to do nothing, monitor, run `thesis-check`, or run `company-deep-dive`. |
 | Ad-hoc when a name is in question | `thesis-check` and/or `valuation-check` | Stress-test against written kill switches; check price vs. fair value range. |
+| Quarterly | `watchlist-revisit` | Sweeps "Passed (with reason)" and "Researched, waiting for entry" names; flags where the original pass/wait reason has materially changed. |
+| On every position change | `decision-log` | Same-day structured record of BUY / ADD / TRIM / SELL / EXIT / PASS with the supporting verdicts; updates `portfolio.md`. Decisions are not optional. |
 | On any position close | `post-mortem` | Within 30 days of exit. Reads the full thesis log, distills 1-3 lessons, writes back to the framework. The highest-ROI artifact in the system over a 5-year horizon. |
 
 ## Conventions
@@ -95,6 +102,8 @@ Each skill lives in `.claude/skills/{skill-name}/SKILL.md`. The full set:
 - `news-triage` — daily/weekly pass; filters into IGNORE / LOG / FLAG; defaults to suppression.
 - `earnings-prep` — pre-commits criteria before each print so the post-print analysis isn't rationalization.
 - `earnings-debrief` — grades the print against the prep; recommends next action.
+- `decision-log` — captures every position change (BUY / ADD / TRIM / SELL / EXIT / PASS) the same day it happens, with the verdicts that informed it; updates `portfolio.md`. The bridge between research artifacts and actual position history.
+- `watchlist-revisit` — quarterly sweep of "Passed" and "waiting for entry" names; flags where the original reason to pass or wait has been overtaken by reality.
 - `post-mortem` — written within 30 days of every exit; writes back to the framework's lessons section.
 
 Explicitly **deferred** (stub at `.claude/skills/compare-within-sector/SKILL.md.deferred`):
@@ -117,7 +126,7 @@ This system assumes free-tier access to:
 - **Yahoo Finance** — via `yfinance` (Python library, no MCP needed). Prices, basic fundamentals, multiples, and historical data. Used by `valuation-check`, `earnings-prep`, `post-mortem`, and `watchlist-revisit`.
 - **Web search** — built into Claude. Used by `news-triage`, `sector-primer`, `framework-bootstrap`, `earnings-debrief` (for transcripts), and `watchlist-revisit`.
 
-Configure MCPs in `.claude/settings.json`. See `.claude/settings.example.json` for the pattern.
+Project-scoped MCP servers are configured in **`.mcp.json` at the repo root** (Claude Code does not read `mcpServers` from `.claude/settings.json`). The active config wires `edgartools`; see `.mcp.json.example` for placeholder patterns for future sources.
 
 ### Gaps and future upgrades
 
@@ -142,4 +151,13 @@ If you ever want to share specific frameworks publicly, fork them out into a sep
 ## Maintenance
 
 - After the first real deep dive completes, copy a redacted version into `sectors/_example/` as a worked example. Templates are easier to follow with one filled-in example than with placeholders alone.
-- Run `scripts/check-cross-references.py` periodically to verify markdown links between files still resolve. It walks the repo and reports any broken paths.
+- `scripts/check-cross-references.py` verifies markdown links between files still resolve. It runs automatically as a **pre-commit hook** (`.githooks/pre-commit`). One-time setup on each new clone/machine: `git config core.hooksPath .githooks`. Bypass in an emergency with `git commit --no-verify`.
+
+### Keeping the rituals honest
+
+The monitoring cadence table above is the system's heartbeat, and it only works if the rituals actually run. The failure mode to guard against (it happened once: May–July 2026, ~8 weeks of silence — journal empty, two revisit dates blown through) is the burst-then-silence pattern: heavy research sprint, then nothing until something hurts. Minimum viable cadence if time is short:
+
+1. `news-triage` — at least twice a week. "Nothing material" takes two minutes and is the usual output.
+2. `portfolio-review` — every Monday, even on an empty or tiny book (it stamps `Last reviewed` and keeps weights honest).
+3. `earnings-prep` — non-negotiable before every holding's print. Put each holding's next report date in your calendar the day the previous debrief lands.
+4. `watchlist-revisit` — first week of each quarter.

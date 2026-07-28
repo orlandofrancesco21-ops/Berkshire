@@ -3,7 +3,7 @@
 Companion to `thesis.md`. The valuation must use the multiples specified in the relevant industry framework — generic DCF is not the default unless the framework calls for it.
 
 **Last updated:** YYYY-MM-DD
-**Framework:** `../../../frameworks/{industry}.md`
+**Framework:** `../../../../frameworks/{industry}.md`
 
 ---
 

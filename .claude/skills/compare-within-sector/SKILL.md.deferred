@@ -1,6 +1,11 @@
+---
+name: compare-within-sector
+description: Stack-rank multiple company deep dives within one sector to support a single-pick decision. Reads each candidate's thesis.md and valuation.md, normalizes bull/bear cases against the shared sector framework, and outputs a comparison matrix + recommended ranking to journal/{date}-compare-{sector}.md. Use when 3+ deep dives exist in one sector and one name must be picked. Triggered by "compare the {sector} names", "compare-within-sector {sector}", "which of X/Y/Z should I pick".
+---
+
 # compare-within-sector — DEFERRED
 
-> Filename ends in `.deferred` so Claude Code does not load this as an active skill. Rename to `SKILL.md` to enable.
+> Filename ends in `.deferred` so Claude Code does not load this as an active skill. Rename to `SKILL.md` to enable — the frontmatter above is already valid, but the Process/Output sections still need to be written against the felt need (see "Design intent" below).
 
 ## When to build
 
@@ -20,7 +25,6 @@ The brief explicitly says *"Build when there's a real felt need — not before."
 
 ## Design intent (so it's recoverable when built)
 
-- Should read but not modify the per-company files.
-- Should write its output to `journal/{YYYY-MM-DD}-compare-{sector}.md` and reference it from each compared thesis's Update log.
+- Should write its analysis to `journal/{YYYY-MM-DD}-compare-{sector}.md`. The only write to per-company files is a one-line dated pointer appended to each compared thesis's Update log (`### YYYY-MM-DD — compared, see journal/...`) — consistent with how other skills treat the Update log. No other modification of thesis/valuation content.
 - Should distinguish "which name is best by current framework" from "which name has the most upside if the framework is wrong in a specific way" — these are different questions and a serious comparator answers both.
 - Should not produce a single numeric score. Rankings, yes; rolled-up scores, no — they hide the question the comparison is supposed to expose.

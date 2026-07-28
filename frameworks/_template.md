@@ -4,6 +4,7 @@
 > Append-only. Refine every time you study a new name in this space.
 
 **Last updated:** YYYY-MM-DD
+**Umbrella framework:** no <!-- set to "yes — triage only; sub-framework required before any deep dive" for umbrella industries. This marker line — not the presence of a Sub-sector navigator — is what company-deep-dive and evaluate key on. -->
 
 ---
 
@@ -11,7 +12,7 @@
 
 One paragraph: what these companies do, where their revenue comes from, what drives demand at the customer level. Avoid encyclopedia tone — write the version you'd need if you were teaching a friend.
 
-<!-- Optional — use for umbrella industries (e.g. financials, energy, industrials) that span genuinely different business models with different KPIs and valuation lenses. Delete this section if the framework is for a single coherent business type. If kept, `company-deep-dive` will require the matching sub-framework to exist before proceeding (the umbrella is for triage, not decisions). -->
+<!-- Optional — use for umbrella industries (e.g. financials, energy, industrials) that span genuinely different business models with different KPIs and valuation lenses, OR as pure triage context in a decision-grade framework that covers several related business models. Delete this section if the framework is for a single coherent business type. Whether `company-deep-dive` requires a sub-framework is governed by the **Umbrella framework:** marker at the top of the file, NOT by this section's presence. -->
 
 ## Sub-sector navigator
 

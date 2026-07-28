@@ -95,3 +95,74 @@ A name with the franchise depth of Nike at this level of discount earns a starti
 ### 2026-05-20 — initial thesis
 
 Initial write-up. Stock at ~$43, market cap ~$63B. Thesis is mid-turnaround story under Elliott Hill (returning insider CEO since Oct 2024) with credible wholesale recovery and depressed valuation, balanced against real bear-case threats from structural China decline, durable insurgent share loss in running, and tariff drag. Conviction 3. Sizing 3-4% on initiation, capacity to 5-6% on confirming data. Will revisit after Q4 FY26 print (expected late June 2026) which will be the first full-year report under Hill and the cleanest data point on whether wholesale revenue acceleration is translating into sell-through and inventory normalization.
+
+### 2026-07-17 — scenario-number reconciliation note (system audit)
+
+The Conviction section's narrative ranges ("50-70% upside to $65-75 … 25-30% downside to $30-35") do not match `valuation.md`'s scenario table ($28 bear / $62 base / $91 bull, i.e. -35% / +44% / +112% from $43). For the record: **valuation.md is canonical** — it's what `valuation-check` reads; the conviction paragraph's softer numbers are a rougher probability-weighted narrative. Next deep-dive refresh should align the conviction paragraph to the scenario table rather than maintaining two sets of numbers.
+
+### 2026-07-17 — earnings-debrief (backfilled ~3 weeks late for the Q4 FY26 print)
+
+**Process notes, stated loudly:** (1) This debrief is a **late backfill** — the print was 2026-06-30 and the skill's 48h window was missed by ~2.5 weeks; treat the grading with the hindsight-narrative caveat the skill warns about. (2) **No earnings-prep one-pager was ever produced for this print** — the initial thesis committed to revisit after Q4 FY26 but the prep step was skipped, so this debrief grades the print directly against the thesis's kill switches and bull/bear case points rather than against a prep. That gap is a process failure to fix before the Q1 FY27 print (Sep 2026): run earnings-prep. (3) No Q&A-questions check is possible (no prep = no pre-committed questions); Q&A themes are summarized instead.
+
+**Print date:** 2026-06-30 (after market close; quarter and fiscal year ended 2026-05-31). Sources: Nike press release via about.nike.com / 8-K (2026-06-30), earnings-call transcript coverage (Benzinga full transcript, Investing.com, 2026-06-30/07-01), CNBC and TradingView summaries (2026-06-30). All numbers below dated to the 2026-06-30 print unless noted.
+
+Headline: Beat on depressed expectations (adj. EPS ~$0.20 vs ~$0.12 consensus; revenue $11.0B vs ~$10.85B est), but the optical blowout was a one-time $986M IEEPA tariff-recovery credit (~900 bps of Q4 GM, $0.52 of the $0.72 reported Q4 EPS). The most important non-obvious data point: **ex-tariff-recovery Q4 gross margin was 40.2%, down only 10 bps YoY — better than management's guided 25-75 bps decline — with GM expansion guided to begin Q1 FY27.** Second non-obvious point: Greater China deteriorated to -17% currency-neutral (from -10% the prior quarter).
+
+Key numbers (all from the 2026-06-30 press release / call unless noted):
+- Q4 revenue $11.0B, -1% reported / -4% currency-neutral. FY26 revenue $46.4B, flat reported / -2% cc.
+- Q4 GM 49.2% reported (+890 bps) including ~900 bps IEEPA tariff-recovery benefit ($986M); ex-benefit ~40.2%, -10 bps YoY. FY26 GM 42.9% (+20 bps, including ~210 bps recovery benefit).
+- Q4 diluted EPS $0.72 (incl. $0.52 tariff benefit); FY26 EPS $2.10 (-3%), ~$1.58 ex-benefit.
+- Inventory $7.5B, flat YoY. EMEA off-price inventory down >50%; ~$2B of classic-franchise supply removed from the market in FY26; management cited a 15-point improvement in full-price realization from reduced digital promotion.
+- Q4 wholesale $6.6B, +4% reported (+1% cc); FY26 wholesale $27.5B, +6%. Q4 Nike Direct $4.1B, -7% (-9% cc); digital -12%; owned stores -7%.
+- Geography (Q4): North America +3% with **NA wholesale +10%** (management attributed part to lower returns/discounts/cancellations, i.e. quality not just sell-in); EMEA -1% reported / -6% cc; Greater China $1.29B, **-12% reported / -17% cc**, worse than the prior quarter's -10%.
+- Running: fifth consecutive quarter of double-digit growth; ~+$1B of FY26 revenue; management claims ~5 points of share gained in statement running footwear across North America and Western Europe.
+- FY27 guidance (call, 2026-06-30): revenue down low-to-mid single digits over the next two quarters (H1 FY27) as wholesale supply is cut and digital promotions pulled back; Q1 FY27 GM expansion "slightly positive"; forward tariff assumption 10% incremental through July then 15%; Q1 SG&A ~flat with demand creation up high-single-digits and overhead down.
+- Capital returns FY26: dividends $2.4B (+5%); buybacks only ~$123M (~1.8M shares) — effectively paused.
+
+Kill switch grades — bull-case switches (would invalidate the bull thesis):
+- NA wholesale growth negative 2+ quarters: **REVERSED** — NA wholesale +10% in Q4 after +11% in Q3; the rebuild is still visibly working.
+- Foot Locker / Dick's Nike sell-through underperforming vs Adidas/Hoka/On 2+ quarters: **NEUTRAL** — no direct retailer sell-through data in this print; the lower-discounts/returns/cancellations color is an indirect positive proxy, but graded neutral pending retailer prints.
+- GM below 40% for 3+ quarters: **NEUTRAL** — ex-tariff Q4 GM 40.2% held above 40% and beat the guided decline; not triggered, but only ~20 bps of headroom.
+- Operating margin sub-8% sustained for FY27: **NEUTRAL** — not yet observable; FY27 just started. Ex-benefit FY26 earnings (~$1.58 EPS) confirm margins remain depressed.
+- Material athlete defection: **NEUTRAL** — none disclosed.
+- Greater China declines accelerating beyond -20% YoY: **PARTIAL** — -17% cc in Q4, an acceleration from -10% cc the prior quarter. Not through the -20% line, but moving toward it, and management framed China as a multi-year "reset" (local product-creation teams; locally designed product by holiday 2027). This is the closest thing to a trigger in the print. Watch Q1 FY27 closely.
+- Inventory builds again (DIO rising 2+ quarters): **NEUTRAL** — inventory flat YoY at $7.5B; supply of classics deliberately cut and EMEA off-price down >50%. Not a build; not yet a clean decline either.
+- Strategic pivot / acquisition: **NEUTRAL** — no acquisition; the "Sport Offense" reorg (~8,000 employees into sport verticals) is a deepening of the existing plan, not a new pivot.
+
+Kill switch grades — bear-case switches (would signal the franchise is back):
+- GM above 44% on 4-quarter trailing: **NEUTRAL** — FY26 GM 42.9% reported but ~40.8% ex-tariff-recovery; not met.
+- FL/DKS sell-through outpaces category 3+ quarters: **NEUTRAL** — no data in this print.
+- Clear hero-product hit: **NEUTRAL (leaning positive)** — new Mercurial was "the fastest-selling 24-hour launch for cleated footwear in the history of Nike Direct" amid World Cup activation (1.5B story views claimed, 2.5x 2022 kit volumes); notable heat but not yet a Samba-class cultural phenomenon.
+- Greater China flat/growth: **NEUTRAL (firmly not met)** — the opposite: decline accelerated to -17% cc.
+- Nike running wins back share: **TRIGGERED (in the bulls' favor)** — five straight quarters of double-digit running growth, ~+$1B FY26 revenue, claimed ~5 pts share gain in statement running footwear in NA/Western Europe. Management-sourced, but this is the single strongest anti-bear datapoint written in the thesis, and it fired.
+- Operating margin inflects upward Q/Q for 3+ quarters: **NEUTRAL** — not yet; GM expansion guided to start Q1 FY27, which would begin the clock.
+
+Bull case grades:
+- 1. Turnaround real / wholesale rebuild → sell-through → inventory → GM chain: **CONFIRMED (early innings)** — FY wholesale +6%, NA wholesale +10% with improving quality metrics, inventory flat, ex-tariff GM stabilized (-10 bps, better than guide), GM expansion guided from Q1 FY27. The causal chain the bull case wrote is observably operating, though total revenue is still shrinking (Q4 -4% cc) and Nike Direct/digital remain weak (-9% cc / -12%).
+- 2. Valuation reflects severe pessimism: **NEUTRAL (supportive color)** — not print-gradeable per se, but noteworthy: CEO Hill made two ~$1M open-market purchases (Dec 2025 near $61; April 2026 near $42) and directors Robert Swan and Jørgen Vig Knudstorp also bought (Investing.com/Fool coverage, 2026-07). Insider buying at these levels is consistent with the pessimism-overdone read.
+- 3. Structural floor above valuation: **NEUTRAL** — nothing in the print disproves it; but guidance of further revenue declines through H1 FY27 keeps normalized-earnings-power uncertainty open.
+
+Bear case grades:
+- 1. Brand lost a generation in running and China: **MIXED** — running leg materially **REFUTED** (share gains, 5 quarters of double-digit growth); China leg **CONFIRMED and worsening** (-17% cc, accelerating; management now talking multi-year reset with locally designed product not landing until holiday 2027).
+- 2. Margin recovery slower/shallower than bulls assume: **MIXED** — trajectory leaning refuted (ex-tariff GM beat guide; expansion guided from Q1 FY27), but level confirmed (ex-benefit FY26 EPS ~$1.58, below even the thesis's depressed ~$1.53 TTM baseline expectations of recovery; revenue guided down low-to-mid single digits H1 FY27). The recovery is real but slow — which is what the bear case said.
+- 3. Structural ceiling lower (China + insurgents + tariffs): **MIXED** — China: confirmed worse. Tariffs: confirmed structural (forward assumption 10% then 15% incremental; the $986M recovery is one-time). Insurgents: weakened — Nike is taking running share back rather than continuing to cede it.
+
+Q&A check: no prep existed, so no pre-committed questions to check. Dominant Q&A themes per transcript coverage (Benzinga, 2026-06-30): Greater China reset strategy and timeline; inventory/promotional cleanup (EMEA off-price -50%+, full-price realization +15 pts); sportswear repositioning ($2B of classics pulled, 12+ new footwear styles in H2 FY27); margin-recovery path ex-tariffs; NA wholesale quality. Management answers read specific and operational rather than evasive — consistent with the thesis's read on Hill/Friend disclosure quality.
+
+Guidance:
+- Action: effectively **maintained/lowered-at-the-margin** — reiterated the "flattish earnings through H1 FY27" framing from last quarter while explicitly guiding revenue down low-to-mid single digits for the next two quarters (channel-cleanup driven); GM guided to expand slightly from Q1 FY27.
+- Vs prior pattern: consistent with the Hill/Friend "honest, specific, no hiding behind macro" baseline noted in the Management section. No prep existed to record a sandbagger/overpromiser prediction.
+
+Unanticipated disclosures:
+- $986M IEEPA tariff-recovery credit (+$0.52 Q4 EPS, ~900 bps Q4 GM): one-time accounting item, but the forward tariff assumption (10% → 15% incremental) confirms the thesis's "structurally higher tariff steady state" — noise on the quarter, signal on the structure.
+- Buybacks nearly zero in FY26 (~$123M vs $3.0B FY25): the thesis flagged Hill slowing buybacks; near-total pause at $40-45 is capital preservation, not the counter-cyclical buying the framework would rate highest. Not a kill switch; a capital-allocation datapoint to keep grading.
+- Insider cluster buying (CEO ~$2M across Dec/Apr, plus two directors): positive governance signal not contemplated in the thesis.
+- "Sport Offense" reorg of ~8,000 employees into sport verticals: execution detail of the existing plan, not a pivot; noise.
+- China "reset" framing with locally designed product not arriving until holiday 2027: pushes the China stabilization timeline out further than the thesis's base case assumed. Candidate input to the next valuation refresh (China sensitivity row), not a new kill switch.
+
+Price reaction (24h): pre-print close $41.05 (2026-06-30); ~-2.3% after hours, ~-3.5% on 2026-07-01 (~$39.6-40.1) — beat on headline, sold off on China + revenue guidance. Noted, not weighted. Since recovered: **~$44.12 as of 2026-07-16** (Yahoo Finance quote) — i.e., above the pre-print level and roughly at the thesis-initiation price of ~$43.
+
+Current price vs valuation.md scenarios (unchanged: $28 bear / $62 base / $91 bull, probability-weighted ~$60.75): at ~$44.12 (2026-07-16), the stock sits ~57% above bear, ~29% below base, ~27% below the probability-weighted FV — squarely inside the HOLD band ($38-65). No band action implied by price.
+
+Verdict: **MONITOR**
+Recommended next action: **monitor** — no bull-case kill switch fully triggered and one bear-case switch (running share recovery) fired in the bulls' favor, but the Greater China PARTIAL (accelerating to -17% cc, one step from the -20% trigger) plus guided revenue declines through H1 FY27 keep this short of THESIS INTACT. Specifically: (1) run **earnings-prep before the Q1 FY27 print (~late Sep 2026)** — do not skip it again; (2) at that print, the two decisive observables are Greater China cc decline (a print at/beyond -20% cc would TRIGGER the kill switch and require thesis-check) and whether Q1 FY27 GM expansion materializes as guided (first tick of the bear-case margin-inflection anti-trigger). Conviction stays 3; no sizing change implied.

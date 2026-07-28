@@ -2,6 +2,17 @@
 
 > Handoff brief written 2026-05. Captures the design intent, what's built, what's still to build, and in what order. If you (future Francesco, or a future Claude session) wonder *why* something was built or skipped, this is the answer.
 
+## Status as of 2026-07-17
+
+Everything in "Gaps to fill" 1-5 below is **built**: `thesis-check`, `portfolio-review`, `post-mortem` + `archive/_template.md`, `news-triage`, and the `earnings-prep`/`earnings-debrief` pair all exist in `.claude/skills/`. Two skills were added that this plan never listed: `evaluate` (single entry point chaining framework-bootstrap → sector-primer → company-deep-dive) and `decision-log` (same-day structured record of every position change). Gap 6 (`compare-within-sector`) remains deliberately deferred — its precondition (3+ deep dives in one sector) is unmet.
+
+Of the "Smaller things to fix": journal structure is defined (`journal/README.md`), the quarterly passed-names skill exists (`watchlist-revisit`), and the framework write-back is explicit in `company-deep-dive`. Still genuinely open:
+
+- `portfolio.md` → structured format (yml/csv) at 15+ positions.
+- End-to-end relative-path verification with a real deep dive (mechanical link checking is covered by `scripts/check-cross-references.py`).
+
+The historical sections below are kept as written for context — read them as history, not as a to-do list.
+
 ## Context: what this repo is and what we're optimizing for
 
 This is a personal long-only, long-term, low-frequency investing research system. The user is Francesco — works in growth equity at Blume, this is his personal public-markets stack. Not a developer by background but comfortable in Claude Code + PowerShell on Windows.
@@ -51,7 +62,7 @@ Templates exist for: framework, sector (primer, value-chain, kpis, players), com
 
 ## MCPs needed for the monitoring skills
 
-- **EDGAR** — the `sec-edgar-mcp` pattern in `.claude/settings.example.json` should be activated. Free, no API key. Needed for 10-K/10-Q/8-K/Form 4 pulls in `thesis-check`.
+- **EDGAR** — `sec-edgar-mcp` is active in `.mcp.json` at the repo root (project MCP servers live there, not in `.claude/settings.json`). Free, no API key. Needed for 10-K/10-Q/8-K/Form 4 pulls in `thesis-check`.
 - **yfinance** — used as Python library directly, no MCP needed. Current prices, historical multiples.
 - **Web search** — built into Claude. Used for news triage and sell-side commentary.
 - For non-US issuers, plug in additional sources as needed (Companies House UK, ESMA portals EU).
@@ -83,4 +94,8 @@ A thesis is **stale** if any of the following are true:
 - (b) The company has reported earnings since the most recent thesis or valuation update (i.e. the most recent Update log entry predates the most recent earnings release).
 - (c) A prior `thesis-check` returned **REVIEW** within the last **90 days** and no `company-deep-dive` refresh has run since.
 
-Skills that depend on this rule: `valuation-check` (step 2), `thesis-check` (step 7), `portfolio-review` (step 6). When any of these skills detect a stale thesis, the recommendation is `company-deep-dive` refresh — *not* a price-based action.
+Skills that depend on this rule: `valuation-check` (step 2), `thesis-check` (step 7), `portfolio-review` (step 6), `decision-log` (discipline checklist). When any of these skills detect a stale thesis, the recommendation is `company-deep-dive` refresh — *not* a price-based action.
+
+### Price and data sourcing (canonical)
+
+Prices come from **yfinance** unless a skill states otherwise. Every written entry that quotes a price, multiple, or market-derived number must snapshot the **date, time, and currency** it was pulled at — a price without a timestamp is not evidence. News/headline references in journal entries carry their publication date. Skills that depend on this rule: `valuation-check`, `thesis-check`, `decision-log`, `earnings-prep`, `watchlist-revisit`, `post-mortem`, `news-triage`.

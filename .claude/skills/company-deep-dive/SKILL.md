@@ -1,6 +1,6 @@
 ---
 name: company-deep-dive
-description: Produce a full long-form analysis of a single company, grounded in the relevant industry framework and sector primer. Reads frameworks/{industry}.md and sectors/{sector}/primer.md as context. Output is thesis.md and valuation.md in sectors/{sector}/companies/{TICKER}/. Use when evaluating a specific company as a potential investment. Triggered by "deep dive on X", "company-deep-dive X", or "evaluate X for the Y book".
+description: Produce a full long-form analysis of a single company, grounded in the relevant industry framework and sector primer. Reads frameworks/{industry}.md and sectors/{sector}/primer.md as context — assumes both already exist (for the auto-bootstrapping entry point that creates missing prerequisites, use the evaluate skill instead). Output is thesis.md and valuation.md in sectors/{sector}/companies/{TICKER}/; also handles the refresh of an existing thesis. Triggered by "deep dive on X", "company-deep-dive X", "refresh the X thesis", or "deep-dive X for the Y book".
 ---
 
 # company-deep-dive
@@ -20,9 +20,17 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
 
 ## Process
 
+0. **Determine mode: fresh or REFRESH.** If `sectors/{sector}/companies/{TICKER}/thesis.md` already exists, this run is a **REFRESH**, not a fresh write. In refresh mode:
+   - Read the existing `thesis.md` and `valuation.md` in full before pulling any new data. The old thinking is calibration data, not something to discard.
+   - **Preserve the Update log verbatim.** Every prior dated entry stays exactly as written — the first entry is the original bull case and `post-mortem` depends on it.
+   - Rewrite the body sections in place (summary, bull case, bear case, capital allocation, management, kill switches, conviction, sizing logic) to reflect current reality.
+   - Append a dated entry `### YYYY-MM-DD — deep-dive refresh` to the Update log summarizing *what changed and why* — which bull/bear points strengthened or died, any kill-switch rewording, conviction moves with reasoning.
+   - Apply the same rules to `valuation.md`: rewrite scenario tables and bands in place, preserve and append to its update history.
+   Fresh mode (no existing thesis.md) proceeds from the templates as described below.
+
 1. **Confirm context exists.** Check that `sectors/{sector}/` and `frameworks/{industry}.md` both exist. If not, stop and ask the user to run the appropriate prior skill.
 
-1b. **Check whether the framework is an umbrella.** If `frameworks/{industry}.md` contains a section titled **"Sub-sector navigator"**, this is an umbrella framework and is *explicitly* not decision-grade — the framework itself will say so. Do not proceed using the umbrella alone:
+1b. **Check whether the framework is an umbrella.** Look for the marker line near the top of `frameworks/{industry}.md`: `**Umbrella framework:** yes` means triage-only, *explicitly* not decision-grade. (The presence of a "Sub-sector navigator" section does **not** by itself make a framework an umbrella — decision-grade frameworks may keep a navigator as triage context. The marker is the only signal. A framework with no marker line is treated as decision-grade.) If the marker says yes, do not proceed using the umbrella alone:
    - Identify which sub-sector this company belongs to from the navigator table (e.g. ASML.AS in the semis umbrella is "semiconductor equipment"; CEG in the energy umbrella is "Nuclear IPP").
    - Check whether `frameworks/{sub-sector-slug}.md` exists.
    - If yes: use the sub-framework as the **primary** lens for this deep-dive. The umbrella stays as supplementary context (cross-cutting principles, cycle position, regulatory backdrop).
@@ -52,7 +60,7 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
    - Conviction level (1-5) with explicit reasoning
    - Position sizing logic
 
-5. **Run the valuation.** Either invoke `industry-valuation` as a sub-step or do it inline. The valuation must use the multiples specified in `frameworks/{industry}.md` — not a generic DCF unless the framework calls for one.
+5. **Run the valuation inline.** The valuation must use the multiples specified in `frameworks/{industry}.md` — not a generic DCF unless the framework calls for one.
 
 6. **Write `sectors/{sector}/companies/{TICKER}/valuation.md`** using the template. Key outputs:
    - Primary valuation framework per the industry framework
@@ -62,7 +70,7 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
    - Cross-checks
    - Hold / trim / add bands (this is what `valuation-check` reads)
 
-7. **Save model code if you build any** to `sectors/{sector}/companies/{TICKER}/model.py`. It should be re-runnable with new inputs next quarter.
+7. **Save model code if you build any** to `sectors/{sector}/companies/{TICKER}/model.py`. It should be re-runnable with new inputs next quarter. (Ad-hoc scratch material can live in `sectors/{sector}/companies/{TICKER}/notes/` — no skill reads or writes it; it's human working space.)
 
 8. **Date the thesis entry.** First entry under "Update log" should be dated today and summarize the initial write-up.
 
@@ -78,12 +86,19 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
 
    Do not silently rewrite other parts of the framework. New insights go in this append-only section. Restructuring the framework body is a separate, deliberate decision.
 
-10. **If the conclusion is PASS, route the analysis to the watchlist.** A deep-dive that ends in "not confident enough to recommend" is a valid output — but the work has value and the name belongs on `watchlist.md`.
+10. **Route the verdict to the watchlist or portfolio.** A deep-dive ends in one of three routings:
 
-    - Append the company to `watchlist.md` under **"Passed (with reason)"** with today's date and a one-line reason (the specific bear-case or framework gap that drove the pass).
+    **BUY-worthy** — hand off to the user for a decision; if they act, `decision-log` records it and updates `portfolio.md`.
+
+    **WAIT (great business, wrong price)** — the most common non-BUY, non-PASS outcome. Append the company to `watchlist.md` under **"Researched, waiting for entry"** with: today's date, the fair value range, and an **explicit entry trigger** (a price level and/or a named event — "below $X" or "post-{event} clarity"). Append a dated entry to the thesis Update log: `### YYYY-MM-DD — WAIT` with the trigger. `watchlist-revisit` sweeps this section quarterly.
+
+    **PASS (not confident enough to recommend)** — still a valid output; the work has value.
+    - Append the company to `watchlist.md` under **"Passed (with reason)"**, filling every column of that table: today's date, a one-line reason (the specific bear-case or framework gap that drove the pass), and **"Revisit when"** (the specific condition that would reopen the question).
     - Do **not** delete `thesis.md` or `valuation.md` from `sectors/{sector}/companies/{TICKER}/` — they remain the source material for any future re-evaluation by `watchlist-revisit` (the quarterly re-evaluation skill).
-    - Append a note to the company's `thesis.md` Update log: `PASSED YYYY-MM-DD — see watchlist.md. Reason: {short reason}.`
+    - Append a dated entry to the company's `thesis.md` Update log: `### YYYY-MM-DD — PASS` followed by `See watchlist.md. Reason: {short reason}.` (Dated heading format, same as every other Update-log entry — log parsers rely on one convention.)
     - The next `watchlist-revisit` sweep will check whether the reason for passing has materially changed.
+
+    If `watchlist-revisit` re-opened this name and this deep-dive resolves it, also update or remove the company's existing watchlist row so it appears in exactly one section.
 
 ## Output
 

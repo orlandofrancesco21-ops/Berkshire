@@ -41,8 +41,10 @@ This is the skill that turns the system from a research workbench into a portfol
    | INTACT | TRIM | TRIM candidate — confirm position sizing |
    | WATCH | HOLD | MONITOR — next event likely to escalate |
    | WATCH | ADD/TRIM | DEFER price action — resolve the WATCH first |
+   | WATCH | REVIEW | RE-DEEP-DIVE — both axes are wobbling |
    | REVIEW | any | RE-DEEP-DIVE — do not act on price until thesis refreshed |
    | INTACT | REVIEW | RE-DEEP-DIVE — valuation logic is stale |
+   | any | EXIT | ESCALATE — sleep on it, then `decision-log` discussion; EXIT is never executed from a sweep |
 
    The matrix is deliberately asymmetric: thesis status dominates valuation status. A REVIEW verdict on either axis suppresses price-based action.
 
@@ -55,7 +57,7 @@ This is the skill that turns the system from a research workbench into a portfol
    6. ADD candidates with lower conviction (1-3) — usually defer to higher-conviction ADDs
    7. Plain HOLD (everything else) — collapse into a single line
 
-6. **Compute portfolio-level metrics.** Independent of name-by-name verdicts, report:
+6. **Compute portfolio-level metrics — from current prices, not the stored weights.** The `Current weight` column in `portfolio.md` is only as fresh as the last sweep; recompute it now. For each position: shares (from `portfolio.md`) × current price (yfinance, per the canonical price-sourcing rule in `docs/build-plan.md` Shared rules), converted to the base currency declared at the top of `portfolio.md`. Total portfolio value = sum of position values + Cash line. Then report:
    - Total position count
    - Top 5 concentration (% of portfolio)
    - Sector concentration (any > 35%?)
@@ -63,9 +65,11 @@ This is the skill that turns the system from a research workbench into a portfol
    - Cash level
    - Stale theses, per the canonical stale-thesis rule in `docs/build-plan.md` (Shared rules)
 
-7. **Write the digest** to `journal/{YYYY-MM-DD}-review.md`. Format below.
+7. **Write the recomputed numbers back to `portfolio.md`.** This is the one file this skill updates: the `Current weight` column per position, the `Total portfolio value` line, the Concentration check section (each figure dated today), the `Thesis status` column from today's verdicts, and the `Last reviewed` date. If the book is empty, just set `Last reviewed` and state that explicitly.
 
-8. **Do not modify any thesis or valuation files.** This skill aggregates; it does not write to per-company files. The per-company appends already happened when `thesis-check` and `valuation-check` ran in steps 2 and 3.
+8. **Write the digest** to `journal/{YYYY-MM-DD}-review.md`. Format below.
+
+9. **Do not modify any thesis or valuation files.** This skill aggregates; per-company writes already happened when `thesis-check` and `valuation-check` ran in steps 2 and 3. `portfolio.md` (step 7) is the only file this skill updates directly.
 
 ## Output
 

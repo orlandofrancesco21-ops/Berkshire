@@ -15,6 +15,8 @@ Where `type` is one of:
 | `triage` | `news-triage` skill | Daily/weekly news-triage output (FLAGs, LOGs, IGNORE counts). |
 | `review` | `portfolio-review` skill | Weekly portfolio sweep — ranked action items, metrics, full-sweep table. |
 | `decision` | `decision-log` skill (preferred) or human directly | A decision you made: buy / sell / trim / add / exit / pass with structured supporting context and mandatory reasoning. Written *at* the time of the decision, not after. The `decision-log` skill enforces the structure and pulls supporting verdicts automatically. |
+| `watchlist-revisit` | `watchlist-revisit` skill | Quarterly sweep of passed / waiting-for-entry names — which original reasons have been overtaken by reality. |
+| `compare-{sector}` | `compare-within-sector` skill (currently deferred) | Stack-rank of multiple deep dives within one sector. |
 | `notes` | Human (you) | Free-form weekly reflection. Optional. Useful for capturing things that don't fit anywhere else but you want to be able to grep later. |
 
 Examples:

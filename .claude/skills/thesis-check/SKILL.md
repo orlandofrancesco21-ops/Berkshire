@@ -1,6 +1,6 @@
 ---
 name: thesis-check
-description: For a held position (or watchlist name with an existing thesis), pull every material event since the last thesis update and ask one question — does anything trigger a kill switch written in thesis.md? Reads thesis.md and the relevant industry framework. Output is "thesis intact" or "REVIEW: signal X potentially triggers kill switch Y" with a dated entry appended to the thesis update log. Use when an earnings release lands, when a position has dropped or rallied sharply, when portfolio-review flags a name, or as a standalone gut-check before adding/trimming. Triggered by "thesis-check X", "is the X thesis still intact", "X just reported, run a thesis-check".
+description: For a held position (or watchlist name with an existing thesis), pull every material event since the last thesis update and ask one question — does anything trigger a kill switch written in thesis.md? Reads thesis.md and the relevant industry framework. Output is "thesis intact" or "REVIEW: signal X potentially triggers kill switch Y" with a dated entry appended to the thesis update log. Use when a position has dropped or rallied sharply, when portfolio-review flags a name, or as a standalone gut-check before adding/trimming. For post-earnings analysis use earnings-debrief instead — running both on the same print creates duplicate thesis-log entries. Triggered by "thesis-check X", "is the X thesis still intact".
 ---
 
 # thesis-check
@@ -11,8 +11,9 @@ Either invoked directly on a single name, or by `portfolio-review` across all po
 
 - "Thesis-check [TICKER]"
 - "Is the [TICKER] thesis still intact?"
-- "[TICKER] just reported — run thesis-check"
 - "Something feels off on [TICKER], check the thesis"
+
+**Not for post-earnings analysis.** "[TICKER] just reported" routes to `earnings-debrief`, which grades the print against the pre-committed `earnings-prep` criteria and can itself recommend a thesis-check afterward. Running both directly on the same print creates duplicate thesis-log entries.
 
 This is the skill that separates noise from signal. The whole point is to stress-test the specific, falsifiable kill switches written in `thesis.md` — not to re-do the original analysis. If you find yourself re-arguing the bull case, you're doing the wrong skill. Run `company-deep-dive` instead.
 

@@ -4,6 +4,7 @@
 > Append-only. Refine every time you study a new name in this space.
 
 **Last updated:** 2026-05-20
+**Umbrella framework:** no — decision-grade for payers and integrated payer-services; the Sub-sector navigator below is triage context, not a sub-framework requirement.
 
 ---
 

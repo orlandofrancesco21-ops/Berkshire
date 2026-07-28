@@ -20,8 +20,8 @@ This is the skill that makes the journal discipline actually work. The journal i
 
 - Ticker
 - Action — one of: `BUY` / `SELL` / `TRIM` / `ADD` / `EXIT` / `PASS`
-- Size — optional. Either % of portfolio (e.g. "3%"), absolute amount, or "full" for EXIT. If omitted, the skill will prompt.
-- Price — optional. Defaults to current price via yfinance if not provided.
+- Size — optional. Share count (preferred — it's the ground truth `portfolio.md` stores), % of portfolio, absolute amount, or "full" for EXIT. If given as % or amount, convert to shares using the current price and the **Total portfolio value** line in `portfolio.md`; if that line is stale or blank, ask the user for the actual share count rather than deriving from a stale total. If omitted entirely, prompt.
+- Price — optional. Defaults to current price via yfinance if not provided (snapshot date + currency per the canonical price-sourcing rule in `docs/build-plan.md` Shared rules).
 
 ## Process
 
@@ -45,8 +45,8 @@ This is the skill that makes the journal discipline actually work. The journal i
    ```
    ## {TICKER} — {ACTION}
    **Time:** YYYY-MM-DD HH:MM (local)
-   **Size:** {% of portfolio or absolute or "full"}
-   **Price:** ${X}
+   **Size:** {N shares (~X% of portfolio) or "full"}
+   **Price:** {X} {listing currency} (pulled {date} via yfinance; FX to base: {rate} if applicable)
    **FV range at decision:** ${low} – ${high} (last updated {date in valuation.md})
    **Position vs FV:** {% above/below base}
 
@@ -69,12 +69,12 @@ This is the skill that makes the journal discipline actually work. The journal i
    - [ ] For SELL/EXIT: the trigger maps to a written kill switch, a valuation hit, or a stated portfolio-level reason (no "I just felt like it")
    ```
 
-6. **Update `portfolio.md` if applicable:**
-   - `BUY` — add a new row with ticker, sector, today's date, cost basis (price × size), weight, conviction (pulled from thesis), thesis status (pulled from most recent thesis-check)
-   - `ADD` — increase weight on existing row; do not change conviction unless the user explicitly requests
-   - `TRIM` — decrease weight on existing row
-   - `SELL` (partial) — same as TRIM
-   - `EXIT` — do *not* remove the row from `portfolio.md` here. Confirm with the user that `post-mortem` should run, which will remove the row in its own step 11.
+6. **Update `portfolio.md` if applicable.** Shares are the primary data; weights are derived. Every transaction also updates the **Cash** line and the **Total portfolio value** line (dated today):
+   - `BUY` — add a new row: ticker, sector, today's date, shares, listing currency, avg cost/share, cost basis in base currency (shares × price, converted at today's FX rate — state the rate used), current weight (vs today's total portfolio value), conviction (pulled from thesis), thesis status (pulled from most recent thesis-check). Decrease Cash by the base-currency cost.
+   - `ADD` — increase shares on the existing row; recompute avg cost/share and cost basis; do not change conviction unless the user explicitly requests. Decrease Cash.
+   - `TRIM` — decrease shares on the existing row (cost basis reduces proportionally; avg cost/share unchanged). Increase Cash by the proceeds.
+   - `SELL` (partial) — same as TRIM. **A SELL of the full position is an EXIT** — treat it as EXIT below, including the post-mortem prompt.
+   - `EXIT` — do *not* remove the row from `portfolio.md` here. Confirm with the user that `post-mortem` should run — removing the row from `portfolio.md` is `post-mortem`'s job, as its final step.
    - `PASS` — do not touch `portfolio.md` and do not write to `watchlist.md` either. `watchlist.md` is the write-territory of `company-deep-dive` (which appends to "Passed (with reason)" when a serious deep-dive concludes PASS). A `decision-log PASS` action records the decision in `journal/` only — it's the lightweight "I considered this and moved on" log. If the PASS is serious enough that the name should sit on the watchlist for future revisit, run `company-deep-dive` and let it write through the proper channel.
 
 7. **Restate the reasoning back to the user in chat.** This is the verbal commitment that pairs with the written one. If the reasoning sounds weak when restated aloud, that's a signal — the user can still abort the action.

@@ -65,10 +65,10 @@ Five-year capital allocation data (FY21-FY25, calendar years):
 - DOJ produces a structural settlement (forced PBM divestiture, MA risk-adjustment clawback) rather than civil monetary penalties.
 - MLR fails to continue improving sequentially in Q2-Q4 2026; MCR remains above 86%.
 - MA membership losses continue at 500K+/quarter through 2026.
-- 2027 CMS MA rate notice is restrictive (worse than 2026 base case).
+- 2028 CMS MA rate notice (advance notice ~Feb 2027, final ~Apr 2027) is restrictive — rate spread below expected cost trend. (The 2027 notice was already published before this thesis was written — modest improvement, embedded in the base case — so it cannot serve as a forward trigger.)
 - Hemsley steps back or is medically unable to continue before a credible successor is in place.
-- Optum Health continues to underperform; restructuring fails to drive EBIT recovery.
-- Another major regulatory/legal event (new DOJ action, FTC enforcement on PBM, state-level action).
+- Optum Health operating margin fails to reach 4%+ on a four-quarter trailing basis by the Q4 2026 print (the direct mirror of the bear-side "recovers to 6%+" switch — between 4% and 6% is WATCH territory).
+- A NEW major regulatory/legal action beyond those already disclosed as of 2026-05 (a fresh DOJ front, an FTC enforcement order on the PBM, or a state-level suit naming UNH — escalations within the existing known investigations don't count; new fronts do).
 - Material dividend cut (would be the cleanest signal that management has lost confidence in cash generation).
 
 **Bear-case kill switches (signals that the bear case is wrong):**
@@ -77,7 +77,7 @@ Five-year capital allocation data (FY21-FY25, calendar years):
 - MLR returns to 84% or below by Q4 2026.
 - MA membership stabilizes or returns to growth at 4-star+ plans by H2 2026.
 - Optum Health margin recovers to 6%+ on a four-quarter trailing basis.
-- 2027 MA rate notice is constructive (favourable spread vs cost trend).
+- 2028 MA rate notice (advance ~Feb 2027, final ~Apr 2027) is constructive (favourable spread vs cost trend).
 - Hemsley executes aggressive buyback at sub-$400 stock during 2026-2027.
 - Earnings guidance for 2027 emerges above $22+ adjusted EPS.
 
@@ -109,3 +109,43 @@ If both (a) price retraces and (b) one supporting data point lands, conviction w
 ### 2026-05-21 — initial thesis
 
 Initial write-up. Stock at $393, market cap ~$360B, having rallied 47% from March 2026 low of $270. Thesis is "quality franchise mid-reset under genuine regulatory cloud; the easy compression-to-normal trade was at $270-300, and current pricing asks for trust on resolutions that haven't happened." Berkshire's complete exit of position between Q3 2025 and Q1 2026 (revealed May 15, 2026) at near-current prices is the strongest external pricing signal — the smartest known long-only investor concluded the asymmetry no longer justified the position at $300-400 range. Conviction 2. **PASS at current pricing; place on watchlist with re-entry triggers**. Will revisit on either material price retracement OR DOJ resolution clarity.
+
+### 2026-07-17 — kill-switch maintenance (system audit)
+
+Three kill switches rewritten for falsifiability; no change to the thesis itself. (1) The "2027 CMS MA rate notice" trigger (both bull and bear side) was keyed to an event that had **already resolved** before this thesis was written — the 2027 notice published April 2026 with modest improvement, embedded in the base case. Retargeted to the **2028 rate notice** (advance ~Feb 2027, final ~Apr 2027), the actual forward event. (2) "Optum Health continues to underperform" had no threshold or timeframe — now: trailing-4Q operating margin <4% by the Q4 2026 print, mirroring the bear-side 6%+ switch. (3) "Another major regulatory/legal event" was open-ended — now scoped to NEW enforcement fronts beyond those disclosed as of 2026-05. Also noting for the record: the Conviction section's narrative ranges (~$280-310 downside / ~$470-500 upside) are probability-weighted mid-scenarios; the canonical scenario values are `valuation.md`'s $240 bear / $400 base / $532 bull. The two are deliberately different objects — valuation.md governs `valuation-check`.
+
+### 2026-07-17 — earnings-debrief (Q2 2026 print; watchlist name)
+
+UNH reported Q2 2026 on July 15-16, 2026 (release 8-K + call July 16). This was the print the valuation flagged as the key check on MLR durability. Sources: SEC 8-K earnings release, earnings-call transcript (Motley Fool / Sahm Capital, 2026-07-16), stockanalysis.com quote 2026-07-17.
+
+**The print:**
+- Revenue $112.0B; operating earnings $8.0B; adjusted EPS **$6.38** (GAAP $6.04) — a beat; stock rallied on the print.
+- **MCR 86.7%** vs 89.4% in Q2 2025 (**-270 bps YoY**), helped by $860M net favorable prior-period development (majority 2026 dates of service). Management attributed improvement to product/portfolio actions and pricing discipline. FY26 MCR guidance narrowed to **88.1% ± 25 bps**.
+- **MA membership:** cumulative contraction since YE2025 still 965K at the Q2 print — i.e. essentially **zero net additional attrition in Q2** (the 965K was already the Q1 figure). FY26 expected decline ~1.1M, implying only ~-135K over H2. Medicare margins projected to finish 2026 above 3%.
+- **Optum Health:** Q2 revenue $23.5B, operating earnings $1.2B = **5.1% quarterly margin**, described as "slightly better than we expected." FY26 operating earnings guided to "at least $2.2B," with management noting nearly all Optum Health earnings land in H1 (modest Q3 profit offset by modest Q4 losses).
+- **FY26 guidance RAISED:** adjusted EPS to **$19.50-$20.00** (from >$17.75 at the initial guide). Long-term 13-16% annual EPS growth target reaffirmed. **Buyback target raised to at least $5B for 2026** (from $2.5B).
+- **DOJ:** no resolution, no settlement, no new developments disclosed at the print — only the standard risk-factor mention. Searches for material DOJ/regulatory news since 2026-05-21 surfaced nothing new (all substantive coverage dates to 2025 disclosures). No new enforcement fronts identified.
+
+**Kill-switch grading (bull-side switches — did any fire?):**
+- *"MLR fails to continue improving sequentially in Q2-Q4 2026; MCR remains above 86%"* — **NEUTRAL, not fired on intent; switch needs recalibration.** YoY improvement was large (-270 bps) and FY MCR guidance was narrowed alongside a raised EPS guide — the "improvement stalls" scenario clearly did not happen. But the literal letter of the switch is breached: Q2 MCR 86.7% > 86%, and FY guide 88.1% > 86%. The 86% ceiling appears mis-calibrated against MCR seasonality (Q1 is the seasonally lowest quarter — Q1 2026 was 83.9%; raw sequential comparison Q1→Q2 is confounded). Judged on the YoY trend the thesis actually cares about, this is a pass, not a fire. Flag for the next kill-switch maintenance pass: restate as YoY improvement per quarter, or set the ceiling vs FY MCR guidance.
+- *"MA membership losses continue at 500K+/quarter through 2026"* — **REFUTED (did not fire).** Q2 net attrition ≈ 0; H2 guide implies ~-135K total. Membership has effectively stabilized after the Q1 965K hit.
+- *"Optum Health trailing-4Q operating margin <4% by the Q4 2026 print"* — **NEUTRAL at this print (dated to Q4), but a calibration problem is now visible.** Q2 quarterly margin of 5.1% is a genuine improvement and ahead of plan. However, FY guidance of ≥$2.2B operating earnings on a revenue run-rate of ~$90-95B (Q2 annualized) implies a trailing-4Q margin of roughly 2.3% at the Q4 print — arithmetic that cannot reach 4% given the disclosed H1-weighted seasonality. Either this switch fires mechanically at Q4 despite an improving business, or the 4% threshold was written against the wrong revenue base (the thesis SOTP assumed ~$110B revenue at ~5% margin, inconsistent with the seasonal earnings profile now disclosed). Needs review before the Q4 print — do not let a mis-specified threshold generate a false kill signal.
+- *"NEW major regulatory/legal action beyond those disclosed as of 2026-05"* — **NOT FIRED.** No new fronts found since 2026-05-21.
+- Other switches (2028 rate notice, Hemsley succession, dividend cut) — no relevant news; NEUTRAL.
+
+**Bear-case kill switches (signals the bear case is wrong):**
+- *"MA membership stabilizes... by H2 2026"* — **CONFIRMED** (stabilization visible already in Q2).
+- *"Hemsley executes aggressive buyback at sub-$400 stock"* — **partially CONFIRMED**: 2026 buyback target doubled to ≥$5B, though still below the $9B 2024 pace.
+- *"Earnings guidance for 2027 above $22"* — **NEUTRAL, trending confirm**: no 2027 guide yet, but FY26 raised to $19.50-$20.00 and the 13-16% growth algorithm reaffirmed implies ~$22+ for 2027 if held.
+- *"MLR returns to 84% or below by Q4 2026"* — not fired (FY guide 88.1%).
+- *"DOJ resolution... no structural change"* — not fired; no resolution of any kind yet.
+
+**Verdict:** Thesis intact; **the print moved the evidence toward the bull case**. MLR durability — the specific question this print was flagged to answer — was answered favorably (large YoY improvement, guidance raised, PPD favorable). MA membership stabilized a full half-year earlier than the bear-case switch required. Optum Health is ahead of its own plan. No bull-side kill switch fired on intent (two switches need threshold recalibration, noted above). The one thing that did NOT move: the DOJ overhang, which remains fully unresolved.
+
+**WATCHLIST ENTRY TRIGGERS — assessment:**
+1. *Price < $320?* **NO — not fired, and further away than ever.** UNH trades at ~$431 intraday on 2026-07-17 (stockanalysis.com, 12:01 PM EDT; July 16 close $423.38; post-print quotes across sources ranged $423-445 — sources disagree slightly on the exact post-print closes, but all are decisively in the $420-445 zone). That is +10% vs the $393 thesis price and ~35% above the trigger.
+2. *DOJ resolution clarity?* **NO — not fired.** No settlement, no resolution structure, no new disclosures at the print or in the news flow since 2026-05-21.
+
+**Neither entry trigger has fired.** The uncomfortable position: fundamentals are confirming the bull case while the price runs further from the entry band — the stock now sits above valuation.md's $400 base-case FV (HOLD band $320-500, so no action implied for a non-position). The base case ($25 FY28 EPS) may now be conservative given the raised FY26 guide and reaffirmed growth algorithm; recommend a `thesis-check` / valuation refresh via `company-deep-dive` to re-underwrite the scenario EPS paths and probabilities — the risk of a stale-anchor error (waiting for $320 on a name whose fair value is drifting up) is now live. PASS stands until that refresh is done; do not chase the post-print pop.
+
+**Data not verified / caveats:** exact post-print daily closes conflict across secondary sources (one showed $445.08 on July 15, stockanalysis.com shows July 16 close $423.38); Optum Health FY revenue guidance was not directly confirmed (the ~2.3% implied FY margin is my arithmetic from Q2 run-rate); the SEC 8-K itself returned 403 to automated fetch, so release figures were cross-verified via two secondary transcriptions (StockTitan, Motley Fool transcript) which agreed on all headline numbers.

@@ -4,6 +4,7 @@
 > Append-only. Refine every time you study a new name in this space.
 
 **Last updated:** 2026-05-08
+**Umbrella framework:** yes — triage only; spin out the matching sub-framework before any company deep dive.
 
 > **A note on scope.** "Energy & cleantech" is genuinely 8-10 different businesses with different KPIs, capital structures, and valuation lenses. This file is the **umbrella framework** — the cross-cutting principles that hold across all of it (capital cycle behavior, cost-curve thinking, transition risk, regulatory weight, contracted-vs-merchant cash flow). For deep work on any single name, expect to spin out a sub-framework: `upstream-oil-gas.md`, `midstream.md`, `regulated-utilities.md`, `renewables-developers.md`, `oilfield-services.md`, `refining.md`, `cleantech-equipment.md`, `nuclear-uranium.md`, `lng.md`. Treat this file as the **navigator** — useful for triage, not for decisions.
 

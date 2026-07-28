@@ -25,7 +25,4 @@ Resolved flag (preserved for calibration):
 
 (populated by `news-triage`; resolved by `thesis-check` or `earnings-debrief`)
 
-<!-- Example entries (delete once real flags exist):
-- AAPL: flagged 2026-05-01 — 8-K Item 5.02 (CFO departure) → next: thesis-check
-- MSFT: flagged 2026-04-28, resolved 2026-04-30 (THESIS INTACT) — was: cluster of 3 downgrades in 10d
--->
+- ADBE: flagged 2026-07-17 — Q2 FY26 debrief triggered CEO-transition kill switch (Narayen stepping down, announced 2026-03-12, no successor; CFO Durn exited 2026-06-15); conviction 4 needs re-weighing with the management leg impaired → next: thesis-check
