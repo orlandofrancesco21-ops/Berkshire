@@ -68,6 +68,16 @@ Claims this memo relays rather than originates. Each caps at `partial` per "Veri
 
 ## Fan-out
 
-Written by absorb. Recorded here so an entry that changed nothing is visible as such.
+Recorded here so an entry that changed nothing is visible as such.
 
-- Pending: fan-out to the five tagged themes was in progress when this entry was written; see the dated Log lines in each principle file for what actually landed.
+**Deliberately deferred, and this is the honest state.** No principle was updated from this memo. The tier was being written and then audit-corrected on the same day this source was absorbed, so fanning out into six files mid-correction would have interleaved new external voices with in-flight structural fixes — and the one thing this vault cannot afford is uncertainty about whether an item's support came from a primary source or from its own earlier prose.
+
+What this memo is queued to change, in priority order, when fan-out runs:
+
+- **NARC** — the strongest fit and the theme the seeds are thinnest on. Marks supplies the mechanism the vault's own narrative items assert but do not explain (bubbles are excessive optimism *applied to* real developments, so the diagnosis is psychology, not technology), plus the newness argument, and Templeton's "20% of the time things really are different" as a genuine external **diverges** voice against any reflex that the phrase is always a sell signal. This would be the first `[verified]` tier-1 voice anywhere in the tier.
+- **CAPA** — the four-part debt test (proportion, asset quality, alternative liquidity, lender safety margin) and the uncertain-versus-conjectural lending line are the checkable criteria the capital-allocation items currently lack. Circular vendor financing and off-balance-sheet SPVs are named markers.
+- **MOAT** — Buffett on autos (2,000 companies, three survivors) is the cleanest statement of the transformative-technology-versus-investor-return split, and bears directly on the moat items about architecture shifts.
+- **VAL** — the bubble-era p/e comparison is a live counter-example to "high multiples mean bubble", and lottery-ticket thinking is a named valuation failure mode.
+- **ASYM** — the participation problem (no way to take the upside without the exposure) and lottery-ticket thinking as asymmetry abuse.
+
+Also note for whoever runs it: this memo is a **relay-heavy** source. Eight of its notable claims come from elsewhere (see `## Cites`) and cap at `partial`. Only what Marks asserts in his own voice is `verified` here, and promoting any relayed claim means fetching its primary — which is a separate absorb, not a tag edit.
