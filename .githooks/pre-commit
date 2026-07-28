@@ -1,0 +1,14 @@
+#!/bin/sh
+# Pre-commit: verify all markdown cross-references resolve.
+# Installed via: git config core.hooksPath .githooks
+# Bypass in an emergency with: git commit --no-verify
+
+echo "pre-commit: checking markdown cross-references..."
+python "$(git rev-parse --show-toplevel)/scripts/check-cross-references.py"
+status=$?
+if [ $status -ne 0 ]; then
+    echo ""
+    echo "pre-commit: broken cross-references — commit blocked."
+    echo "Fix the links above, or bypass once with: git commit --no-verify"
+fi
+exit $status
