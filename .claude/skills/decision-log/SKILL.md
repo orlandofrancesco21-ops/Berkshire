@@ -30,6 +30,7 @@ This is the skill that makes the journal discipline actually work. The journal i
 2. **Locate and read the supporting files.** For any ticker that's been deep-dived:
    - `sectors/{sector}/companies/{TICKER}/thesis.md` — extract current conviction level, most recent `thesis-check` verdict, most recent `valuation-check` verdict (look in the Update log).
    - `sectors/{sector}/companies/{TICKER}/valuation.md` — extract current fair value range (low / base / high).
+   - The same `thesis.md`'s `## Principles check` section — the `ALIGNS | TENSION | VIOLATES {ID}` lines already written against this name, or the sentinel saying no stored principle bore on it. Carry the IDs through verbatim, and pick up each cited principle's as-of date from its tag line in `principles/{theme}.md` — step 5 needs it for the reliance stamp. If the thesis is stale per "Stale thesis (canonical)", say so: those lines are a record of past reasoning, not today's read. The sentinel is a first-class result — never sweep `principles/` at trade time hunting for something to fill the row with.
 
    If no thesis exists (a PASS on a name you haven't deep-dived, or a BUY without prior analysis — which is itself a red flag), note that explicitly in the entry. A BUY without a thesis-on-file deserves a loud `WARNING: no thesis on file at time of buy` in the decision entry.
 
@@ -55,6 +56,11 @@ This is the skill that makes the journal discipline actually work. The journal i
    - Most recent thesis-check: {verdict, date}
    - Most recent valuation-check: {verdict, date}
 
+   **Principles at stake:** (advisory — per "Principle authority (canonical)")
+   - {ID} ({attribution}): {ALIGNS|TENSION|VIOLATES} — {one line}
+   - relied on {ID}@{as-of-date}
+   - {or "none — no stored principle bears on this action"}
+
    **Recent journal signals:**
    - {pull-through from review/triage/flagged.md or "none"}
 
@@ -67,7 +73,12 @@ This is the skill that makes the journal discipline actually work. The journal i
    - [ ] FV range was updated within last 6 months OR a fresh valuation-check was just run
    - [ ] For BUY: a written thesis exists on file
    - [ ] For SELL/EXIT: the trigger maps to a written kill switch, a valuation hit, or a stated portfolio-level reason (no "I just felt like it")
+   - [ ] Principles check reviewed; any VIOLATES explicitly acknowledged in the Reasoning section
    ```
+
+   `{attribution}` is the named investor behind the Voices line the verdict rests on, or "vault's own" where no external voice exists — the registers stay apart, and per "Evidence weighting (canonical)" an investor's general rule does not outrank your own closed-position evidence about you.
+
+   `relied on {ID}@{as-of}` is the reliance stamp, per "Reliance stamp (canonical)". Write one line per principle the decision *actually leaned on* — not one per principle listed. Take the `@date` from the as-of date on that principle's tag line, never today's date. The stamp is what makes reliance greppable: it is how a future `absorb` finds the decisions resting on principle text that has since changed, and reverse-notifies a decision already made. Without the `@date` the stamp matches nothing and is dead weight. Cite by permanent ID per "Permanent IDs and addressing (canonical)", and write no ID you have not read in the file that defines it — a plausible-looking invented ID blocks the commit.
 
 6. **Update `portfolio.md` if applicable.** Shares are the primary data; weights are derived. Every transaction also updates the **Cash** line and the **Total portfolio value** line (dated today):
    - `BUY` — add a new row: ticker, sector, today's date, shares, listing currency, avg cost/share, cost basis in base currency (shares × price, converted at today's FX rate — state the rate used), current weight (vs today's total portfolio value), conviction (pulled from thesis), thesis status (pulled from most recent thesis-check). Decrease Cash by the base-currency cost.
@@ -77,11 +88,13 @@ This is the skill that makes the journal discipline actually work. The journal i
    - `EXIT` — do *not* remove the row from `portfolio.md` here. Confirm with the user that `post-mortem` should run — removing the row from `portfolio.md` is `post-mortem`'s job, as its final step.
    - `PASS` — do not touch `portfolio.md` and do not write to `watchlist.md` either. `watchlist.md` is the write-territory of `company-deep-dive` (which appends to "Passed (with reason)" when a serious deep-dive concludes PASS). A `decision-log PASS` action records the decision in `journal/` only — it's the lightweight "I considered this and moved on" log. If the PASS is serious enough that the name should sit on the watchlist for future revisit, run `company-deep-dive` and let it write through the proper channel.
 
+6b. **Resolve the flag if this decision acted on the flagged name.** A flag that motivated the action has been answered by it; left active, it makes the next `portfolio-review` re-raise a question already settled. Rewrite that one line from the active form into the resolved form — read the exact grammar from `journal/_flagged.md`'s own `## Format` block rather than reconstructing it, put the action taken in the `{verdict}` slot, and keep today's date as the resolved date. That file is append-only at the **line** level, and the active→resolved rewrite of a single line is its one sanctioned in-place edit: touch no other line, never delete a resolved entry, never collapse two flags on the same ticker. Resolved lines stay forever — they are the calibration record of how long flags sat open and what closed them. If the flag is about something this action does not answer, leave it active and say so in the entry.
+
 7. **Restate the reasoning back to the user in chat.** This is the verbal commitment that pairs with the written one. If the reasoning sounds weak when restated aloud, that's a signal — the user can still abort the action.
 
 ## Output
 
-The decision entry as written to `journal/{YYYY-MM-DD}-decision.md`, restated in chat. Plus confirmation of any `portfolio.md` / `watchlist.md` updates. Plus, for `EXIT`, an explicit prompt: "Position closed. Run `post-mortem` now or within 30 days."
+The decision entry as written to `journal/{YYYY-MM-DD}-decision.md`, restated in chat. Plus confirmation of any `portfolio.md` / `watchlist.md` / `journal/_flagged.md` updates. Plus, for `EXIT`, an explicit prompt: "Position closed. Run `post-mortem` now or within 30 days."
 
 ## Notes
 
@@ -89,5 +102,6 @@ The decision entry as written to `journal/{YYYY-MM-DD}-decision.md`, restated in
 - "Price went up" / "Price went down" are not reasons. They're observations. The reason is what changed about the thesis, the valuation, or the portfolio's risk profile.
 - Same-day, not "I'll log it later this week." Recall bias corrupts the reasoning within 24 hours.
 - Resolved flags can be cited as the reason for a SELL/EXIT (e.g. "thesis-check returned REVIEW on YYYY-MM-DD, deep-dive refresh confirmed the kill switch, exiting per discipline"). Unresolved flags at the time of a BUY are a discipline failure — log them anyway, with the failure noted.
+- **The principles row is a mirror, not a gate.** Per "Principle authority (canonical)", a `VIOLATES` line does not block the trade, does not veto the size, and never fires a kill switch — the kill switches in `thesis.md` are the only authoritative triggers. All it does is force the violation into writing. You may act against a stored principle; you may not act against it without noticing. And "no stored principle bears on this" is a complete row — the checklist asks whether the check was read, not whether it approved.
 - The `Discipline check` checklist is not a gate that blocks the trade — it's a mirror. If three of five boxes are unchecked at the moment of a BUY, you're trading on instinct. That's allowed (this isn't a trading system) but the journal should be honest about it.
 - Over time, the decision log + post-mortem corpus is what reveals patterns in your own behavior (e.g. "I always trim winners early and ride losers", or "I PASS on names that later compound 5×"). Without this skill writing the inputs, those patterns stay invisible.

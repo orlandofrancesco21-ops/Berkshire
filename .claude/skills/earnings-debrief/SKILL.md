@@ -55,7 +55,7 @@ Within 48 hours of every print for every position. Common phrasings:
 
    Compare to the pattern flagged in the prep (sandbagger / overpromiser / honest).
 
-7. **Identify anything material that wasn't in the prep.** This is the hardest part — what did the print surface that you didn't anticipate? New disclosure, surprise capital allocation move, regulatory development mentioned, customer concentration shift, etc. Write these down without judgement; they may trigger a kill switch you hadn't written.
+7. **Identify anything material that wasn't in the prep.** This is the hardest part — what did the print surface that you didn't anticipate? New disclosure, surprise capital allocation move, regulatory development mentioned, customer concentration shift, etc. Write these down without judgement; they may trigger a kill switch you hadn't written. Where a disclosure matches a stored principle or trap, cite it by ID (`{PREFIX}-T{n}`) — most won't, and no match is a fine answer; a match strengthens the case for promoting the pattern into a *written* kill switch at the next refresh, which is where it would actually become authoritative, since per "Principle authority (canonical)" the principle itself never can.
 
 8. **Verdict.** Pick exactly one:
    - **THESIS INTACT** — no kill switch triggered, bull/bear net neutral or confirming, no material unanticipated disclosure.
@@ -116,6 +116,7 @@ The verdict block, restated to the chat so it lands before the conversation clos
 Verdict: {THESIS INTACT / MONITOR / RUN THESIS-CHECK / RUN COMPANY-DEEP-DIVE}
 Key takeaway: {one sentence}
 Next action: {none / monitor / thesis-check / deep-dive refresh}
+Next print: {est. date} — create the earnings-prep calendar event now, 5-7 days ahead ({date})
 ```
 
 ## Notes

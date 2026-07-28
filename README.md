@@ -12,12 +12,28 @@ Three phases, each producing durable artifacts the next phase reads:
 2. **Company analysis** (`sectors/{sector}/companies/{TICKER}/`) — days per name. Output: thesis, valuation, model.
 3. **Portfolio monitoring** (`portfolio.md`, `journal/`) — continuous, low-noise. Output: position decisions.
 
-A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific evaluation playbooks that apply across all phases. This is the personal IP — the stuff that compounds.
+Two cross-cutting knowledge tiers sit above all three phases, and they are the personal IP — the part that compounds:
+
+- **`frameworks/`** — industry-specific evaluation playbooks. What is true of *an industry*.
+- **`principles/`** — cross-industry investment principles with permanent citable IDs, each carrying attributed investor voices (who agrees, who diverges, and the conditions each holds under) and two independent tags: what the field supports, and what my own record shows. What is true of *investing*.
+
+The routing test between them, and against a company thesis: would this sentence survive with the ticker **and** the industry deleted? Only then is it a principle. Canonical rule: "Principles routing" in [`docs/build-plan.md`](docs/build-plan.md).
+
+Feeding `principles/` is [`library/`](library/README.md) — one distilled entry per absorbed external source (letter, memo, filing, podcast, book chapter), each takeaway locator-addressed and verification-labelled. Drop a file in `library/_inbox/` or paste a URL and run `absorb`; it retrieves, archives the raw source, distills, and fans what it learned out to whichever principles it actually touches.
 
 ## Folder map
 
 ```
 .
+├── principles/              # cross-industry investment principles (the IP that spans industries)
+│   ├── _template.md         # blank template — ID rules, two-axis tags, Voices shape
+│   └── README.md            # routing, index, alias table, split/merge rules
+├── library/                 # one distilled entry per absorbed external source
+│   ├── _inbox/              # DROP ZONE — put a PDF/article/transcript here, then run absorb
+│   ├── sources/             # raw archive (gitignored; mirrored off-machine)
+│   ├── _template.md         # entry schema
+│   └── README.md            # how material gets in, verification labels
+├── sources.md               # recurring sources + the absorption queue
 ├── frameworks/              # industry-specific evaluation playbooks (the IP)
 │   ├── _template.md         # blank template for new frameworks
 │   └── README.md            # framework conventions
@@ -34,7 +50,12 @@ A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific e
 │   ├── skill-dependency-map.md  # which skill reads/writes which file
 │   └── README.md            # docs index
 ├── scripts/
-│   └── check-cross-references.py  # validates markdown links resolve
+│   ├── check-cross-references.py  # THE pre-commit gate — 8 check classes
+│   ├── test-lint.py               # 32 planted-violation cases proving each gate fires
+│   ├── check-cadence.py           # the clock: session-start nag, silent when healthy
+│   ├── pdf-extract.py             # PDF -> canonical page-addressed text (PyMuPDF)
+│   ├── source-pages.py            # page-addressed search/read over the archive
+│   └── mirror-sources.py          # off-machine backup of the gitignored archive
 ├── .mcp.json                # project MCP servers (edgartools)
 └── .claude/
     └── skills/              # reusable Claude skills that read/write the above
@@ -92,6 +113,8 @@ A cross-cutting **frameworks library** (`frameworks/`) holds industry-specific e
 
 Each skill lives in `.claude/skills/{skill-name}/SKILL.md`. The full set:
 
+- `absorb` — **the ingestion path.** One external source per run: resolve (URL / description / dropped file) → retrieve down a per-type ladder → archive the raw text and pass the grounding gate → distill into `library/{slug}.md` with locators and verification tags → fan out to every principle theme it genuinely touches → flag any collision with an open thesis → lint, stage its own files, commit. Zero prompts for a plain investor letter.
+- `consult` — **the read side.** "What do big investors say about this kind of situation?" Routes through the alias table and index to the relevant principle blocks, answers with IDs, attributed voices, verification labels and the conditions each view holds under — and when the corpus does not hold the answer, says so and queues the gap in `sources.md` rather than filling it from memory.
 - `evaluate` — single-entry-point for "I want to look at TICKER" — chains framework-bootstrap → sector-primer → company-deep-dive automatically if prerequisites are missing. Use this when you don't want to orchestrate the three-step prereq chain yourself.
 - `framework-bootstrap` — generates a new industry framework from `frameworks/_template.md`.
 - `sector-primer` — produces a structured sector primer with supporting files.
@@ -155,9 +178,24 @@ If you ever want to share specific frameworks publicly, fork them out into a sep
 
 ### Keeping the rituals honest
 
-The monitoring cadence table above is the system's heartbeat, and it only works if the rituals actually run. The failure mode to guard against (it happened once: May–July 2026, ~8 weeks of silence — journal empty, two revisit dates blown through) is the burst-then-silence pattern: heavy research sprint, then nothing until something hurts. Minimum viable cadence if time is short:
+The monitoring cadence table above is the system's heartbeat, and prose alone has now failed to hold it **twice**: an 8-week silence (May-Jul 2026 — journal empty, two revisit dates blown through), and then 11 days during which the entire 2026-07-17 audit sat uncommitted. The failure mode is burst-then-silence: heavy research sprint, then nothing until something hurts.
 
-1. `news-triage` — at least twice a week. "Nothing material" takes two minutes and is the usual output.
-2. `portfolio-review` — every Monday, even on an empty or tiny book (it stamps `Last reviewed` and keeps weights honest).
-3. `earnings-prep` — non-negotiable before every holding's print. Put each holding's next report date in your calendar the day the previous debrief lands.
-4. `watchlist-revisit` — first week of each quarter.
+So the guard is no longer a paragraph. `scripts/check-cadence.py` runs at session start and reports what is actually overdue — news-triage past 5 days, portfolio-review past 8, watchlist-revisit past 95, an open flag past 30, a held thesis past 180, **and a dirty tree whose oldest change is more than a week old** (that last one is the exact failure that stranded the audit). It also nags while `portfolio.md` still carries TBD trade details, and every ~90 days asks for one verification spot-audit.
+
+Three design choices make it survive contact with a busy owner:
+
+- **It is silent when healthy.** A check that prints a wall of yellow every day trains the dismiss reflex and dies the same death as the prose it replaced.
+- **It is wired at user level too**, not just in this vault. Both documented silences involved *zero* Berkshire sessions — a vault-scoped hook would have fired exactly zero times. Any Claude Code session on this machine surfaces escalated items, once a day, and stays quiet inside the vault where the fuller report already runs.
+- **Every nag names the command that fixes it**, which turns it from guilt into a button.
+
+Minimum viable cadence if time is short: `news-triage` twice a week ("nothing material" takes two minutes and is the usual answer); `portfolio-review` every Monday, even on a tiny book; `earnings-prep` before every print, with the next report date calendared the day the previous debrief lands (`earnings-debrief` now prompts for exactly that); `watchlist-revisit` in the first week of each quarter.
+
+Autonomous scheduled runs — having Claude execute news-triage and the Monday review unattended — are deliberately **not** built yet. The watchdog above is the floor; if rituals still slip twice inside six weeks despite nags firing, that is the trigger to add the scheduler, and to have it stamp a last-run date this same script then watches (so a dead scheduler is caught by the same mechanism that catches a skipped ritual).
+
+### Restore on a new machine
+
+1. `git config core.hooksPath .githooks` — otherwise the pre-commit gate is silently off. (`check-cadence.py` detects and nags about this.)
+2. `setx BERKSHIRE_SOURCE_MIRROR "<a personal path>"` — the off-machine backup for `library/sources/`. It must **not** be the Synera OneDrive; there is deliberately no default, so an unset mirror fails loudly instead of leaking a private archive into company storage.
+3. In Obsidian: Settings → Files & Links → Excluded files → add `library/_inbox/` and `library/sources/`. Gitignore hides them from git, not from the quick switcher, search, or graph.
+4. `pip install pymupdf yfinance` if absent, and confirm `uvx` is available for the `edgartools` MCP.
+5. Sanity check: `python scripts/test-lint.py` (expect all cases passing) and `python scripts/check-cadence.py`.

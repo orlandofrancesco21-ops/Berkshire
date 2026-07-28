@@ -33,6 +33,8 @@ This is the skill that separates noise from signal. The whole point is to stress
 
    Also read `frameworks/{industry}.md` "Red flags specific to this industry" — these are kill switches the user may not have explicitly written into the thesis but the framework says to watch for. Treat them as additional candidate triggers.
 
+   Also read the thesis's own `## Principles check` section, if present — any principle marked TENSION or VIOLATES at write-time is a standing watch item. If an event in this window bears on one, classify it exactly like a framework-level red flag: **WATCH**, and recommend the owner add (or explicitly reject) a written kill switch. Never REVIEW, never a trigger — "Principle authority (canonical)" in `docs/build-plan.md` (Shared rules) makes principles advisory everywhere, and the Notes below hold that the kill switches in `thesis.md` are the only authoritative source of truth; a principle-derived signal that could escalate would invert both. This section lives inside `thesis.md`, so it costs no extra read. Finding that no stored principle bears on the window is a normal result, not a gap to fill.
+
 3. **Establish the lookback window.** Default: from the date of the most recent Update log entry to today. If that's < 30 days, extend back to 90 days — short windows miss slow-developing signals.
 
 4. **Pull material events in the window.** For US issuers, via EDGAR MCP if configured:
@@ -74,6 +76,7 @@ This is the skill that separates noise from signal. The whole point is to stress
    - Kill switches triggered (direct): {list, or "none"}
    - Kill switches triggered (partial): {list, or "none"}
    - Framework red flags triggered: {list, or "none"}
+   - Principle tensions touched: {list, or "none"}
    - Recommended next action: {none / monitor / re-deep-dive}
    ```
 

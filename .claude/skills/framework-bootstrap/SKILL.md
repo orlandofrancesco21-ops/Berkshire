@@ -32,6 +32,7 @@ Before running, check whether a framework already exists for this industry. If y
    - 10-K risk factor language across 3-5 large players (this reveals what management actually thinks matters)
    - Trade publications and industry associations
    - Recent earnings transcripts to hear how operators talk about the business
+   - `principles/` — the cross-industry principles that bear on this industry (start from the index in `principles/README.md`), cited inline by ID inside the sections the template already has: "Mental-model crossover risks" and "Red flags specific to this industry". Inline deliberately — step 1's template-exact rule means a new principles section here would make every existing framework non-conforming, so do not "improve" this into one. Advisory only, per "Principle authority (canonical)"; finding that nothing stored bears on a new industry is a valid result.
 
 4. **Fill in each section opinionatedly.** Avoid generic statements ("companies make money by selling products"). The user already knows generic — they need framework-level insight that isn't in a Wikipedia article.
 

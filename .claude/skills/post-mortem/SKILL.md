@@ -1,6 +1,6 @@
 ---
 name: post-mortem
-description: When a position closes, write a structured post-mortem to archive/. Reads the closed position's thesis.md and valuation.md including the full update log, computes the actual return, and produces a candid post-mortem using archive/_template.md. The highest-ROI artifact in the entire system over a 5-year horizon — every closed position teaches something, and the lessons compound. Also writes the lesson back into the relevant framework's "What I've learned over time" section. Use when you exit a position, never later than 30 days after exit. Triggered by "post-mortem on X", "I sold X — write the post-mortem", "close out X".
+description: When a position closes, write a structured post-mortem to archive/. Reads the closed position's thesis.md and valuation.md including the full update log, computes the actual return, and produces a candid post-mortem using archive/_template.md. The highest-ROI artifact in the entire system over a 5-year horizon — every closed position teaches something, and the lessons compound. Also writes the lesson back into the relevant framework's "What I've learned over time" section, and — for a lesson that survives deleting the ticker *and* the industry — into `principles/`, where it grades the entry thesis's Principles check against the realized outcome and updates the item's `My record:` line, the one field this skill alone writes. Use when you exit a position, never later than 30 days after exit. Triggered by "post-mortem on X", "I sold X — write the post-mortem", "close out X".
 ---
 
 # post-mortem
@@ -54,7 +54,15 @@ The hardest cases to write are wins. Losses force introspection; wins encourage 
    - **What I got wrong** — 1-3 specific points where the thesis was wrong. Be honest. "I underestimated X" is fine; "the market was wrong" is not.
    - **What was unknowable** — the 1-2 things that broke the thesis but couldn't have been seen at entry with reasonable diligence. Bar is high — "I didn't see it" doesn't qualify.
 
-8. **Distill 1-3 lessons.** These are the artifacts that compound. Each lesson should be (a) concrete, (b) generalizable beyond this one name, (c) actionable in the framework. Example: "Capital allocators with a buyback-at-any-price habit destroy value in cyclicals" is a lesson. "I should be more careful" is not.
+7b. **Grade the entry thesis's `## Principles check`.** That section was written at entry against stored principles; a realized return is the only thing that can score it. Grade each line, and write the grade down in the diagnostic section it bears on, carrying the permanent ID so the grade stays greppable per "Permanent IDs and addressing (canonical)":
+   - **PREDICTIVE** — a VIOLATES or TENSION line named what actually went wrong. Quote it verbatim. If the position was taken anyway, say what overrode it: an advisory flag that was read and dismissed is a different failure from one that was never written.
+   - **MISSED** — a trap that was already in the store fired, and the check never cited it. Name the ID. Least comfortable finding in the exercise and the most valuable one, so look for it deliberately instead of waiting for it to surface.
+   - **IRRELEVANT** — an ALIGNS line turned out to have nothing to do with the outcome. Say so. An ALIGNS line that did no work is not support, it is padding.
+   - **NOTHING TO GRADE** — the thesis predates the section, or it carried the sentinel and the outcome bears that out. A complete answer; do not manufacture a grade to have something to say.
+
+   The grade is a record, not a verdict. It cannot move the outcome classification (step 4) or the exit reason (step 6): principles are advisory everywhere, per "Principle authority (canonical)", and the kill switches in `thesis.md` remain the only authoritative triggers.
+
+8. **Distill 1-3 lessons.** These are the artifacts that compound. Each lesson should be (a) concrete, (b) generalizable beyond this one name, (c) actionable — in the framework if it is industry-specific, in `principles/` if it survives deleting the ticker *and* the industry (step 9b), routed per "Principles routing (canonical)". Example: "Capital allocators with a buyback-at-any-price habit destroy value in cyclicals" is a lesson. "I should be more careful" is not.
 
 9. **Update the framework.** Append every lesson to `frameworks/{industry}.md` "What I've learned over time" section. Use the post-mortem source tag — these entries are higher-signal than deep-dive entries (calibrated by actual returns) and the tag preserves that distinction in the log. Format:
 
@@ -67,7 +75,21 @@ The hardest cases to write are wins. Losses force introspection; wins encourage 
    - Should "what good looks like" be revised for any KPI?
    - Should the historical valuation range be revised?
 
-   Make those edits in `frameworks/{industry}.md` and note them in the post-mortem's "Framework updates triggered" section.
+   Make those edits in `frameworks/{industry}.md` and note them in the post-mortem's "Framework / principles updates triggered" section.
+
+9b. **Write back to `principles/`** — for any lesson that passed the cross-industry test in step 8. This is the vault's highest-grade evidence: the only place a stored principle meets a realized return.
+
+   - **Find the item the closed position bears on** — by ID from the grades in step 7b, or through the Index and `**Scope:**` lines in `principles/README.md`. Append a dated calibration line to that item's **Log**:
+
+     ```
+     - YYYY-MM-DD ({TICKER} post-mortem, WIN|LOSS|NEUTRAL): {what the outcome showed}
+     ```
+
+     Then update its **My record:** line to say what the closed position showed, dated. The Log line is the ledger entry recording that change.
+   - **Never mint a second item for a lesson an existing item already covers.** IDs are permanent per "Permanent IDs and addressing (canonical)", so a near-duplicate is permanent too, and from then on each copy gets cited half the time. If nothing covers the lesson, park it in the closest file's **Open questions** with the date and ticker; a genuinely new item or a new file is glance-confirm per "Tiered autowrite (canonical)".
+   - **This skill is the sole writer of `My record:` lines in `principles/`.** No other skill touches that field. Ownership ambiguity is exactly what the vault's "if two skills write the same field, that's the bug" rule exists to prevent.
+   - **You may move `my record:` (untested → validated | mixed). You may not touch `evidence:`.** The two tags are independent axes: `evidence:` tracks external support and moves only under "Maturity and tier-1 sources (canonical)" — one closed position is not a new primary origin. Per "Evidence weighting (canonical)", about the owner's own record his post-mortems outrank any absorbed external claim, so a `well-supported | mixed` mismatch is the signal to surface before the next sizing decision, not a contradiction to be settled in the famous investor's favour.
+   - **"No stored principle bears on this outcome" is a complete result.** Say it and move on — but say it, because skipping the step silently is not the same thing: per "Stale principle (canonical)" an item whose `my record:` line predates a post-mortem on a position it bears on is thereby stale.
 
 10. **Write the post-mortem** to `archive/{exit-YYYY-MM}-{TICKER}.md`. Filename uses **exit** year-month so the archive sorts by when the lesson was learned, not by when the position was opened. The `Entry: YYYY-MM` field in the frontmatter preserves the original entry context for sequencing.
 
@@ -86,6 +108,7 @@ The hardest cases to write are wins. Losses force introspection; wins encourage 
 Confirmation of:
 - File written: `archive/{exit-YYYY-MM}-{TICKER}.md`
 - Framework updated: `frameworks/{industry}.md` ({N lessons appended, M kill switches added})
+- Principles updated: `principles/{theme}.md` ({IDs} — Log line plus `My record:`), or "none — no stored principle bore on this outcome"
 - Portfolio updated: position removed from `portfolio.md`
 - Thesis log updated: exit note appended
 
@@ -98,4 +121,6 @@ Plus the 1-3 lessons, restated, so they land at the top of the user's attention 
 - If the lesson is "this name was idiosyncratic, no framework update needed," that's a valid conclusion — but be honest about it. Most losses contain at least one framework-level lesson.
 - Filename convention is `{exit-YYYY-MM}-{TICKER}.md` (exit-year-month) so the archive sorts by when the lesson was learned. The frontmatter `Entry: YYYY-MM` field preserves entry-context for sequencing.
 - If you find yourself unwilling to write the post-mortem, that's a signal — usually that the loss was discipline-related (you knew, you didn't act). Write it anyway. Especially that one.
+- No lint can score whether a Principles check was *insightful* — the gate checks shape only: line count, resolvable IDs, a legal verdict token. Step 7b is the only feedback loop that ever grades the content, and it runs exactly once per closed position. Skip it and the section decays into boilerplate: three comfortable ALIGNS lines nobody ever checked against an outcome.
+- post-mortem alone writes `My record:` in `principles/`. `absorb` adds Voices and moves `evidence:`; only a closed position can say what my own record shows.
 - The lessons section is where the entire system pays for itself. A 5-year journal of these is the real IP. Treat it accordingly.

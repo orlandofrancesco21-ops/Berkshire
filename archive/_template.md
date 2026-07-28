@@ -72,13 +72,15 @@ The 1-3 lessons that should change how I evaluate the next name. These get writt
 1.
 2.
 
-## Framework updates triggered
+## Framework / principles updates triggered
 
-Specific edits to `frameworks/{industry}.md` made as a result of this experience. List them here for traceability.
+Specific edits to `frameworks/{industry}.md` and `principles/{theme}.md` made as a result of this experience. List them here for traceability.
 
 - {date} — added new kill switch: ...
 - {date} — refined "what good looks like" for metric X: ...
+- {date} — {PREFIX}-P{n}: calibration Log line + `My record:` updated (`my record:` untested → validated)
 - {date} — no framework update needed (lesson was idiosyncratic to this name)
+- {date} — no principles update needed (no stored principle bore on this outcome)
 
 ## Would I do this again with the same information?
 

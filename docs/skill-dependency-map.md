@@ -17,6 +17,8 @@ What each skill needs before it can run, what optional inputs it consumes, and w
 | `post-mortem` | thesis + valuation on file (a closed position) | — | appends to framework's "What I've learned" (post-mortem tag); writes `archive/{exit-YYYY-MM}-{TICKER}.md` + `CLOSED.md` marker; removes row from `portfolio.md` |
 | `decision-log` | nothing strict — reads thesis if present and warns if not | recent `journal/{date}-review.md` or `journal/{date}-triage.md`; `journal/_flagged.md` | `post-mortem` (if action was SELL or EXIT); updates `portfolio.md` for BUY/ADD/TRIM |
 | `watchlist-revisit` | `watchlist.md` populated (specifically "Passed" and "Researched, waiting for entry" sections) | — | `company-deep-dive` refresh on FLAGGED names; `valuation-check` + `decision-log` on TRIGGER FIRED names |
+| `absorb` | nothing strict — resolves, retrieves and grounds its own source. Needs `library/_template.md` + `principles/` to write into | a file in `library/_inbox/`; a queued row in `sources.md` | writes `library/{slug}.md` + index row; mints IDs / appends Voices + Log lines in `principles/`; drafts `journal/_flagged.md` entries on collision with an open thesis; surfaces decisions whose `relied on {ID}@` stamp predates a principle it changed; mirrors `library/sources/` |
+| `consult` | `principles/` populated | the named ticker's `thesis.md` Principles check + active flags; `library/` entries; archived sources via `scripts/source-pages.py` | recommends `absorb` for a gap it cannot answer, and queues that gap in `sources.md` |
 | `compare-within-sector` (deferred) | 3+ `company-deep-dive`s in a single sector + a real felt need for the comparison | — | `decision-log` (the BUY that follows the pick) |
 
 ## Reading this table
@@ -31,6 +33,12 @@ Skills coordinate through three shared state files:
 
 - **`portfolio.md`** — written by `decision-log` (BUY/ADD/TRIM) and `post-mortem` (EXIT removes the row); read by `portfolio-review`, `news-triage`, `decision-log`.
 - **`watchlist.md`** — written by `company-deep-dive` (on PASS, appends to "Passed"); read by `news-triage`, `watchlist-revisit`, `decision-log`.
-- **`journal/_flagged.md`** — written by `news-triage` (new flags); modified-in-place by `thesis-check` and `earnings-debrief` (resolve flags); read by `portfolio-review` (prioritizes flagged names) and `decision-log` (surfaces active flags at moment of decision). Append-only at the line level — resolved entries stay in place for calibration.
+- **`journal/_flagged.md`** — written by `news-triage` (news-derived flags) and `absorb` (a source contradicting an open thesis's reasoning, `next: thesis-check`); modified-in-place by `thesis-check`, `earnings-debrief` and `decision-log` (each resolves flags it acts on); read by `portfolio-review` (prioritizes flagged names) and `decision-log` (surfaces active flags at the moment of decision). Append-only at the line level — an active→resolved rewrite of one line is the single sanctioned in-place edit, and resolved entries stay in place for calibration.
+
+Two further tiers were added 2026-07-28 and follow the same single-writer discipline:
+
+- **`principles/`** — cross-industry principles with permanent IDs. **Voices lines and `evidence:` tags: `absorb` only.** **`My record:` lines: `post-mortem` only** (it is the only skill that sees a realized return). **Log lines:** `absorb`, `post-mortem`, `company-deep-dive` (step 9b) and `watchlist-revisit`, append-only and source-tagged. A rewrite of existing principle text is glance-confirm, never silent. Read by `consult`, `company-deep-dive` (step 3b), `thesis-check`, `decision-log`, `framework-bootstrap`.
+- **`library/`** — one distilled entry per absorbed source. **Written by `absorb` only.** Read by `consult` and, through it, by anything asking what a source actually said. `library/_inbox/` and `library/sources/` are gitignored; durability comes from `scripts/mirror-sources.py`, not git.
+- **`sources.md`** — the source watchlist and absorption queue. Written by `absorb` (clears rows it consumes, updates Last-absorbed and rotted access paths) and `consult` (appends a `wanted:` row for a gap it could not answer, and commits that single change so the file never sits dirty in a path `absorb` needs clean).
 
 If two skills appear to write to the same field, that's the bug — flag it and route the write through one skill only.

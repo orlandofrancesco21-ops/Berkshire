@@ -54,10 +54,28 @@ Specific, falsifiable signals. Not "if the thesis breaks" — what concrete obse
 **Bear-case kill switches:**
 -
 
+## Principles check
+
+Which stored principles this situation engages. Route by `**Scope:**` line via `../../../../principles/README.md`, not by index title.
+
+<!-- One line each: {ALIGNS|TENSION|VIOLATES} {ID} — {who holds it, source + year} — {the fact of THIS situation that engages it}. Rules:
+     max 5 lines, hard cap;
+     every line must cite a fact from THIS thesis — a line that could be pasted into another company's thesis is banned;
+     ALIGNS lines are permitted ONLY where the alignment changes sizing or conviction, max 2 of them;
+     TENSION and VIOLATES are always permitted, and a VIOLATES line must be answered in Conviction below;
+     advisory only, per "Principle authority (canonical)" in docs/build-plan.md: no line here fires a kill switch or decides the verdict;
+     the sentinel is a legitimate complete output, not a stub to fill in later. -->
+
+- {ALIGNS|TENSION|VIOLATES} {PREFIX}-P{n} — {investor, source + year} — {the fact of this situation that engages it}
+
+Or, instead of every line above, exactly this one:
+
+- No stored principle bears on this situation (reviewed: {theme-slug}, {theme-slug}, {theme-slug})
+
 ## Conviction
 
 **Level (1-5):**
-**Why this level:**
+**Why this level:** (must answer every VIOLATES line in the Principles check — as an input to the judgment, never as the judgment)
 
 ## Position sizing logic
 
