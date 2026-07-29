@@ -28,11 +28,11 @@ State files: `portfolio.md` (positions), `watchlist.md` (names), `sources.md` (s
 
 `python scripts/check-cross-references.py` — one gate, eight check classes: broken links, unresolvable `{PREFIX}-{P|M|T}{n}` citations, library schema (locators, verification tags, non-empty `## Not captured`, archive pairing), podcast gap-partition interval math, index bijection, thesis Principles-check shape, append-only violations, evidence-tag consistency. Runs `--staged` from `.githooks/pre-commit` (it checks what is being committed, not your working tree).
 
-`python scripts/test-lint.py` — 32 planted-violation cases proving each gate actually fires. **Run this after touching the lint.** A gate that silently checks nothing is this vault's documented failure mode: two such gates were caught during design, keyed to strings no skill ever writes.
+`python scripts/test-lint.py` — planted-violation cases proving each gate actually fires, in **both** directions where a gate can reject. **Run this after touching the lint.** A gate that silently checks nothing is this vault's documented failure mode: two were caught during design keyed to strings no skill ever writes, and three more were caught in use — including one that made `contested` unreachable and `well-supported` unachievable at the same time, while the negative test cases passed for the wrong reason. A check that only ever rejects is indistinguishable from a check that rejects everything.
 
 `python scripts/check-cadence.py` — the clock. Runs at session start (and at user level for any session on this machine, once a day, escalated items only). Silent when healthy. Never blocks.
 
-One-time setup on a new clone: `git config core.hooksPath .githooks`, and `setx BERKSHIRE_SOURCE_MIRROR "<personal path>"` for the source archive mirror (must NOT be the Synera OneDrive — see the mirror script's docstring).
+One-time setup on a new clone: `git config core.hooksPath .githooks`, and set `BERKSHIRE_SOURCE_MIRROR` to a personal location for the source archive (must NOT be the Synera OneDrive). Use PowerShell's `[Environment]::SetEnvironmentVariable(...)`, **not** `setx` — `setx` stores the quote characters as part of the value. Full step in the README's "Restore on a new machine".
 
 ## Deep retrieval — cheapest rung that answers the question wins
 
