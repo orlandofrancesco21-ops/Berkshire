@@ -76,6 +76,35 @@ FLAG_DAYS = 30
 THESIS_STALE_DAYS = 180
 DIRTY_DAYS = 7
 SPOT_AUDIT_DAYS = 90
+NOVEL_EVAL_DAYS = 90
+
+# Deliberate marker for "this value or behavior needs resolving before it can be
+# trusted, and it may currently be silently wrong." Introduced 2026-07-31, after
+# PRINCIPLES_CHECK_CUTOVER shipped as the literal placeholder "2099-01-01" with an
+# in-code comment nobody re-read, and quietly disabled the vault's flagship
+# enforcement gate for two days while it reported [OK]. That specific defect is
+# fixed; this scanner exists so its shape can never ship silently again — a
+# stale TODO is exactly as invisible as a gate that checks nothing, and this
+# vault has now hit that pattern seven times.
+#
+# The literal string is namespaced (`TODO(vault):`, not bare `TODO`) so it can
+# never collide with an ordinary comment or a human-directed note like
+# journal/2026-07-17-decision.md's "TODO (Francesco): fill in the TBD fields" —
+# that one is a request to a person and is already surfaced by the portfolio-TBD
+# check above; this one is a request to whoever next touches the vault's own
+# tooling, wherever it lives.
+TODO_MARKER_RE = re.compile(r"TODO\(vault\):.*")
+TODO_SCAN_GLOBS = ("*.py", "*.md")
+TODO_SCAN_EXCLUDE_PARTS = {".git", ".obsidian", "_inbox", "sources"}
+# Files that legitimately contain the literal marker string IN PROSE OR CODE
+# describing the feature itself — this file's own docstrings, and the string
+# constant its implementation matches against. Excluding them is narrow and
+# justified (the file that spells out a sentinel cannot be scanned for it, the
+# same way a spell-checker does not flag its own dictionary), unlike a broad
+# "skip everything" exemption. Verified empirically: without this, the scanner's
+# first-ever run self-flagged three times on its own comments and its own
+# membership test, on the same day it was written.
+TODO_SCAN_SELF_EXEMPT = {"scripts/check-cadence.py"}
 
 
 class Nag:
@@ -153,6 +182,38 @@ def latest_journal(kind: str) -> date | None:
     if not jdir.is_dir():
         return None
     dates = [d for p in jdir.glob(f"*-{kind}.md") if (d := parse_date(p.name))]
+    return max(dates) if dates else None
+
+
+def scan_todo_markers() -> list[Nag]:
+    """Find every marker in the repo — see TODO_MARKER_RE's docstring comment
+    above for why this exists. Reports file:line so it is a two-second fix, not
+    a hunt."""
+    hits: list[Nag] = []
+    for glob in TODO_SCAN_GLOBS:
+        for p in REPO_ROOT.rglob(glob):
+            rel = p.relative_to(REPO_ROOT).as_posix()
+            if rel in TODO_SCAN_SELF_EXEMPT:
+                continue
+            if any(part in TODO_SCAN_EXCLUDE_PARTS for part in p.relative_to(REPO_ROOT).parts):
+                continue
+            text = read(p)
+            for i, line in enumerate(text.splitlines(), start=1):
+                m = TODO_MARKER_RE.search(line)
+                if m:
+                    hits.append(Nag(f"{rel}:{i}: {m.group(0).strip()[:90]}",
+                                    "resolve the marker, or say explicitly why it must wait",
+                                    ratio=2.0))
+    return hits
+
+
+def latest_new_sector() -> date | None:
+    """Date of the most recently ADDED framework or sector primer — i.e. the last
+    time this vault was pointed at a name it had no lens for yet. sectors/_example/
+    is scaffolding, not a real evaluation, and is excluded."""
+    out = git("log", "--diff-filter=A", "--format=%ad", "--date=short", "--",
+              "frameworks/*.md", "sectors/*/primer.md", ":(exclude)sectors/_example/*")
+    dates = [d for ln in out.splitlines() if (d := parse_date(ln.strip()))]
     return max(dates) if dates else None
 
 
@@ -248,6 +309,23 @@ def collect() -> list[Nag]:
                             "re-check one random library entry against its archived source, or one "
                             "principle block against its own Voices/Log; write journal/{date}-spot-audit.md",
                             "verification spot-audit has never run (library entries exist)"))
+
+    nags.extend(scan_todo_markers())
+
+    # Past the initial build (2+ real sectors), nag if it has been a while since
+    # the whole evaluate chain last ran against a name the vault had no lens for.
+    # Every bug this vault's own build-plan status log records as "found by
+    # dogfooding" (the cutover placeholder, the parallel-orchestration gaps) was
+    # found this way — by real, unplanned use, not by any planted test case. This
+    # turns that into a scheduled practice instead of something that only happens
+    # when the owner happens to ask for a new name.
+    real_sectors = [p for p in REPO_ROOT.glob("sectors/*/primer.md") if "_example" not in p.parts]
+    if len(real_sectors) >= 2:
+        n = age_nag("a full evaluate on an unfamiliar name", latest_new_sector(), NOVEL_EVAL_DAYS,
+                    "run evaluate on a name outside every existing sector — that is how the "
+                    "cutover-placeholder and parallel-orchestration bugs were actually found")
+        if n:
+            nags.append(n)
 
     return [n for n in nags if n]
 

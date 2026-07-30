@@ -363,7 +363,15 @@ def check_ids(corpus: Corpus, errors: list[str]) -> int:
     for rel in corpus.paths():
         if is_exempt(rel):
             continue
-        text = corpus.read(rel)
+        # Strip HTML comments before scanning for bold definitions and citations.
+        # principles/_template.md's own schema-notes comment shows a worked
+        # example — "**{PREFIX}-P1** — {statement}" — and _template.md is
+        # separately exempted above, so this never bit a real file. But nothing
+        # stopped a REAL principle file's own authoring notes from doing the same
+        # thing and silently colliding with — or masking — a genuine duplicate.
+        # Same fix already applied to bullet-counting (bullet_lines) and the
+        # Principles-check line cap; this closes the same gap here.
+        text = HTML_COMMENT_RE.sub("", corpus.read(rel))
         for pref, kind, num in bold_re.findall(text):
             tok = f"{pref}-{kind}{num}"
             definitions.setdefault(tok, []).append(rel)

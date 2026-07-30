@@ -167,6 +167,30 @@ def replace(rel: str, old: str, new: str):
     return _m
 
 
+def render_real_principles_template():
+    """Read the ACTUAL principles/_template.md from the real repo — not a
+    hand-typed paraphrase of it — fill its two mechanically-parsed tokens
+    ({PREFIX}, {slug}; YYYY-MM-DD dates don't affect any check here), and swap it
+    in for the fixture's existing valuation-discipline.md.
+
+    Two prior bugs (HTML-comment bullets counted toward the Principles-check
+    line cap; the template's own indented `*Texture:*` sub-bullet failing its own
+    schema) were both cases where the checker disagreed with what the REAL
+    template actually prescribes, while the hand-typed CLEAN fixture — written by
+    the same person who wrote the checker — happened to agree with it. A
+    hand-typed fixture can silently drift from the template it is supposed to
+    stand in for; this case reads the template file directly so that drift is
+    structural rather than something a human has to remember to keep in sync.
+    """
+    def _m(files: dict[str, str]) -> None:
+        real = (REPO_ROOT / "principles" / "_template.md").read_text(encoding="utf-8")
+        rendered = (real.replace("{PREFIX}", "VAL")
+                        .replace("{slug}", "valuation-discipline")
+                        .replace("YYYY-MM-DD", "2026-07-31"))
+        files["principles/valuation-discipline.md"] = rendered
+    return _m
+
+
 def noop(files: dict[str, str]) -> None:
     return None
 
@@ -251,6 +275,8 @@ tags: [valuation-discipline]
 CASES = [
     # -- baseline -----------------------------------------------------------
     case("clean vault passes", noop, expect_fail=False),
+    case("the REAL principles template, minimally filled, passes the real checker",
+         render_real_principles_template(), expect_fail=False),
 
     # -- 1. cross-references ------------------------------------------------
     case("broken markdown link", append("principles/README.md", "\nSee [gone](nope.md)\n"),
