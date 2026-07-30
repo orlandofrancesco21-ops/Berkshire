@@ -28,13 +28,13 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
    - Apply the same rules to `valuation.md`: rewrite scenario tables and bands in place, preserve and append to its update history.
    Fresh mode (no existing thesis.md) proceeds from the templates as described below.
 
-1. **Confirm context exists.** Check that `sectors/{sector}/` and `frameworks/{industry}.md` both exist. If not, stop and ask the user to run the appropriate prior skill.
+1. **Confirm context exists.** Check that `sectors/{sector}/` and `frameworks/{industry}.md` both exist. If not — and nothing is concurrently producing them, per "Concurrent orchestration (canonical)" — stop and ask the user to run the appropriate prior skill. If this run was orchestrated alongside `framework-bootstrap`/`sector-primer` running in parallel (rather than `evaluate`'s own sequential default), re-check once rather than stopping at the first miss, read whatever lands **fresh**, and note in the Update log entry that the lens arrived mid-run.
 
 1b. **Check whether the framework is an umbrella.** Look for the marker line near the top of `frameworks/{industry}.md`: `**Umbrella framework:** yes` means triage-only, *explicitly* not decision-grade. (The presence of a "Sub-sector navigator" section does **not** by itself make a framework an umbrella — decision-grade frameworks may keep a navigator as triage context. The marker is the only signal. A framework with no marker line is treated as decision-grade.) If the marker says yes, do not proceed using the umbrella alone:
    - Identify which sub-sector this company belongs to from the navigator table (e.g. ASML.AS in the semis umbrella is "semiconductor equipment"; CEG in the energy umbrella is "Nuclear IPP").
    - Check whether `frameworks/{sub-sector-slug}.md` exists.
    - If yes: use the sub-framework as the **primary** lens for this deep-dive. The umbrella stays as supplementary context (cross-cutting principles, cycle position, regulatory backdrop).
-   - If no: stop and recommend `framework-bootstrap {sub-sector-slug}` first. Do not attempt to deep-dive against an umbrella alone — the result will be a generic analysis, not framework-grounded.
+   - If no: stop and recommend `framework-bootstrap {sub-sector-slug}` first — unless that bootstrap is already running concurrently as part of this same orchestrated evaluation, in which case wait for it and read it fresh, per "Concurrent orchestration (canonical)". Do not attempt to deep-dive against an umbrella alone — the result will be a generic analysis, not framework-grounded.
 
    This enforces the discipline that umbrella frameworks aren't decision-grade. They're navigators.
 
@@ -85,11 +85,11 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
    - YYYY-MM-DD ({TICKER} deep-dive): {one or two sentences on what was new — a metric the framework hadn't named, a red flag pattern not previously captured, a valuation quirk specific to this archetype, etc.}
    ```
 
-   The ` deep-dive` source tag distinguishes these from `post-mortem` entries, which are higher-signal (calibrated by actual returns). Future-you reading the log should be able to weight them differently.
+   The ` deep-dive` source tag distinguishes these from `post-mortem` entries, which are higher-signal (calibrated by actual returns). Future-you reading the log should be able to weight them differently. If the finding being written back actually originated in a *different* skill's run this session (e.g. a sector-primer left an item outstanding for the framework — see that skill's step 6), use a neutral tag naming the real origin instead: `({origin-skill} write-back)`, never `({TICKER} deep-dive)` for something a deep-dive didn't produce. Per "Concurrent orchestration (canonical)": a mislabeled tag is worse than an unlabeled one.
 
    If the deep-dive surfaced nothing new beyond the existing framework, write that explicitly: `- YYYY-MM-DD ({TICKER} deep-dive): no framework-level updates — existing framework captured everything material.` Honest negatives are also calibration data.
 
-   Do not silently rewrite other parts of the framework. New insights go in this append-only section. Restructuring the framework body is a separate, deliberate decision.
+   Do not silently rewrite other parts of the framework. New insights go in this append-only section. Restructuring the framework body is a separate, deliberate decision. If this same framework file is concurrently being written by a peer skill invocation (per "Concurrent orchestration (canonical)"), do not attempt this write inline — record the finding as an "Outstanding write-back" note in `thesis.md`'s own process notes instead, name the target section, and say so in the run's report.
 
 9b. **Write back to `principles/` — only what clears the tier test.** If a lesson from this dive is true *beyond this industry*, append it to the relevant principles file: a dated line on the item's own Log, or a new item minted at the next ordinal per "Permanent IDs and addressing (canonical)". Same format and source tag as step 9:
 

@@ -119,6 +119,30 @@ UPDATE_LOG_HEADING = "## Update log"
 # rewrites a line by design (documented in the file's own header).
 APPEND_ONLY_EXEMPT_INPLACE = {"journal/_flagged.md"}
 
+# Frameworks and principles were append-only by CONVENTION only, with no gate at
+# all — found the day this was added, when an Edit call inserted new learned-log
+# entries above the file's last existing bullet instead of after it (caught and
+# repaired by hand, nothing lost, but a future agent doing the same thing would
+# silently reorder history with no lint to catch it).
+#
+# frameworks/*.md: append-only is scoped to ONE section, "## What I've learned
+# over time" — the rest of a framework (KPIs, red flags, valuation logic) is
+# meant to be rewritten as understanding improves; only the dated learning log
+# is a historical record.
+FRAMEWORK_LEARNED_HEADING = "## What I've learned over time"
+
+# principles/*.md: unlike a framework, the ITEM BODIES (the rule statement,
+# Voices lines, evidence/my-record tags) are legitimately rewritten in place —
+# "Tiered autowrite (canonical)" makes a statement rewrite glance-confirm, not
+# forbidden, and the audit-fix pass corrected several the same day this file was
+# seeded. Only each item's own "- **Log:**" sub-list is the append-only evidence
+# ledger. Checked as the flat set of every nested "  - " bullet in the file
+# (verified against all six seeded files: every such bullet is a Log entry —
+# Voices and My-record are single, unindented lines) rather than per-item, since
+# set-membership already tolerates an item's Log block being reordered or a new
+# item being inserted between two existing ones.
+PRINCIPLE_LOG_LINE_RE = re.compile(r"^  - .+")
+
 LINK_PATTERN = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 BACKTICK_PATH_PATTERN = re.compile(r"`(\.{1,2}/[^`]+\.md|[a-zA-Z0-9_\-./]+/[a-zA-Z0-9_\-./]+\.md)`")
 DATED_LINE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
@@ -657,7 +681,9 @@ def check_append_only(corpus: Corpus, errors: list[str]) -> None:
     for rel in corpus.staged_md_paths():
         journalish = any(Path(rel).match(g) for g in APPEND_ONLY_GLOBS)
         thesis = Path(rel).name == "thesis.md"
-        if not (journalish or thesis) or is_exempt(rel):
+        framework = Path(rel).parts[:1] == ("frameworks",) and Path(rel).name not in ("README.md", "_template.md")
+        principle = Path(rel).parts[:1] == ("principles",) and Path(rel).name not in ("README.md", "_template.md")
+        if not (journalish or thesis or framework or principle) or is_exempt(rel):
             continue
         head = corpus.read_head(rel)
         if not head.strip():
@@ -670,14 +696,25 @@ def check_append_only(corpus: Corpus, errors: list[str]) -> None:
             if head_body is None or new_body is None:
                 continue
             head, new = head_body, new_body
+        elif framework:
+            head_body, new_body = section(head, FRAMEWORK_LEARNED_HEADING), section(new, FRAMEWORK_LEARNED_HEADING)
+            if head_body is None or new_body is None:
+                continue  # no learned-log section yet — nothing to protect
+            head, new = head_body, new_body
+        elif principle:
+            # Scope to Log-entry lines only; item bodies above them may be
+            # legitimately rewritten and must not trip this check.
+            head = "\n".join(ln for ln in head.splitlines() if PRINCIPLE_LOG_LINE_RE.match(ln))
+            new = "\n".join(ln for ln in new.splitlines() if PRINCIPLE_LOG_LINE_RE.match(ln))
         new_lines = set(new.splitlines())
         lost = [
             ln for ln in head.splitlines()
             if ln.strip() and DATED_LINE_RE.search(ln) and ln not in new_lines
         ]
         if lost:
+            kind = "Log entry" if principle else "dated line"
             errors.append(
-                f"{rel}: {len(lost)} existing dated line(s) removed or rewritten — "
+                f"{rel}: {len(lost)} existing {kind}(s) removed or rewritten — "
                 f"append-only (write a new dated entry that corrects the old one instead). "
                 f"First: {lost[0].strip()[:70]}"
             )

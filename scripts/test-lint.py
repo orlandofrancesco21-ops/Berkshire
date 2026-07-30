@@ -104,6 +104,18 @@ Written before the principles layer existed.
 
 - 2026-05-20 — BUY AAA, starter size.
 """,
+    "frameworks/widgets.md": """# Widgets — industry framework
+
+## Valuation framework
+
+Use forward earnings, normalized for the cycle.
+
+## What I've learned over time
+
+Append-only log.
+
+- 2026-05-20 (AAA deep-dive): the first lesson.
+""",
 }
 
 
@@ -384,6 +396,34 @@ CASES = [
          replace("sectors/x/companies/AAA/thesis.md",
                  "### 2026-05-20 — initial thesis", "### 2026-05-20 — revised history"),
          expect_fail=True, needle="append-only", staged=True, commit_first=True),
+    case("removing a framework learned-log line is blocked",
+         replace("frameworks/widgets.md", "- 2026-05-20 (AAA deep-dive): the first lesson.\n", ""),
+         expect_fail=True, needle="append-only", staged=True, commit_first=True),
+    case("appending a framework learned-log line is allowed",
+         append("frameworks/widgets.md", "- 2026-05-21 (BBB deep-dive): a second lesson.\n"),
+         expect_fail=False, staged=True, commit_first=True),
+    case("rewriting a framework section OUTSIDE the learned-log is allowed",
+         replace("frameworks/widgets.md", "Use forward earnings, normalized for the cycle.",
+                 "Use forward earnings, normalized for the cycle. Prefer a 2-year normalized figure."),
+         expect_fail=False, staged=True, commit_first=True),
+    case("removing a principle Log line is blocked",
+         replace("principles/valuation-discipline.md",
+                 "  - 2026-07-28 — minted from docs/build-plan.md\n", ""),
+         expect_fail=True, needle="append-only", staged=True, commit_first=True),
+    case("appending a principle Log line is allowed",
+         replace("principles/valuation-discipline.md", "  - 2026-07-28 — minted from docs/build-plan.md\n",
+                 "  - 2026-07-28 — minted from docs/build-plan.md\n"
+                 "  - 2026-07-29 — corroborated by a second source.\n"),
+         expect_fail=False, staged=True, commit_first=True),
+    case("rewriting a principle's RULE STATEMENT in place is allowed",
+         # Item bodies (statement, Voices, tags) are legitimately editable — only
+         # each item's own Log sub-list is the append-only evidence ledger. This
+         # is the positive control: without it, the framework/principle extension
+         # could have silently frozen the whole file instead of just its Log lines.
+         replace("principles/valuation-discipline.md",
+                 "Express fair value as a scenario range; a point estimate is fake precision.",
+                 "Express fair value as a probability-weighted scenario range; a point estimate is fake precision."),
+         expect_fail=False, staged=True, commit_first=True),
 
     # -- 8. evidence tags ---------------------------------------------------
     # BOTH directions, deliberately. A regex bug once made these two negative cases

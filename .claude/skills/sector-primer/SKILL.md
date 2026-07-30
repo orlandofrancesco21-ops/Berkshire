@@ -20,7 +20,7 @@ The user wants to start a deep dive on a specific sector. The framework for the 
 
 ## Process
 
-1. **Identify the parent industry framework.** Check `frameworks/` for the relevant file. If none exists, stop and suggest `framework-bootstrap` first. The primer is meaningless without the framework lens.
+1. **Identify the parent industry framework.** Check `frameworks/` for the relevant file. If none exists and nothing is concurrently producing it, stop and suggest `framework-bootstrap` first — the primer is meaningless without the framework lens. If this run was orchestrated alongside `framework-bootstrap` running in parallel for the same industry (per "Concurrent orchestration (canonical)"; `evaluate`'s own default is sequential and won't hit this), do not stop: ground the primer directly in the underlying industry facts and sources instead of the not-yet-written framework, then read the framework fresh once it lands and reconcile — check the primer's structure, concentration claims and central dynamics against it, and note any conflict rather than silently preferring one.
 
 2. **Create the sector folder.** `sectors/{sector-slug}/` if it doesn't exist. Slugify the name.
 
@@ -65,7 +65,7 @@ The user wants to start a deep dive on a specific sector. The framework for the 
 
 5. **Cross-reference between the files** where it helps the reader.
 
-6. **Update the parent framework** if research surfaces something missing. Add a dated entry to the "What I've learned over time" section of `frameworks/{industry}.md`.
+6. **Update the parent framework** if research surfaces something missing. Add a dated entry to the "What I've learned over time" section of `frameworks/{industry}.md`. If that file is being concurrently authored by a peer `framework-bootstrap` invocation in this same orchestrated run, do not write to it inline — appending to a file mid-write risks a lost update. Instead, per "Concurrent orchestration (canonical)": record the finding as an "Outstanding write-back" note in this primer's own process notes, name the framework section it belongs in, and say so in the run's report, so it is picked up deliberately rather than lost or guessed at.
 
 ## Output
 
