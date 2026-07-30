@@ -1,7 +1,7 @@
 ---
 theme: valuation-discipline
 prefix: VAL
-updated: 2026-07-28
+updated: 2026-07-30
 ---
 # Valuation discipline
 
@@ -30,6 +30,7 @@ updated: 2026-07-28
 - **My record:** 2026-07-28 — untested. Applied in all three deep dives; no closed position yet shows whether the chosen lens was the one that mattered.
 - **Log:**
   - 2026-07-28 — minted from `frameworks/energy-and-cleantech.md` "Valuation framework" (opening rule) and its "Sub-sector navigator".
+  - 2026-07-30 (SNDK deep-dive): before leaning on an asset-based or replacement-cost floor, confirm the company owns the assets. A business that reaches its productive capacity through a joint venture, a contract manufacturer, or a leased or franchised base has book value and committed obligations but **no floor** — there is no rebuild cost to anchor to, only an obligation schedule — and its balance sheet understates capital intensity while overstating flexibility in the same breath. The observed instance: a manufacturer whose primary lens was correctly chosen as an asset multiple, whose prescribed secondary cross-check was replacement cost, and for which that cross-check turned out not to exist, because the plants belong to its joint-venture partner and it is contractually barred from building its own. Recorded here rather than minted as a new item: this is one instance, and per `README.md` a single orphan waits for a second and third before it earns an ordinal. The generalisable half is that choosing the right *primary* multiple does not carry the cross-checks that usually accompany it — each one has to be re-tested against the business model separately.
 
 ### VAL-P3 — Independent cross-checks must cluster, and divergence gets reconciled
 
