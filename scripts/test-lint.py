@@ -21,10 +21,12 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
+from datetime import date
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -425,6 +427,25 @@ CASES = [
 ]
 
 
+def check_no_placeholder_cutover():
+    """The cutover constant must be a real date, not a far-future placeholder.
+
+    It shipped as "2099-01-01", which grandfathered every thesis in the vault and
+    made the Principles-check gate inert while the lint still reported [OK]. No
+    planted-violation case could catch it: the fixture theses are correctly
+    post-cutover under any sane value, so the suite stayed green. The defect was in
+    the CONSTANT, not the logic, so this asserts on the constant directly.
+    """
+    src = (REPO_ROOT / LINT).read_text(encoding="utf-8")
+    m = re.search(r'BERKSHIRE_PRINCIPLES_CUTOVER"\s*,\s*"(\d{4})-(\d{2})-(\d{2})"', src)
+    if not m:
+        return "could not find the PRINCIPLES_CHECK_CUTOVER default in the lint source"
+    if int(m.group(1)) > date.today().year + 1:
+        return (f"cutover default is {m.group(1)}-{m.group(2)}-{m.group(3)} - a far-future "
+                "placeholder grandfathers every thesis and makes the check inert")
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("-v", "--verbose", action="store_true")
@@ -466,6 +487,13 @@ def main() -> int:
                 print(f"        {line}")
         passed += ok
         failed += not ok
+
+    problem = check_no_placeholder_cutover()
+    if problem:
+        print(f"[FAIL] constant guard: {problem}")
+        failed += 1
+    else:
+        print("[PASS] constant guard: cutover is a real date, not a placeholder")
 
     print(f"\n{passed}/{passed + failed} cases pass.")
     return 0 if failed == 0 else 1

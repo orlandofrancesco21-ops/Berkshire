@@ -97,8 +97,20 @@ DEEP_DIVE_LOG_RE = re.compile(
 # cannot apply retroactively to work written before the skill could satisfy it.
 # The env override exists so scripts/test-lint.py can exercise this gate against a
 # synthetic vault; never set it in normal use.
+# The date the Principles check became mandatory: when the grafts landed in the
+# skills that write theses. A thesis whose newest deep-dive entry predates this is
+# grandfathered — NKE, ADBE and UNH were all written before the principles tier
+# existed and cannot retroactively cite it; they acquire the section at their next
+# refresh, which is when the skill will produce it.
+#
+# This sat at "2099-01-01" for two days, which grandfathered EVERY thesis past and
+# future and made this whole check inert while reporting [OK]. It was caught by a
+# deep-dive agent reading the source to get the section's shape right, not by the
+# lint or the self-test. Sixth instance of this vault's signature failure: a gate
+# that reports green while enforcing nothing. test-lint.py now fails if a
+# placeholder-shaped far-future date ever reappears here.
 PRINCIPLES_CHECK_CUTOVER = os.environ.get(
-    "BERKSHIRE_PRINCIPLES_CUTOVER", "2099-01-01"  # PLACEHOLDER — set to the Phase 5 date
+    "BERKSHIRE_PRINCIPLES_CUTOVER", "2026-07-28"
 )
 
 APPEND_ONLY_GLOBS = ("journal/*.md",)
