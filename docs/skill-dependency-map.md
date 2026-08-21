@@ -33,6 +33,7 @@ Skills coordinate through three shared state files:
 
 - **`portfolio.md`** — written by `decision-log` (BUY/ADD/TRIM) and `post-mortem` (EXIT removes the row); read by `portfolio-review`, `news-triage`, `decision-log`.
 - **`watchlist.md`** — written by `company-deep-dive` (on PASS, appends to "Passed"); read by `news-triage`, `watchlist-revisit`, `decision-log`.
+- **`sectors/{sector}/companies/{TICKER}/ic-sheet.md`** — the one-page derived decision view, per "IC sheet (canonical)". Written by `company-deep-dive` ONLY, regenerated whole on every run (fresh or refresh) — never appended, carries no log; the audit trail is thesis.md's Update log and the numbers reconcile to valuation.md. Read by anyone who wants the decision without the argument. Mandatory sibling for post-2026-08-22 deep-dives, lint-enforced (presence, required sections, dash ban).
 - **`journal/_flagged.md`** — written by `news-triage` (news-derived flags) and `absorb` (a source contradicting an open thesis's reasoning, `next: thesis-check`); modified-in-place by `thesis-check`, `earnings-debrief` and `decision-log` (each resolves flags it acts on); read by `portfolio-review` (prioritizes flagged names) and `decision-log` (surfaces active flags at the moment of decision). Append-only at the line level — an active→resolved rewrite of one line is the single sanctioned in-place edit, and resolved entries stay in place for calibration.
 
 Two further tiers were added 2026-07-28 and follow the same single-writer discipline:

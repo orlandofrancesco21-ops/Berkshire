@@ -104,6 +104,61 @@ Written before the principles layer existed.
 
 - 2026-05-20 — BUY AAA, starter size.
 """,
+    # BBB: a thesis whose newest deep-dive entry postdates BOTH cutovers, so the
+    # Principles-check gate AND the IC-sheet gate apply to it in every case. It is
+    # the standing positive control for both — if either gate over-reaches, the
+    # baseline "clean vault passes" case fails and says so.
+    "sectors/x/companies/BBB/thesis.md": """# BBB — thesis
+
+## What would change my mind
+- Nothing yet.
+
+## Principles check
+
+- **TENSION VAL-P1** (self, 2026): the draft stated fair value as a point, corrected to a range.
+
+## Conviction
+3
+
+## Update log
+
+### 2026-08-25 — initial thesis
+Written after the IC-sheet cutover.
+""",
+    "sectors/x/companies/BBB/ic-sheet.md": """# BBB IC sheet
+
+| | |
+|---|---|
+| Verdict | WATCH, conviction 3 |
+| Price | 100.00 USD, 2026-08-25 |
+
+## Executive summary
+- A test company that exists to prove the gates fire.
+
+## Business
+- Sells widgets to widget users.
+
+## Bull case
+1. Widgets are selling.
+
+## Bear case
+1. Widgets are cyclical.
+
+## Variant perception: where we differ from the market
+- The market pays 10x widgets; we pay 8x. Evidence: none, this is a fixture.
+
+## Valuation
+- Method: multiple on mid-cycle widget earnings.
+
+## Kill switches, short form
+- Widget ASP down two quarters running.
+
+## Sizing
+- 0% until the price is inside the range.
+
+## What we do not know
+- Everything. Fixture.
+""",
     "frameworks/widgets.md": """# Widgets — industry framework
 
 ## Valuation framework
@@ -193,6 +248,13 @@ def render_real_principles_template():
 
 def noop(files: dict[str, str]) -> None:
     return None
+
+
+def remove(rel: str):
+    def _m(files: dict[str, str]) -> None:
+        assert rel in files, f"fixture drift: {rel!r} not in fixture"
+        del files[rel]
+    return _m
 
 
 def add_episode(body: str):
@@ -411,6 +473,30 @@ CASES = [
          ),
          expect_fail=False, env={"BERKSHIRE_PRINCIPLES_CUTOVER": "2026-07-01"}),
 
+    # -- 6b. IC sheet ---------------------------------------------------------
+    case("post-IC-cutover thesis without an ic-sheet is blocked",
+         remove("sectors/x/companies/BBB/ic-sheet.md"),
+         expect_fail=True, needle="ic-sheet"),
+    case("pre-cutover thesis without an ic-sheet stays grandfathered",
+         # Remove BBB entirely: the vault is then AAA alone (2026-05-20, before
+         # both cutovers) with no ic-sheet anywhere, and must still pass.
+         lambda files: (remove("sectors/x/companies/BBB/thesis.md")(files),
+                        remove("sectors/x/companies/BBB/ic-sheet.md")(files)),
+         expect_fail=False),
+    case("em dash in an IC sheet is blocked",
+         append("sectors/x/companies/BBB/ic-sheet.md",
+                "\n- a bullet that argues in the house style — banned here\n"),
+         expect_fail=True, needle="dash"),
+    case("en dash in an IC sheet is blocked",
+         append("sectors/x/companies/BBB/ic-sheet.md",
+                "\n- a range written 0.8–1.3x instead of 0.8-1.3x\n"),
+         expect_fail=True, needle="dash"),
+    case("IC sheet missing a required section is blocked",
+         replace("sectors/x/companies/BBB/ic-sheet.md",
+                 "## Variant perception: where we differ from the market",
+                 "## Where we differ"),
+         expect_fail=True, needle="Variant perception"),
+
     # -- 7. append-only (staged mode only) ----------------------------------
     case("removing a dated journal line is blocked",
          edit("journal/2026-05-20-decision.md", "# Decisions — 2026-05-20\n\n(nothing here now)\n"),
@@ -503,12 +589,14 @@ def check_no_placeholder_cutover():
     the CONSTANT, not the logic, so this asserts on the constant directly.
     """
     src = (REPO_ROOT / LINT).read_text(encoding="utf-8")
-    m = re.search(r'BERKSHIRE_PRINCIPLES_CUTOVER"\s*,\s*"(\d{4})-(\d{2})-(\d{2})"', src)
-    if not m:
-        return "could not find the PRINCIPLES_CHECK_CUTOVER default in the lint source"
-    if int(m.group(1)) > date.today().year + 1:
-        return (f"cutover default is {m.group(1)}-{m.group(2)}-{m.group(3)} - a far-future "
-                "placeholder grandfathers every thesis and makes the check inert")
+    for env_name, what in (("BERKSHIRE_PRINCIPLES_CUTOVER", "Principles-check"),
+                           ("BERKSHIRE_IC_SHEET_CUTOVER", "IC-sheet")):
+        m = re.search(env_name + r'"\s*,\s*"(\d{4})-(\d{2})-(\d{2})"', src)
+        if not m:
+            return f"could not find the {env_name} default in the lint source"
+        if int(m.group(1)) > date.today().year + 1:
+            return (f"{what} cutover default is {m.group(1)}-{m.group(2)}-{m.group(3)} - a "
+                    "far-future placeholder grandfathers every thesis and makes the check inert")
     return None
 
 

@@ -49,6 +49,8 @@ This skill is a convenience wrapper. It does not replace the discipline of hand-
    thing that worries you most, conviction level.}
 
    ---
+   The one-page decision view is at sectors/{sector-slug}/companies/{TICKER}/ic-sheet.md.
+
    Infrastructure created during this evaluation (refine when you have time):
    - frameworks/{industry-slug}.md  ({"created v1 draft" / "already existed"})
    - sectors/{sector-slug}/primer.md  ({"created" / "already existed"})

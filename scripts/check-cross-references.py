@@ -113,6 +113,31 @@ PRINCIPLES_CHECK_CUTOVER = os.environ.get(
     "BERKSHIRE_PRINCIPLES_CUTOVER", "2026-07-28"
 )
 
+# The IC sheet: a one-page derived view next to thesis.md and valuation.md,
+# regenerated whole by company-deep-dive on every run. Mandatory for any thesis
+# whose newest deep-dive entry is on or after this date; older theses acquire it
+# at their next refresh, the same grandfathering as the Principles check. Env
+# override exists for test-lint.py only. Canon: "IC sheet (canonical)".
+IC_SHEET_CUTOVER = os.environ.get(
+    "BERKSHIRE_IC_SHEET_CUTOVER", "2026-08-22"
+)
+IC_SHEET_REQUIRED_HEADINGS = (
+    "## Executive summary",
+    "## Business",
+    "## Bull case",
+    "## Bear case",
+    "## Variant perception",
+    "## Valuation",
+    "## Kill switches",
+    "## Sizing",
+    "## What we do not know",
+)
+# The sheet's style contract bans em- and en-dashes outright. This is a firewall,
+# not a taste: the deep documents argue in the vault's house style, the sheet
+# informs in bullets, and the dash ban is the cheapest mechanical proxy for "did
+# not inherit the essay register". Hyphens are fine.
+IC_SHEET_BANNED_CHARS = ("—", "–")
+
 APPEND_ONLY_GLOBS = ("journal/*.md",)
 UPDATE_LOG_HEADING = "## Update log"
 # journal/_flagged.md is the one sanctioned in-place edit: active -> resolved
@@ -645,6 +670,14 @@ def check_thesis_shape(corpus: Corpus, errors: list[str]) -> None:
         dates = [d for d, _ in DEEP_DIVE_LOG_RE.findall(text)]
         if not dates or max(dates) < PRINCIPLES_CHECK_CUTOVER:
             continue  # grandfathered: written before the skill could satisfy the rule
+        # IC sheet: mandatory sibling for deep-dives on/after its own (later) cutover.
+        if max(dates) >= IC_SHEET_CUTOVER:
+            sheet_rel = rel[: -len("thesis.md")] + "ic-sheet.md"
+            if not corpus.exists(sheet_rel):
+                errors.append(
+                    f"{rel}: deep-dive dated {max(dates)} is post-IC-cutover but has no "
+                    f"sibling ic-sheet.md (canonical: IC sheet)"
+                )
         body = section(text, PRINCIPLES_CHECK_HEADING)
         if body is None:
             errors.append(
@@ -676,6 +709,36 @@ def check_thesis_shape(corpus: Corpus, errors: list[str]) -> None:
                     f"{rel}: principles-check line lacks a verdict token "
                     f"{sorted(VERDICT_TOKENS)}: {ln[:70]}"
                 )
+
+
+# ------------------------------------------------------ check 6b: ic-sheet shape
+def check_ic_sheets(corpus: Corpus, errors: list[str]) -> None:
+    """Every real ic-sheet.md carries the required sections and honours the
+    style firewall (no em- or en-dashes anywhere in the file, comments included).
+
+    Presence is checked from the thesis side (check_thesis_shape); this checks
+    the sheets that exist, wherever they came from.
+    """
+    for rel in corpus.paths():
+        parts = Path(rel).parts
+        if not (len(parts) == 5 and parts[0] == "sectors" and parts[2] == "companies"
+                and parts[4] == "ic-sheet.md"):
+            continue
+        if is_exempt(rel):
+            continue
+        text = corpus.read(rel)
+        for heading in IC_SHEET_REQUIRED_HEADINGS:
+            # Prefix match: "## Variant perception" may carry a subtitle after a colon.
+            if not re.search(rf"^{re.escape(heading)}", text, re.MULTILINE):
+                errors.append(f"{rel}: missing required section `{heading}`")
+        for i, line in enumerate(text.splitlines(), start=1):
+            for ch in IC_SHEET_BANNED_CHARS:
+                if ch in line:
+                    errors.append(
+                        f"{rel}:{i}: em/en dash in an IC sheet — the sheet's style "
+                        f"contract is hyphens only (canonical: IC sheet): {line.strip()[:60]}"
+                    )
+                    break
 
 
 # --------------------------------------------------------- check 7: append-only
@@ -801,6 +864,7 @@ def main() -> int:
     n_lib = check_library(corpus, errors)
     check_indexes(corpus, errors)
     check_thesis_shape(corpus, errors)
+    check_ic_sheets(corpus, errors)
     check_append_only(corpus, errors)
     check_evidence_tags(corpus, errors)
 

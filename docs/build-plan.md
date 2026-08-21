@@ -231,6 +231,16 @@ A source is not absorbed when its theses are captured — it is absorbed when it
 
 When a decision leans on a stored principle, `decision-log` writes `relied on {ID}@{YYYY-MM-DD}` — the ID plus the as-of date of the text relied upon. This is a greppable contract: it lets `absorb` mechanically find decisions resting on principle text that has since changed (reverse-notification), which is the only way a corpus that keeps growing can notify a decision that was already made.
 
+### IC sheet (canonical)
+
+Every company folder carries three documents, not two: `thesis.md` (the argument, append-only log), `valuation.md` (the numbers, canonical per VAL-P5), and **`ic-sheet.md` — the one-page decision view a senior reader digests in under five minutes.**
+
+- **It is a derived view, not a record.** `company-deep-dive` regenerates it whole on every run, fresh or refresh. It is never appended to, carries no log, and is the one company document the append-only rule deliberately does not cover. The audit trail lives in `thesis.md`; the scenario numbers reconcile to `valuation.md`. If the sheet disagrees with either, the sheet is wrong.
+- **Nothing originates here.** No new analysis, no new numbers, no softer adjectives than the source documents earned. The sheet summarizes the decision; summarizing is not a licence to re-decide.
+- **Style firewall, lint-enforced:** short declarative bullets; no em- or en-dashes anywhere in the file (hyphens are fine); every figure carries its as-of date; one page. The deep documents argue in the vault's house style — the sheet informs, and the dash ban is the cheap mechanical proxy for "did not inherit the essay register."
+- **Required sections, lint-enforced:** header table (verdict, price, fair value, reward-to-risk, next dated event, doc links), Executive summary, Business, Bull case, Bear case, **Variant perception** (where and why our method or conclusion differs from how the market prices the name — stated fairly, with the strongest case against us and the observable that would prove us wrong; if we agree with the market, say that instead — manufactured contrarianism is as dishonest as hidden divergence), Valuation, Kill switches (short form), Sizing, What we do not know.
+- **Enforcement:** any thesis whose newest deep-dive Update-log entry is on or after **2026-08-22** must have a sibling `ic-sheet.md` (older theses acquire one at their next refresh, same grandfathering as the Principles check); every existing sheet must carry the required sections and pass the dash ban. Template: `sectors/_example/companies/_TICKER/ic-sheet.md`. Written by `company-deep-dive` only.
+
 ### Concurrent orchestration (canonical)
 
 Skills in this vault are written assuming one skill runs at a time, hands off, and the next one starts. That is the common case. It is not the only one: a parent agent may orchestrate several skills in parallel to save time — for instance, running `framework-bootstrap` and `sector-primer` concurrently while assembling `company-deep-dive`'s prerequisites, which is exactly how the first `evaluate SNDK` run (2026-07-30) was actually executed. Every skill must tolerate this without producing a wrong, stranded, or silently-lost result.

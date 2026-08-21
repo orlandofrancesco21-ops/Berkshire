@@ -1,6 +1,6 @@
 ---
 name: company-deep-dive
-description: Produce a full long-form analysis of a single company, grounded in the relevant industry framework and sector primer. Reads frameworks/{industry}.md and sectors/{sector}/primer.md as context — assumes both already exist (for the auto-bootstrapping entry point that creates missing prerequisites, use the evaluate skill instead). Output is thesis.md and valuation.md in sectors/{sector}/companies/{TICKER}/; also handles the refresh of an existing thesis. Triggered by "deep dive on X", "company-deep-dive X", "refresh the X thesis", or "deep-dive X for the Y book".
+description: Produce a full long-form analysis of a single company, grounded in the relevant industry framework and sector primer. Reads frameworks/{industry}.md and sectors/{sector}/primer.md as context — assumes both already exist (for the auto-bootstrapping entry point that creates missing prerequisites, use the evaluate skill instead). Output is thesis.md, valuation.md and the one-page ic-sheet.md in sectors/{sector}/companies/{TICKER}/; also handles the refresh of an existing thesis. Triggered by "deep dive on X", "company-deep-dive X", "refresh the X thesis", or "deep-dive X for the Y book".
 ---
 
 # company-deep-dive
@@ -26,6 +26,7 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
    - Rewrite the body sections in place (summary, bull case, bear case, capital allocation, management, kill switches, Principles check, conviction, sizing logic) to reflect current reality. The Principles check is re-run from step 3b, never carried over — the lint keys the requirement on the Update-log headings `— initial thesis` and `— deep-dive refresh`, so a refresh that drops the section is a blocked commit, not a silent loss.
    - Append a dated entry `### YYYY-MM-DD — deep-dive refresh` to the Update log summarizing *what changed and why* — which bull/bear points strengthened or died, any kill-switch rewording, conviction moves with reasoning.
    - Apply the same rules to `valuation.md`: rewrite scenario tables and bands in place, preserve and append to its update history.
+   - **Regenerate `ic-sheet.md` whole** (step 6b). It is a derived view with no log — a refresh that rewrites the thesis but leaves a stale sheet standing produces two verdicts on disk, and the sheet is the one a hurried reader will believe.
    Fresh mode (no existing thesis.md) proceeds from the templates as described below.
 
 1. **Confirm context exists.** Check that `sectors/{sector}/` and `frameworks/{industry}.md` both exist. If not — and nothing is concurrently producing them, per "Concurrent orchestration (canonical)" — stop and ask the user to run the appropriate prior skill. If this run was orchestrated alongside `framework-bootstrap`/`sector-primer` running in parallel (rather than `evaluate`'s own sequential default), re-check once rather than stopping at the first miss, read whatever lands **fresh**, and note in the Update log entry that the lens arrived mid-run.
@@ -75,6 +76,8 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
    - Cross-checks
    - Hold / trim / add bands (this is what `valuation-check` reads)
 
+6b. **Write `sectors/{sector}/companies/{TICKER}/ic-sheet.md`** from the template in `sectors/_example/companies/_TICKER/ic-sheet.md`, per "IC sheet (canonical)". This is the one-page decision view a senior reader digests in under five minutes, and it is a **derived view**: regenerate it whole on every run (fresh or refresh — never append, it carries no log), source every line from the thesis and valuation just written (nothing originates here; the scenario numbers reconcile to `valuation.md` per VAL-P5), and honour its style firewall — short declarative bullets, no em- or en-dashes anywhere in the file, every figure dated. Its **Variant perception** section is mandatory content, not a formality: state fairly how the market prices this name, what this vault anchors on instead and why, the strongest case against us, and the observable that would prove us wrong. If the vault agrees with the market, say that — manufactured contrarianism is as dishonest as hidden divergence. The lint enforces presence (post-2026-08-22 deep-dives), required sections, and the dash ban.
+
 7. **Save model code if you build any** to `sectors/{sector}/companies/{TICKER}/model.py`. It should be re-runnable with new inputs next quarter. (Ad-hoc scratch material can live in `sectors/{sector}/companies/{TICKER}/notes/` — no skill reads or writes it; it's human working space.)
 
 8. **Date the thesis entry.** First entry under "Update log" should be dated today and summarize the initial write-up.
@@ -117,7 +120,7 @@ The user wants to evaluate a specific company seriously — not a screen, not a 
 
 ## Output
 
-Files written, plus a verbal summary:
+Files written (`thesis.md`, `valuation.md`, `ic-sheet.md`), plus a verbal summary. The IC sheet IS the summary's skeleton — if the verbal summary and the sheet diverge, one of them is wrong:
 
 - The thesis in 3 sentences
 - Fair value range (range, never a point)

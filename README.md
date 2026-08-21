@@ -12,6 +12,8 @@ Three phases, each producing durable artifacts the next phase reads:
 2. **Company analysis** (`sectors/{sector}/companies/{TICKER}/`) — days per name. Output: thesis, valuation, model.
 3. **Portfolio monitoring** (`portfolio.md`, `journal/`) — continuous, low-noise. Output: position decisions.
 
+Each company folder carries three documents: `thesis.md` (the argument, append-only log), `valuation.md` (the numbers, canonical), and `ic-sheet.md` — a one-page IC-memo view in plain bullets that a senior reader digests in under five minutes, regenerated from the other two on every deep-dive. Read the sheet first; open the deep documents where you want the reasoning.
+
 Two cross-cutting knowledge tiers sit above all three phases, and they are the personal IP — the part that compounds:
 
 - **`frameworks/`** — industry-specific evaluation playbooks. What is true of *an industry*.
@@ -51,7 +53,7 @@ Feeding `principles/` is [`library/`](library/README.md) — one distilled entry
 │   └── README.md            # docs index
 ├── scripts/
 │   ├── check-cross-references.py  # THE pre-commit gate — 8 check classes
-│   ├── test-lint.py               # 32 planted-violation cases proving each gate fires
+│   ├── test-lint.py               # planted-violation cases proving each gate fires
 │   ├── check-cadence.py           # the clock: session-start nag, silent when healthy
 │   ├── pdf-extract.py             # PDF -> canonical page-addressed text (PyMuPDF)
 │   ├── source-pages.py            # page-addressed search/read over the archive
