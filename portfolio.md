@@ -26,6 +26,22 @@ Column semantics:
 - **Current weight** — shares × current price ÷ total portfolio value, in base currency. **Computed by `portfolio-review` at each sweep** (dated by "Last reviewed" above) — treat as stale between sweeps; never hand-maintain.
 - **Thesis status** — most recent `thesis-check`/`earnings-debrief` verdict, updated whenever those skills run.
 
+## Fund allocations
+
+Pooled vehicles per "Funds tier (canonical)". Separate table because the company columns do not describe a fund: there is no sector, no conviction-to-fair-value mapping, and no thesis status written by `thesis-check`. What matters instead is the exposure, the target weight and the drift band.
+
+| Ticker (ISIN) | Exposure | Role | Target weight | Current weight | Rebalance band | Expected net real return (horizon) | Last reviewed |
+|---|---|---|---|---|---|---|---|
+| | | | | | | | |
+
+Column semantics:
+
+- **Ticker (ISIN)** — the ISIN is the identity; the ticker is convenience. Accumulating and distributing share classes are different rows, never the same one.
+- **Role** — core beta or satellite tilt. The role decides how a drift is treated: a core holding is rebalanced back, a tilt is re-argued.
+- **Target weight / Rebalance band** — rebalancing is a rule, not a view. State the band and act on it mechanically.
+- **Current weight** — computed by `portfolio-review` at each sweep, like the company table. Stale between sweeps.
+- **Expected net real return** — from the fund's `valuation.md`, which is canonical for it (VAL-P5), with its horizon. Not a fair value; a fund does not have one.
+
 ## Cash / dry powder
 
 - **Cash:** — ( —% of portfolio, as of: — ) <!-- updated by decision-log on every BUY/ADD/TRIM/SELL/EXIT, and correctable by hand after deposits/withdrawals -->

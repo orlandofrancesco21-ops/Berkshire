@@ -38,7 +38,11 @@ Bands are **allocation** bands keyed to expected return and valuation percentile
 ## Instruments
 
 - `python scripts/exposure-history.py {TICKER}` — realised rolling-return distributions, drawdown depth and time-to-recovery. Reports how many windows are genuinely independent, because overlapping windows are the standard way this table misleads.
-- What it cannot do: tell you what returns followed a given *starting valuation*. That needs decades of valuation history, and it enters the vault through `absorb` as a cited source in `library/` — never hardcoded, never remembered.
+- What it cannot do: tell you what returns followed a given *starting valuation*.
+
+**That capability is NOT YET BUILT, and this section says so rather than describing it as an absorb away.** It needs decades of valuation history, which is a time series rather than a document — and the vault's ingestion stack is text-only: `absorb` archives `.txt` and `.pdf`, the lint's locator forms are pages, timestamps, paragraphs and statutory sections, and `source-pages.py` globs `*.txt`. A spreadsheet has no rung. So a queued Shiller-style dataset currently has no defined landing.
+
+Two ways to close it, neither done: add a dataset rung to `absorb` (archive the raw file, define a series locator convention such as `(sheet Data, col K, 1871-2026)`, extend the locator pattern), or build the derived artifact — a script that takes an absorbed series and reports realised forward 10-year real returns bucketed by starting-valuation decile — and cite that instead of a queue row. Until one exists, a fund valuation states the valuation-conditional question as an open gap rather than answering it.
 
 ## The honest caution about a fund's track record
 

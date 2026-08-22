@@ -273,17 +273,26 @@ def collect() -> list[Nag]:
             nags.append(Nag(f"flag on {ticker} open since {d.isoformat()} ({days}d)",
                             nxt or "resolve or explicitly re-scope the flag", ratio=days / FLAG_DAYS))
 
-    for thesis in sorted(REPO_ROOT.glob("sectors/*/companies/*/thesis.md")):
-        if "_example" in thesis.as_posix():
+    # Both tiers. The company glob is 5 parts, the funds glob is 3, and keying the
+    # staleness clock to the company shape alone is exactly the failure the lint's
+    # own position_doc() was written to fix on 2026-08-22 — reproduced here the
+    # same day, in the sibling gate that commit did not open. A fund thesis could
+    # have sat for years without ever nagging.
+    theses = [(p, "company") for p in sorted(REPO_ROOT.glob("sectors/*/companies/*/thesis.md"))]
+    theses += [(p, "fund") for p in sorted(REPO_ROOT.glob("funds/*/thesis.md"))]
+    for thesis, variant in theses:
+        rel = thesis.as_posix()
+        if "_example" in rel or "_TICKER" in rel:
             continue
         ticker = thesis.parent.name
         if portfolio and not re.search(rf"^\|\s*{re.escape(ticker)}\s*\|", portfolio, re.MULTILINE):
-            continue  # not a held position; watchlist names are swept quarterly instead
+            continue  # not held; watchlist names are swept quarterly instead
         entries = [d for d in (parse_date(ln) for ln in read(thesis).splitlines()
                                if ln.startswith("### ")) if d]
         if entries:
+            skill = "fund-deep-dive" if variant == "fund" else "company-deep-dive"
             n = age_nag(f"{ticker} thesis", max(entries), THESIS_STALE_DAYS,
-                        f"run company-deep-dive refresh on {ticker} (canonical: stale thesis)")
+                        f"run {skill} refresh on {ticker} (canonical: stale thesis)")
             if n:
                 nags.append(n)
 

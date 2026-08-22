@@ -123,7 +123,9 @@ A thesis is **stale** if any of the following are true:
 - (b) The company has reported earnings since the most recent thesis or valuation update (i.e. the most recent Update log entry predates the most recent earnings release).
 - (c) A prior `thesis-check` returned **REVIEW** within the last **90 days** and no `company-deep-dive` refresh has run since.
 
-Skills that depend on this rule: `valuation-check` (step 2), `thesis-check` (step 7), `portfolio-review` (step 6), `decision-log` (discipline checklist). When any of these skills detect a stale thesis, the recommendation is `company-deep-dive` refresh — *not* a price-based action.
+**For a fund thesis, clause (b) reads differently**, because a fund has no earnings date. It is stale if the fund has published an annual report since the most recent thesis update, or if any of these has occurred: a TER change, an index methodology change, a change of the index tracked, a share-class merger, or a closure notice. Those are the fund's material events, and the first of them is the one that carries the authoritative cost and securities-lending figures.
+
+Skills that depend on this rule: `valuation-check` (step 2), `thesis-check` (step 7), `portfolio-review` (step 6), `decision-log` (discipline checklist), `fund-deep-dive` (mode determination), and `scripts/check-cadence.py`, which sweeps both tiers. When any of them detects a stale thesis, the recommendation is a **`company-deep-dive` refresh for a company and a `fund-deep-dive` refresh for a fund** — *not* a price-based action.
 
 ### Price and data sourcing (canonical)
 

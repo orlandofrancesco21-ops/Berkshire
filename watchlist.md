@@ -30,6 +30,16 @@ Names worth eventually evaluating. Sourced from sector primers, conversations, r
 |---|---|---|---|
 |  |  |  |  |
 
+## Funds under consideration
+
+Pooled vehicles researched but not allocated. Separate table because "Fair value range" and "Current price" are company constructs — a fund's trigger is an expected-return level, a valuation percentile, or a named vehicle event, never a price alone.
+
+| Ticker (ISIN) | Exposure | Expected net real return (horizon) | Vehicle verdict | Trigger to allocate |
+|---|---|---|---|---|
+| | | | | |
+
+**Vehicle verdict** carries its own column deliberately: "right exposure, wrong vehicle" is a routine finding and it means find a better wrapper, not abandon the asset class.
+
 ## Passed (with reason)
 
 Names you've evaluated and decided not to invest in. Keep this — pattern recognition compounds.

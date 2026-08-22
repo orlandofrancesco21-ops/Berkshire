@@ -19,7 +19,9 @@ against alternatives. The lint enforces this variant's headings.
 | Price / NAV | {x.xx CCY, YYYY-MM-DD} |
 | Expected net real return | {bear} / {base} / {bull} over {horizon}, weighted {w.w%} |
 | Cost | TER {x.xx%}, realised tracking difference {y.yy%} over {N} years |
+| All-in annual drag | {x.xx% to y.yy%: TER + unrecovered withholding + turnover, less lending; per the vehicle assessment} |
 | Alternative | {the next best way to own this exposure, and its cost} |
+| Next dated event | {annual report / index review / fee change, YYYY-MM-DD — for a fund this is never an earnings date} |
 | Deep docs | `./thesis.md`, `./valuation.md`, both as-of {YYYY-MM-DD} |
 
 ## Executive summary
