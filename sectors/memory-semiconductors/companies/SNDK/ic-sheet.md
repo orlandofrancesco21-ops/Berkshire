@@ -2,94 +2,84 @@
 
 | | |
 |---|---|
-| Verdict | PASS, conviction 1 of 5, 0% position (docs as-of 2026-07-30) |
-| Status | REFRESH REQUIRED: the PASS's own revisit trigger fired 2026-08-05, flag open in journal |
-| Price | 1,596.08 USD, close 2026-08-21 (docs' reference price: 1,249.44, 2026-07-30) |
-| Fair value | 200 / 400 / 1,560 bear/base/bull, probability-weighted ~552 (2026-07-30, pre-refresh) |
-| Price vs range | above the bull case: the old table calls this TRIM territory |
-| Reward-to-risk | negative on base-over-bear at 1,249.44; worse at 1,596.08 |
-| Next dated event | company-deep-dive refresh, mandated now; then the Q1 FY2027 print (~Nov 2026) |
-| Deep docs | `./thesis.md`, `./valuation.md`, both as-of 2026-07-30 |
-
-## Status as of 2026-08-22
-
-The thesis pre-committed 13 kill switches and a revisit trigger before two known events. Both events have now happened. Graded:
-
-- Zero of eight bull-case kill switches fired. ASP per gigabyte rose again in fiscal Q4 (8-K, 2026-08-05). GAAP gross margin printed 84.6%. No Flash Ventures under-utilization charges in FY2026 (10-K, filed 2026-08-17). No equity issued. The $6.0bn buyback went from press release to $4.5bn executed in one quarter.
-- One of five bear-case switches fired, and it was the one the thesis named its single highest-value unknown: the contracted book carries price floors and ceilings. $93.9bn of minimum contracted revenue at floor pricing, about half of FY2027 bits, two-thirds of FY2028, $16.5bn of guarantees (Q4 deck p.11, 2026-08-05; reaffirmed at the 2026-08-13 Investor Day).
-- Two caveats survive: the floor LEVEL is not disclosed anywhere, and the floor language lives in unaudited presentation materials. The audited 10-K says only "fixed and variable components". No 8-K was filed for the Investor Day.
-- FY2026 closed at revenue $20.2bn (+175%) with GAAP operating income +$12.4bn, ending the three-year loss streak (10-K). Management guided an FY2028-30 model: ~80% gross margin sustained, ~50% adjusted FCF margin, 100% of excess cash returned (Investor Day release, 2026-08-13).
-- By the thesis's own written pre-commitment, "bear point 5 collapses and the base case moves materially." The refresh, not this sheet, rebuilds the numbers. Until it runs, every figure below is the stale 2026-07-30 set and says so.
+| Verdict | PASS, conviction 2 of 5 (raised from 1), 0% position |
+| As of | 2026-08-22, on the full deep-dive refresh (docs current, flag discharged) |
+| Price | 1,596.08 USD, close 2026-08-21 |
+| Fair value | 475 / 875 / 2,200 bear/base/bull, probability-weighted ~1,090 |
+| Price vs range | 1.8x base, 0.73x bull, 1.46x probability-weighted |
+| Reward-to-risk | negative: upside to base is -45%, downside to bear is -70% (ASYM-P2 basis) |
+| Next dated event | Q1 FY2027 print, ~early Nov 2026: quarterly ASP/GB disclosure returns |
+| Deep docs | `./thesis.md`, `./valuation.md`, both refreshed 2026-08-22 |
 
 ## Executive summary
 
-- SanDisk is the purest listed pure-NAND company. It owns no fab: capacity is a 49.9% JV stake inside buildings Kioxia owns, with half of all JV fixed costs owed regardless of output taken (10-Q q/e 2026-04-03).
-- FY2026 revenue rose 175% almost entirely on price: full-year exabytes grew mid-teens percent (10-K MD&A). The company had GAAP operating losses in each of FY2023, FY2024 and FY2025.
-- The verdict on file is PASS at conviction 1: at 1,249.44 (2026-07-30) the price was 3.1x the base-case fair value and reward-to-risk was negative. No size made sense.
-- Since then the highest-value unknown resolved in the bull's favor (price floors exist), the FY2026 print beat the model's assumptions by ~25%, and the stock at 1,596.08 (2026-08-21) sits above the old bull-case value of 1,560.
-- What has NOT changed: the floor level is unquantified, the contracts are untested through any downturn, and the supply response (Kioxia capex, China at ~19% of 2027 bits per TrendForce 2026-07-21) is already announced.
-- Decision: no action at this price either way. Run the refresh; it starts from a fired bear-side switch and a price above the old bull case, which pull in opposite directions.
+- SanDisk is the purest listed pure-NAND company. It owns no fab: capacity is a 49.9% JV stake inside buildings Kioxia owns, half of all JV fixed costs owed regardless of output, contractually barred from building its own (FY2026 10-K).
+- FY2026 was the biggest year in the asset's history: revenue $20.2bn (+175%, 53-week year), GAAP operating income +$12.4bn after three straight loss years, FCF $11.5bn (10-K, filed 2026-08-17).
+- The July thesis's highest-value unknown resolved on 2026-08-05: the contracted book carries price floors and ceilings. $93.9bn minimum revenue at floor pricing, more than half of FY2027 bits, two thirds of FY2028, and NBM gross margin confirmed "around 80%" by the CFO in Q&A (Q4 call transcript, read in full).
+- Fair value re-based to 475 / 875 / 2,200 (PWFV ~1,090) from 200 / 400 / 1,560. Half the base-case move is new facts; half is a method change forced by the 100%-excess-cash-return policy (book anchors assume retention; this company now retains nothing).
+- PASS stands anyway: at 1,596.08 the upside to base is -45% and the standardized reward-to-risk is negative. No size makes sense at this price under this vault's rules.
+- What would change it fastest: the floor LEVEL disclosed (still secret, including in the audited 10-K), or one quarter of falling ASP/GB with margins held, which would prove the floor works rather than merely exists.
 
 ## Business
 
-- Sells NAND flash and nothing else: enterprise and client SSDs, embedded flash, retail cards. Segments: Datacenter (the only volume growth; 33% of fiscal Q4 revenue), Edge, Consumer.
-- Manufactures through Flash Ventures, a 49.9% JV with Kioxia: output taken at cost plus a small markup, half of fixed costs owed regardless of volume, contractually barred from building its own fab, extended to 2034 for a $1.2bn payment (Jan 2026, 10-Q Note 10).
-- Separated from Western Digital 2025-02-21. Under 18 months of standalone history; the board and executive team all arrived at separation.
+- Sells NAND flash only: enterprise and client SSDs, embedded, retail cards. FY2026 mix: Edge 60.1%, Datacenter 25.4% (the only volume growth: exabytes +~120%), Consumer 14.5% (bits down mid-teens).
+- Manufactures through Flash Ventures with Kioxia: output at cost plus markup, JVs co-terminate 2034-12-31, $1.2bn paid to Kioxia over 2026-2029 for supply availability. Total material cash requirements $11.8bn (10-K).
+- More than half of forward volume now sells under multi-year "New Business Model" contracts the 10-K calls the future "predominant way of doing business". Separated from Western Digital 2025-02-21; 18 months of standalone history.
 
 ## Bull case
 
-1. Datacenter is real volume, not just price: segment exabytes +~120% in FY2026 (10-K MD&A); fiscal Q4 segment revenue $2,977M, +103% QoQ (8-K, 2026-08-05). An AI-inference buyer funding storage from an accelerator budget is the least price-elastic customer NAND has ever had.
-2. The contracted book now has disclosed floors: $93.9bn minimum revenue at floor pricing across 8 customers, half of FY2027 bits, $16.5bn of guarantees (deck, 2026-08-05). Selling forward at the peak trades upside for trough survival; that is the framework's approved trade, executed.
-3. Best balance sheet this asset has ever had: zero long-term debt, $4.8bn cash (2026-07-03), FY2026 FCF $11.5bn (10-K).
-4. Management's FY2028-30 model, if believed, is the end of the NAND cycle as a phenomenon: ~80% gross margin sustained, ~75% operating margin, 100% of excess cash returned (Investor Day, 2026-08-13).
-5. CEO holds over 500k shares with zero open-market sales on record through 2026-07-02 (Forms 4).
+1. Floors are verified at scale: $93.9bn contracted minimum at floor pricing, 8 customers, RPO $91.1bn including two post-quarter signings of $31.3bn (10-K subsequent events). NBM margin ~80% per the CFO. Selling forward at the peak is the framework's one approved top-of-cycle trade, executed at industry-first scale.
+2. Datacenter is real volume in a price year: segment revenue +437% in FY2026 on exabytes +~120%; fiscal Q4 $2,977M, +103% QoQ. The AI-inference buyer is the least price-elastic customer NAND has had.
+3. Balance sheet at its best ever: zero debt, $4.8bn cash, Q4 GAAP gross margin 84.6%.
+4. Management's FY2028-30 model, if real, ends the cycle: ~80% GM, ~75% operating margin, ~50% FCF margin, 100% of excess cash returned (Investor Day, 2026-08-13). Kioxia reaffirmed capex discipline (¥470bn/yr avg) and bought back its own stock instead of building.
+5. Discipline under pressure: pushed in Q&A to accelerate capex, management declined and trimmed FY2027 bit growth to mid-teens to hold NBM inventory buffers.
 
 ## Bear case
 
-1. The revenue is price. FY2026: +175% revenue on mid-teens bit growth (10-K MD&A). Prices this far above cost have summoned supply in every prior cycle, nine times in forty years.
-2. The cycle is this company's own filed record: GAAP operating losses of $2,035M / $468M / $1,377M in FY2023-25, gross margin as low as 7.1%. The mechanism that levered margins up (fixed JV costs) levers them down identically.
-3. The supply response is on the tape: TrendForce (2026-07-21, reaffirmed 07-30) has NAND supply outgrowing demand in 2027, the balance turning 2H27, and Chinese suppliers at ~19% of bits by 2027. Management's own deck claims bits stay on allocation beyond calendar 2027. Both cannot be right, and the disagreement is now explicit and dated.
-4. The floor exists but its level is secret. Whether trough gross margin can still go negative is exactly the number not disclosed, in any audited document. Guarantees cover $16.5bn against $93.9bn of minimums.
-5. At the trough SanDisk owns nothing to floor the value: no fab, $649M of net PP&E, and $12.8bn of total material cash requirements including $6.5bn of JV commitments (10-Q q/e 2026-04-03).
+1. FY2026 revenue was price: +175% on mid-teens bit growth; Consumer bits fell mid-teens. Prices this far above cost have summoned supply nine times in forty years.
+2. New supply is coming from outside the discipline club: YMTC hit 14% global shipment share in Q2 2026 (#3, ahead of Kioxia), third Wuhan fab in production by end-2026. TrendForce still has supply outgrowing demand in 2027; Q4 2026 price momentum is converging. SanDisk was the slowest-growing top-5 vendor in Q2.
+3. The floor regime lives in decks, not the audited record: the 10-K never says "floor" or "ceiling", and the deck's $16.5bn of guarantees resolves to ~$7.7bn identifiable in the filing, of which $5.0bn is collateral accessible only on default. The risk factor concedes guarantees "may not fully offset" lost revenue. No renegotiation mechanics are disclosed anywhere.
+4. The cycle is this company's own record: GAAP operating losses in FY2023-25, gross margin as low as 7.1%, audited under-utilisation charges of $249M / $75M / $11M across FY2024-26. The fixed-cost machine that produced 84.6% margins runs identically in reverse.
+5. Earnings and cash quality flatter the peak: ~$4.0bn of FY2026 operating cash flow was customer deposits and unpaid taxes; a ~$1.4bn tax catch-up hits FY2027 plus 15% CAMT; the Nanya stake added an $808M unrealized non-operating gain; three customers now hold 19/12/10% of receivables.
+6. The market is paying for the model, not the print: it sold the record Q4 (-10% in two sessions, three target cuts into it) and bought the Investor Day model (+22%). FY2028 consensus spans $173 to $361 of EPS across 19 analysts.
 
 ## Variant perception: where we differ from the market
 
-- What the market pays for: forward P/E on cycle earnings. Street mean target 2,126 on FY2027 consensus EPS of ~265 (2026-08-21), roughly 8x. The embedded bet: contract floors make peak earnings durable, so a normal multiple applies to them.
-- What we anchor on instead: price to forward TANGIBLE book at historical trough multiples (0.8-1.6x band), cross-checked with normalized mid-cycle earnings. Not because memory trades on book, but because P/E fails at both ends of this cycle: at the trough earnings are negative and the ratio does not exist; at the peak a low multiple is the signature of the top, not a bargain (VAL-T1). Micron in May 2018 traded at 4-5x forward earnings and fell 56% while earnings were still rising.
-- The evidence for our side: nine mean-reverting NAND cycles in forty years; this company's own three consecutive loss years ending fourteen months before the peak print; consensus FY2027 EPS that rose 86% in the 90 days before the docs were written and another 24% in the three weeks since, which is estimate momentum, not estimate accuracy.
-- The honest weakness on our side: the trough-book band is calibrated on fab-owning Micron. SanDisk owns no fab, and its own Feb 2025 trough priced near 0.6x reported and 1.4x tangible book, bracketing our band without matching it. And the $4.5bn buyback executed near 15x book plus a 100% payout policy means the peak year lands in the share count, not in the book our anchor compounds. The refresh must re-derive the anchor for this balance sheet.
-- The strongest case against us: floors on half of FY2027 bits plus a structurally richer enterprise mix mean trough gross margin never goes negative again. If true, the trough-book prior is wrong, and the street's 8x is cheap, not expensive.
-- What proves us wrong, and when: the floor level disclosed at or above cash cost, in any document; GAAP gross margin holding at or above 50% for four consecutive quarters including one with ASP per gigabyte down; exabytes +15% YoY for two quarters at flat prices. First readable test: the Q1 FY2027 print (~Nov 2026).
-- What proves the market wrong: ASP per gigabyte down QoQ in MD&A for two consecutive quarters (the first down quarter is when floor mechanics finally become observable), or Flash Ventures under-utilization charges reappearing in the related-party note.
+- What the market pays for: forward P/E on cycle earnings. Street mean target 2,126 (23 analysts) = 9.9x FY2027 consensus EPS of $214.10, or 8.0x FY2028's $264.72. The embedded bet: floors make peak earnings the new normal, so a normal multiple applies.
+- What we anchor on instead: distributions received plus a terminal multiple on normalized mid-cycle earnings. P/E fails at both ends of a memory cycle (VAL-T1): trailing 21.6x and forward 7.45x are the same peak quoted twice, and at 8x EV/EBIT the price equals fiscal Q4 annualized forever ($154-166 of permanent EPS after tax, solved backwards).
+- Why not book value anymore: the July docs anchored on forward tangible book. Two things broke it. The trough P/B series was re-verified from primary filings and corrected (Micron bottoms near 1.0x, not a rising staircase to 1.32x; the old 1.32x overstated the floor by ~25%). And the 100%-payout policy plus $4.5bn of buyback at ~20x tangible book means the book no longer compounds; value now reaches the owner as distributions. Method changed accordingly, and the change is stated in valuation.md so the next refresh can grade it.
+- The strongest case against us: floors on half of FY2027 bits and two thirds of FY2028, at ~80% confirmed NBM margins, mean trough gross margin cannot go negative again; FY2027-29 then looks nothing like FY2015-23, and the street's 8-10x is cheap. Our bull case (2,200) now sits at the street's mean target: the market's base case is our regime-change case.
+- What proves us wrong, and when: the floor level disclosed at a strong level; or a full quarter of ASP/GB down with gross margin held above 65% (the floor observed working); or GM at or above 50% for four straight quarters including a down-ASP quarter. First readable test: the Q1 FY2027 print, ~Nov 2026, when quarterly ASP/GB disclosure returns.
+- What proves the market wrong: an NBM customer dispute or renegotiation at any size; ASP/GB down two consecutive quarters with margins following; Flash Ventures under-utilisation charges reappearing.
 
 ## Valuation
 
-- Method: forward tangible book at trough-band multiples, because the trailing book at a memory peak is stale in the opposite direction from the usual trap (the company earns multiples of its book in one peak year). Goodwill ($4,994M, 36% of equity, impaired twice) is stripped. P/E rejected per VAL-T1. Full argument in `./valuation.md`, which is canonical for these numbers per VAL-P5.
+- Method: PV of distributed peak-year earnings plus a 9-10x terminal on normalized EPS, ~2 years at 10%. Scenario numbers are canonical in `./valuation.md` per VAL-P5.
 
 | Scenario | Key assumption | Fair value | Probability |
 |---|---|---|---|
-| Bear | Cycle rolls on the historical clock, 1.0x post-FY27 tangible book | 200 | 40% |
-| Base | Strong FY2027 below consensus, 1.6x tangible book | 400 | 40% |
-| Bull | Floors hold, ~130 of normalized EPS at 12x, a regime change | 1,560 | 20% |
+| Bear | Floor level proves low, regime partially fails its first test; normalized EPS ~$43 | 475 | 30% |
+| Base | Floors hold as written, cycle still cycles above them; normalized EPS ~$80 | 875 | 45% |
+| Bull | FY2028-30 model is real; normalized EPS ~$220; equals the street's mean target | 2,200 | 25% |
 
-- All three cases and the weights are as-of 2026-07-30 and now formally stale: the fired floor disclosure moves the bear multiple by the doc's own sensitivity (1.0x toward 1.3-1.5x), FY2026 actuals beat the book build's final-quarter assumption by ~25%, and probability mass has objectively moved toward the bull. The refresh re-weights; this sheet does not.
-- What the price embedded at 1,249.44: permanent normalized EPS of roughly 98-146 (solved backwards at ~181.5bn EV, 2026-07-30). The price is higher now and the share count lower.
-- Model defects found by the 2026-08-22 audit, to fix at refresh: a share-count inconsistency between the stated 148.1M and the ~155M the bull case uses; an implied-EPS table computed at zero tax; decimal-precision trough multiples resting on an unverified Micron series.
+- Weights are argued, not asserted: bear cut 40 to 30 because the no-floors scenario died; bull raised 20 to 25 because zero of eight bull-side kill switches fired; base carries the contracted two years.
+- What the current price embeds: permanent EPS of $154-166 at 8x EV/EBIT with 15-21% tax. FY2027 consensus sits above every implied cell, so the debate is cycle duration, not next year.
+- The lenses still span 4.6x against a ~1.33x tolerance (VAL-P3 violation, recorded); the conservative lens is the only one resting entirely on verified history.
 
 ## Kill switches, short form
 
-- Bull-side (any one says never own this): ASP/GB down QoQ in MD&A two consecutive quarters; Flash Ventures under-utilization charges at any amount; GAAP gross margin below 55% in any quarter; the exabyte/ASP disclosure disappearing from MD&A for two quarters. As of the FY2026 10-K: none fired.
-- Bear-side (any one says the bear case is wrong): floor pricing disclosed on a third or more of FY2027 bits, FIRED 2026-08-05; exabytes +15% YoY two quarters at flat-to-down prices, not yet; gross margin at or above 50% for four quarters including a down-ASP quarter, not yet testable.
-- Full definitions with thresholds and fallbacks live in `./thesis.md`.
+- Bull-side (any one kills the case for ever owning it): ASP/GB down QoQ two consecutive quarters; any Flash Ventures under-utilisation charge; GAAP GM below 55% in any quarter; any NBM dispute, renegotiation or guarantee draw; Kioxia capex guided above ¥470bn/yr or a new fab producing before 2029; the ASP/GB disclosure disappearing for two quarters; any equity issuance.
+- Bear-side (any one says NAND re-based): floor LEVEL disclosed implying GM at or above 40% in a spot collapse; ASP/GB down one quarter with GM held above 65%; exabytes +15% YoY twice at flat prices; GM at or above 50% four straight quarters including a down-ASP quarter.
+- Graded at this refresh: bull-side 0 of 8 fired; bear-side 1 of 5 fired (the floor disclosure, 2026-08-05, the pre-named highest-value unknown). Full definitions in `./thesis.md`.
 
 ## Sizing
 
-- 0%. The docs' three conditions for a first tranche: price inside the base band on a REPORTED post-peak book, not a forecast; the floor level quantified; the supply picture still favorable on issuer-disclosed proxies. None is currently met, and the third is moving against.
-- Memory sizing is capped at a 1-2% first tranche regardless of conviction (ASYM-T2): this industry has produced -81.7% and -98.2% drawdowns and one 21.5-year recovery.
+- 0%. Entry requires all three: price below the 875 base case; the floor level disclosed or observed working through one down-ASP quarter; no NBM dispute on record. First tranche capped at 1-2% (ASYM-T2: this industry has produced -81.7% and -98.2% drawdowns and one 21.5-year recovery).
+- The gap to a defensible entry compressed from ~70% below the July price to ~45% below today plus one disclosure. Better, and still not actionable.
 
 ## What we do not know
 
-- The floor level. The single number the whole debate now turns on, and it is in no audited document.
-- Whether the floors hold through the first real downturn. The contracts are under two years old; no NAND LTA has ever been stress-tested through a collapse.
-- SanDisk's own trough multiple. Our band is borrowed from a fab owner and partly unverified; this company has exactly one standalone trough on record.
-- What management said on any earnings call: no transcript has been read for any quarter of this company's public life, including the two calls that produced the disclosures above. The refresh must close this before anything else.
+- The floor level. The single number the debate turns on, absent from every document including the audited 10-K.
+- Whether floors survive a tested downturn: contracts under two years old, ~$7.7bn of identifiable audited protection against $93.9bn of minimums, no renegotiation mechanics disclosed.
+- The Investor Day Q&A: the full transcript sits behind a paywall; the one remaining unread primary for this name.
+- What this company's own trough looks like under the NBM regime: there is no precedent, here or anywhere in NAND.
