@@ -12,6 +12,8 @@ Three phases, each producing durable artifacts the next phase reads:
 2. **Company analysis** (`sectors/{sector}/companies/{TICKER}/`) — days per name. Output: thesis, valuation, model.
 3. **Portfolio monitoring** (`portfolio.md`, `journal/`) — continuous, low-noise. Output: position decisions.
 
+The same three-document shape covers **funds** — ETFs and other pooled vehicles — in a separate top-level [`funds/`](funds/README.md) tier, because a fund's peer set is other funds tracking the same exposure rather than the companies inside it. A fund deep-dive reads two lenses instead of a framework-plus-primer: the universal wrapper lens (`frameworks/etf-vehicle-mechanics.md`, written once, used forever) and the per-asset-class exposure lens. Its valuation outputs an **expected real return range over a horizon**, not a fair value, because you cannot buy an index below intrinsic value.
+
 Each company folder carries three documents: `thesis.md` (the argument, append-only log), `valuation.md` (the numbers, canonical), and `ic-sheet.md` — a one-page IC-memo view in plain bullets that a senior reader digests in under five minutes, regenerated from the other two on every deep-dive. Read the sheet first; open the deep documents where you want the reasoning.
 
 Two cross-cutting knowledge tiers sit above all three phases, and they are the personal IP — the part that compounds:
@@ -41,6 +43,9 @@ Feeding `principles/` is [`library/`](library/README.md) — one distilled entry
 │   └── README.md            # framework conventions
 ├── sectors/                 # active sector research, with companies inside
 │   └── _example/            # template structure for a new sector
+├── funds/                   # ETFs and other pooled vehicles (exposure + wrapper)
+│   ├── _TICKER/             # templates: thesis, valuation, ic-sheet (fund variant)
+│   └── README.md            # the two lenses, and why identity is the ISIN
 ├── portfolio.md             # current holdings + conviction
 ├── watchlist.md             # names being researched
 ├── journal/                 # time-stamped append-only context (triage / review / decision / notes)
@@ -55,6 +60,7 @@ Feeding `principles/` is [`library/`](library/README.md) — one distilled entry
 │   ├── check-cross-references.py  # THE pre-commit gate — 8 check classes
 │   ├── test-lint.py               # planted-violation cases proving each gate fires
 │   ├── check-cadence.py           # the clock: session-start nag, silent when healthy
+│   ├── exposure-history.py        # rolling returns, drawdowns, time-to-recovery
 │   ├── pdf-extract.py             # PDF -> canonical page-addressed text (PyMuPDF)
 │   ├── source-pages.py            # page-addressed search/read over the archive
 │   └── mirror-sources.py          # off-machine backup of the gitignored archive
@@ -117,6 +123,7 @@ Each skill lives in `.claude/skills/{skill-name}/SKILL.md`. The full set:
 
 - `absorb` — **the ingestion path.** One external source per run: resolve (URL / description / dropped file) → retrieve down a per-type ladder → archive the raw text and pass the grounding gate → distill into `library/{slug}.md` with locators and verification tags → fan out to every principle theme it genuinely touches → flag any collision with an open thesis → lint, stage its own files, commit. Zero prompts for a plain investor letter.
 - `consult` — **the read side.** "What do big investors say about this kind of situation?" Routes through the alias table and index to the relevant principle blocks, answers with IDs, attributed voices, verification labels and the conditions each view holds under — and when the corpus does not hold the answer, says so and queues the gap in `sources.md` rather than filling it from memory.
+- `fund-deep-dive` — the ETF analogue of `company-deep-dive`. Two lenses (wrapper + exposure), an expected-return range rather than a fair value, kill switches split into exposure-level and vehicle-level because "right exposure, wrong vehicle" is a fund switch and not an exit, and an allocation rather than a position size.
 - `evaluate` — single-entry-point for "I want to look at TICKER" — chains framework-bootstrap → sector-primer → company-deep-dive automatically if prerequisites are missing. Use this when you don't want to orchestrate the three-step prereq chain yourself.
 - `framework-bootstrap` — generates a new industry framework from `frameworks/_template.md`.
 - `sector-primer` — produces a structured sector primer with supporting files.

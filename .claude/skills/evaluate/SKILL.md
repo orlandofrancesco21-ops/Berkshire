@@ -1,6 +1,6 @@
 ---
 name: evaluate
-description: Single-entry-point skill for "I want to look at TICKER" without orchestrating the three-step prerequisite chain manually. Determines the relevant industry and sector for the ticker, checks whether frameworks/{industry}.md and sectors/{sector}/primer.md already exist, runs framework-bootstrap and/or sector-primer inline if missing, then runs company-deep-dive. User-facing output is the deep-dive; intermediate artifacts (framework, primer) are written to disk for later refinement. Use when you want to evaluate a name and don't want to orchestrate the framework → primer → deep-dive sequence yourself. Triggered by "evaluate X", "look at X", "let's look at X", "what about {TICKER}" (a ticker, not a general question), "I'm curious about X".
+description: Single-entry-point skill for "I want to look at TICKER" without orchestrating the three-step prerequisite chain manually. Determines the relevant industry and sector for the ticker, checks whether frameworks/{industry}.md and sectors/{sector}/primer.md already exist, runs framework-bootstrap and/or sector-primer inline if missing, then runs company-deep-dive. User-facing output is the deep-dive; intermediate artifacts (framework, primer) are written to disk for later refinement. Use when you want to evaluate a name and don't want to orchestrate the framework → primer → deep-dive sequence yourself. Routes funds to fund-deep-dive rather than company-deep-dive: an ETF is an exposure in a wrapper, not a business. Triggered by "evaluate X", "look at X", "let's look at X", "what about {TICKER}" (a ticker, not a general question), "I'm curious about X".
 ---
 
 # evaluate
@@ -23,7 +23,11 @@ This skill is a convenience wrapper. It does not replace the discipline of hand-
 
 ## Process
 
-1. **Classify the ticker.** A quick web lookup to determine:
+1. **Classify the ticker — first, is it a company or a fund?**
+
+   If the ticker is an ETF, investment trust or any other pooled vehicle, this is a **fund** and the rest of this skill does not apply: hand off to `fund-deep-dive`, which owns the funds tier and its two lenses (see "Funds tier (canonical)"). Signs you are looking at a fund rather than a business: it tracks a named index, it has an ISIN and a TER, its provider is an asset manager, or a lookup returns "ETF"/"Fund" as the quote type. When genuinely ambiguous, ask rather than guess — analysing a fund with the company skill produces a document about a business that does not exist.
+
+   Otherwise this is a company. Determine:
    - Industry (the framework-level scope: "branded athletic footwear and apparel", "semiconductor equipment", "offshore drilling")
    - Sector slug (the more specific cut for the primer)
 

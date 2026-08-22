@@ -159,6 +159,65 @@ Written after the IC-sheet cutover.
 ## What we do not know
 - Everything. Fixture.
 """,
+    # A FUND, post-both-cutovers: the standing positive control for the funds tier.
+    # Both shape gates were hard-keyed to the 5-part sectors path before the funds
+    # tier existed, so without these fixtures the whole tier would lint as [OK]
+    # while being checked by nothing.
+    "funds/XWLD/thesis.md": """# XWLD — fund thesis
+
+## What would change my mind
+- Exposure-level: nothing yet.
+- Vehicle-level: nothing yet.
+
+## Principles check
+
+- **TENSION VAL-P1** (self, 2026): expected return stated as a point, corrected to a range.
+
+## Conviction
+3
+
+## Update log
+
+### 2026-08-25 — initial thesis
+Written after both cutovers.
+""",
+    "funds/XWLD/ic-sheet.md": """# XWLD IC sheet
+
+| | |
+|---|---|
+| Verdict | WATCH, 0% allocation |
+| Price | 100.00 EUR, 2026-08-25 |
+
+## Executive summary
+- A test fund that exists to prove the fund gates fire.
+
+## Exposure
+- Tracks a broad index of test widgets.
+
+## Vehicle
+- TER 0.20%, tracking difference 0.18%, Irish domiciled, physical replication.
+
+## Case for
+- Cheap, liquid, diversified.
+
+## Case against
+- Starting valuation is high by its own history.
+
+## Variant perception: where we differ from the market
+- The market pays for the index; we ask what the starting multiple implies. Fixture.
+
+## Expected return
+- 10-year real: 2% bear / 4% base / 6% bull.
+
+## Kill switches
+- Exposure: valuation anchor breaks. Vehicle: TER rises or tracking difference degrades.
+
+## Allocation
+- 0% until the expected return beats the alternatives.
+
+## What we do not know
+- Everything. Fixture.
+""",
     "frameworks/widgets.md": """# Widgets — industry framework
 
 ## Valuation framework
@@ -314,6 +373,17 @@ archive: sources/marks-memo.txt
 
 ## Not captured
 - Closing anecdote (pp. 8-9) — colour, no transferable rule
+"""
+
+# A fund-shaped template path: 3 parts under funds/, a real post-cutover date, no
+# sibling ic-sheet and no Principles check. Only the _TICKER exemption stops the
+# shape gates firing on the template itself.
+FUND_TEMPLATE_STUB = """# {TICKER} thesis
+
+## Update log
+
+### 2026-08-25 - initial thesis
+Placeholder.
 """
 
 PODCAST_TIMED = """---
@@ -496,6 +566,42 @@ CASES = [
                  "## Variant perception: where we differ from the market",
                  "## Where we differ"),
          expect_fail=True, needle="Variant perception"),
+
+    # -- 6c. funds tier: both shape gates must reach a 3-part funds/ path -----
+    case("fund thesis without an ic-sheet is blocked",
+         remove("funds/XWLD/ic-sheet.md"),
+         expect_fail=True, needle="ic-sheet"),
+    case("fund ic-sheet missing a fund-specific section is blocked",
+         replace("funds/XWLD/ic-sheet.md", "## Vehicle", "## The Wrapper"),
+         expect_fail=True, needle="Vehicle"),
+    case("fund ic-sheet using the COMPANY section set is blocked",
+         # Proves the headings are variant-aware rather than one shared list:
+         # a company-shaped sheet in funds/ must fail on the fund headings.
+         replace("funds/XWLD/ic-sheet.md", "## Exposure", "## Business"),
+         expect_fail=True, needle="Exposure"),
+    case("company ic-sheet is NOT judged against fund headings",
+         # The mirror control. sectors/x/companies/AAA has no ic-sheet and is
+         # pre-cutover, so the only way this fails is variant bleed.
+         noop, expect_fail=False),
+    case("bad Principles check in a FUND thesis is blocked",
+         replace("funds/XWLD/thesis.md",
+                 "- **TENSION VAL-P1** (self, 2026): expected return stated as a point, corrected to a range.",
+                 "- a line with no verdict token at all"),
+         expect_fail=True, needle="verdict token"),
+    case("em dash in a FUND ic-sheet is blocked",
+         append("funds/XWLD/ic-sheet.md", "\n- a bullet that argues — banned here too\n"),
+         expect_fail=True, needle="dash"),
+    case("the funds/_TICKER template folder is exempt from the fund gates",
+         # It is a fund-shaped path (3 parts under funds/) carrying placeholder
+         # content and no ic-sheet, so without the _TICKER exemption the shape
+         # gates would fire on the template itself.
+         lambda files: files.__setitem__("funds/_TICKER/thesis.md", FUND_TEMPLATE_STUB),
+         expect_fail=False),
+    case("a _template-exposure.md file is exempt like any other template",
+         edit("frameworks/_template-exposure.md",
+              "# {Exposure} — framework\n\n**Scope:** {what this exposure is}\n\n"
+              "Cites {PREFIX}-P{n} as a placeholder, and would otherwise fail every content rule.\n"),
+         expect_fail=False),
 
     # -- 7. append-only (staged mode only) ----------------------------------
     case("removing a dated journal line is blocked",

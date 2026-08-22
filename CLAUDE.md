@@ -4,7 +4,7 @@ Personal long-only, long-term, low-frequency public-markets research system. Pla
 
 **Read [docs/build-plan.md](docs/build-plan.md) "Shared rules" before any structural change.** Those rules are canonical and are referenced *by name* from skills, never restated — restating is how versions drift apart.
 
-## The four tiers
+## The tiers
 
 | Tier | Holds | Written by |
 |---|---|---|
@@ -12,6 +12,9 @@ Personal long-only, long-term, low-frequency public-markets research system. Pla
 | `frameworks/` | Industry-specific evaluation playbooks | `framework-bootstrap`, `company-deep-dive` |
 | `sectors/` | Sector primers, per-company `thesis.md` + `valuation.md` | `sector-primer`, `company-deep-dive` |
 | `library/` | One distilled entry per absorbed external source | `absorb` only |
+| `funds/` | ETFs and other pooled vehicles: exposure + wrapper, one folder per fund | `fund-deep-dive` only |
+
+A fund is not a company: it has no moat, no management allocating capital, and no fair value you can buy below. It has an exposure, a wrapper that costs something certain, and an allocation decision against alternatives. See "Funds tier (canonical)".
 
 State files: `portfolio.md` (positions), `watchlist.md` (names), `sources.md` (sources to absorb), `journal/` (dated triage / review / decision / post-mortem entries), `journal/_flagged.md` (open flags — canon for flag state).
 

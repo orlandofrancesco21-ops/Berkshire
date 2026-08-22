@@ -62,6 +62,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 PRINCIPLES_DIR = "principles"
 LIBRARY_DIR = "library"
+FUNDS_DIR = "funds"
 
 LIBRARY_REQUIRED_FRONTMATTER = ("title", "type", "author", "published", "retrieved-from", "tags")
 LIBRARY_TYPES = {
@@ -121,17 +122,33 @@ PRINCIPLES_CHECK_CUTOVER = os.environ.get(
 IC_SHEET_CUTOVER = os.environ.get(
     "BERKSHIRE_IC_SHEET_CUTOVER", "2026-08-22"
 )
-IC_SHEET_REQUIRED_HEADINGS = (
+# Required sections, by document variant. The shared core is what makes any IC
+# sheet an IC sheet; the rest differs because the objects differ. A fund has no
+# "Business" and no per-name "Sizing" decision — it has an exposure, a wrapper,
+# and an allocation against alternatives.
+IC_SHEET_COMMON_HEADINGS = (
     "## Executive summary",
-    "## Business",
-    "## Bull case",
-    "## Bear case",
     "## Variant perception",
-    "## Valuation",
     "## Kill switches",
-    "## Sizing",
     "## What we do not know",
 )
+IC_SHEET_HEADINGS_BY_VARIANT = {
+    "company": IC_SHEET_COMMON_HEADINGS + (
+        "## Business",
+        "## Bull case",
+        "## Bear case",
+        "## Valuation",
+        "## Sizing",
+    ),
+    "fund": IC_SHEET_COMMON_HEADINGS + (
+        "## Exposure",
+        "## Vehicle",
+        "## Case for",
+        "## Case against",
+        "## Expected return",
+        "## Allocation",
+    ),
+}
 # The sheet's style contract bans em- and en-dashes outright. This is a firewall,
 # not a taste: the deep documents argue in the vault's house style, the sheet
 # informs in bullets, and the dash ban is the cheapest mechanical proxy for "did
@@ -182,7 +199,13 @@ SKIP_PREFIXES = (
     ("library", "sources"),
 )
 
-EXEMPT_PATH_PARTS = ("_example", "_template.md")
+# Template/scaffold paths, exempt from content rules. "_TICKER" covers the fund
+# templates at funds/_TICKER/ the way "_example" covers the company ones at
+# sectors/_example/companies/_TICKER/. Without it those templates were skipped
+# only by accident — their placeholder "YYYY-MM-DD" fails the Update-log date
+# regex, so the shape gate never reached them. Accidental exemption is the
+# thing this vault keeps getting bitten by; make it deliberate.
+EXEMPT_PATH_PARTS = ("_example", "_TICKER", "_template.md")
 
 
 # ------------------------------------------------------------------- file access
@@ -268,7 +291,35 @@ class Corpus:
 
 
 def is_exempt(rel: str) -> bool:
+    # Any file whose BASENAME starts with "_template" is a template, not content:
+    # _template.md, _template-exposure.md, _template-fund.md. The earlier literal
+    # "_template.md" substring match silently failed to exempt the variants the
+    # moment a second template shape existed.
+    if Path(rel).name.startswith("_template"):
+        return True
     return any(part in rel for part in EXEMPT_PATH_PARTS)
+
+
+def position_doc(rel: str) -> tuple[str, str] | None:
+    """Classify a per-position document, or None if this path is not one.
+
+    Returns (variant, filename) where variant is "company" or "fund".
+
+        sectors/{sector}/companies/{TICKER}/thesis.md   -> ("company", "thesis.md")
+        funds/{TICKER}/ic-sheet.md                      -> ("fund", "ic-sheet.md")
+
+    Both shape gates route through here. Before it existed they were hard-keyed to
+    the 5-part sectors path, so the funds tier would have been invisible to both:
+    every ETF thesis and IC sheet would have shipped completely unenforced while
+    the lint printed [OK]. That is this vault's signature failure, and adding a
+    whole document tier is exactly when it recurs.
+    """
+    parts = Path(rel).parts
+    if len(parts) == 5 and parts[0] == "sectors" and parts[2] == "companies":
+        return ("company", parts[4])
+    if len(parts) == 3 and parts[0] == FUNDS_DIR:
+        return ("fund", parts[2])
+    return None
 
 
 def frontmatter(text: str) -> dict[str, str]:
@@ -660,11 +711,8 @@ def check_indexes(corpus: Corpus, errors: list[str]) -> None:
 # -------------------------------------------------------- check 6: thesis shape
 def check_thesis_shape(corpus: Corpus, errors: list[str]) -> None:
     for rel in corpus.paths():
-        parts = Path(rel).parts
-        if not (len(parts) == 5 and parts[0] == "sectors" and parts[2] == "companies"
-                and parts[4] == "thesis.md"):
-            continue
-        if is_exempt(rel):
+        doc = position_doc(rel)
+        if doc is None or doc[1] != "thesis.md" or is_exempt(rel):
             continue
         text = corpus.read(rel)
         dates = [d for d, _ in DEEP_DIVE_LOG_RE.findall(text)]
@@ -672,7 +720,7 @@ def check_thesis_shape(corpus: Corpus, errors: list[str]) -> None:
             continue  # grandfathered: written before the skill could satisfy the rule
         # IC sheet: mandatory sibling for deep-dives on/after its own (later) cutover.
         if max(dates) >= IC_SHEET_CUTOVER:
-            sheet_rel = rel[: -len("thesis.md")] + "ic-sheet.md"
+            sheet_rel = rel[: -len("thesis.md")] + "ic-sheet.md"  # same folder, both variants
             if not corpus.exists(sheet_rel):
                 errors.append(
                     f"{rel}: deep-dive dated {max(dates)} is post-IC-cutover but has no "
@@ -720,14 +768,12 @@ def check_ic_sheets(corpus: Corpus, errors: list[str]) -> None:
     the sheets that exist, wherever they came from.
     """
     for rel in corpus.paths():
-        parts = Path(rel).parts
-        if not (len(parts) == 5 and parts[0] == "sectors" and parts[2] == "companies"
-                and parts[4] == "ic-sheet.md"):
+        doc = position_doc(rel)
+        if doc is None or doc[1] != "ic-sheet.md" or is_exempt(rel):
             continue
-        if is_exempt(rel):
-            continue
+        variant = doc[0]
         text = corpus.read(rel)
-        for heading in IC_SHEET_REQUIRED_HEADINGS:
+        for heading in IC_SHEET_HEADINGS_BY_VARIANT[variant]:
             # Prefix match: "## Variant perception" may carry a subtitle after a colon.
             if not re.search(rf"^{re.escape(heading)}", text, re.MULTILINE):
                 errors.append(f"{rel}: missing required section `{heading}`")
