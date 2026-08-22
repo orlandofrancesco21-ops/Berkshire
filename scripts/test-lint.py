@@ -643,6 +643,20 @@ CASES = [
                  "Express fair value as a probability-weighted scenario range; a point estimate is fake precision."),
          expect_fail=False, staged=True, commit_first=True),
 
+    case("rewriting a FUND thesis Update-log line is blocked",
+         # The canonical rule says a fund thesis is append-only like a company
+         # one. check_append_only's predicate is name-based (basename ==
+         # thesis.md) rather than path-based, so it reaches funds/ by
+         # construction — but "by construction" is exactly what this vault has
+         # been wrong about before, so assert it.
+         replace("funds/XWLD/thesis.md",
+                 "### 2026-08-25 — initial thesis", "### 2026-08-25 — rewritten history"),
+         expect_fail=True, needle="append-only", staged=True, commit_first=True),
+    case("appending to a FUND thesis Update log is allowed",
+         append("funds/XWLD/thesis.md",
+                "\n### 2026-09-01 — deep-dive refresh\nNew entry.\n"),
+         expect_fail=False, staged=True, commit_first=True),
+
     # -- 8. evidence tags ---------------------------------------------------
     # BOTH directions, deliberately. A regex bug once made these two negative cases
     # pass for the wrong reason: the voice-line pattern matched nothing at all, so
