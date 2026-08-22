@@ -140,6 +140,17 @@ def report(ticker: str, years_list: list[int], start: str | None, cpi: float | N
         independent = span_years / years
         print(f"\n  {years}-YEAR ANNUALISED, {len(rr)} overlapping windows "
               f"(~{independent:.1f} independent — read the spread, not the count)")
+        if independent < 3:
+            # Measured, not hypothetical. Run on a world-equity ETF launched in
+            # 2012 this block reports a worst 10-year window of about +5% and
+            # "0% of windows below zero", from ~1.5 independent windows — while
+            # the same exposure's real history carries a 57% drawdown. A sample
+            # this thin cannot contain a bad outcome, and printing it without
+            # comment reads as evidence that there wasn't one.
+            print("    !! ONLY ~%.1f INDEPENDENT WINDOWS — this history is too short to contain"
+                  "\n       a full cycle. The worst case below is the worst case IN THIS SAMPLE,"
+                  "\n       not the worst case of the exposure. Use the history proxy named in the"
+                  "\n       exposure framework rather than the fund's own ticker." % independent)
         print(f"    worst {pct(rr,0):+6.1%}   p10 {pct(rr,0.10):+6.1%}   median {pct(rr,0.50):+6.1%}"
               f"   p90 {pct(rr,0.90):+6.1%}   best {pct(rr,1):+6.1%}")
         neg = sum(1 for r in rr if r < 0) / len(rr)
@@ -147,7 +158,10 @@ def report(ticker: str, years_list: list[int], start: str | None, cpi: float | N
 
     dd = drawdowns(px)
     if dd:
-        print(f"\n  WORST DRAWDOWNS (peak to trough, and time to regain the peak)")
+        # Drawdowns stay nominal regardless of --cpi: the money was lost in
+        # nominal terms, and deflating the depth would understate the felt loss.
+        # Label the basis rather than silently mixing it with the real table above.
+        print(f"\n  WORST DRAWDOWNS (NOMINAL, peak to trough, and time to regain the peak)")
         for e in dd[:5]:
             rec = (f"{e['recovery_days']/365.25:.1f}y" if e["recovery_days"]
                    else "NOT YET RECOVERED")

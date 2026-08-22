@@ -24,7 +24,9 @@ This is the skill that turns the system from a research workbench into a portfol
 
 ## Process
 
-1. **Load the universe.** Read `portfolio.md`. Extract every position: ticker, sector folder, conviction level, position size, entry date. If a position lacks a `sectors/{sector}/companies/{TICKER}/thesis.md` file, flag it — every position must have a thesis on file or it shouldn't be a position.
+1. **Load the universe.** Read `portfolio.md`. Extract every position: ticker, sector folder, conviction level, position size, entry date. Resolve each position's documents through both tiers, in this order — the same lookup the lint's own `position_doc()` performs: `sectors/{sector}/companies/{TICKER}/`, then `funds/{TICKER}/`. A position is an orphan only if **neither** tier holds a `thesis.md`; flag those, because every position must have a thesis on file or it shouldn't be a position.
+
+   An allocated fund with a thesis in `funds/{TICKER}/` is a fully documented position and is never flagged. It has no sector folder by design — per "Funds tier (canonical)" a fund's peer set is other funds on the same exposure, so an S&P 500 tracker has no sector to sit in, and a sweep that reads a missing sector folder as a missing thesis would flag the vault's own correct output every Monday.
 
    Also read `journal/_flagged.md` (if present) — the shared state file `news-triage` writes to. Note any portfolio tickers with active flags, the date flagged, and the recommended follow-on skill. These are the names this review should prioritize, even if their `thesis-check` returns INTACT.
 
@@ -48,6 +50,8 @@ This is the skill that turns the system from a research workbench into a portfol
 
    The matrix is deliberately asymmetric: thesis status dominates valuation status. A REVIEW verdict on either axis suppresses price-based action.
 
+   **Funds enter the same matrix, but `thesis-check` returns two verdicts for them.** Take the worse of the exposure and vehicle verdicts into the matrix, and carry the lens that fired into the reason column — because the implied action differs and the matrix cannot see it: an exposure REVIEW is a RE-DEEP-DIVE on the asset class, a **vehicle** REVIEW is a fund switch (`fund-deep-dive` to name the substitute), and neither is an EXIT. Per "Funds tier (canonical)" the two never collapse into one number. A fund's ADD/TRIM likewise comes from `valuation-check`'s allocation bands and its drift-from-target-weight rule, not from a price against a fair value, so a TRIM row on a fund may be a rebalancing rule firing rather than a view — say which in the reason column.
+
 5. **Rank by urgency.** Sort positions in this order:
    1. REVIEW combined verdicts (every one — these need a deep-dive refresh)
    2. Names with active flags in `journal/_flagged.md` even if INTACT (news-triage surfaced something; investigate before declaring no-action)
@@ -60,7 +64,7 @@ This is the skill that turns the system from a research workbench into a portfol
 6. **Compute portfolio-level metrics — from current prices, not the stored weights.** The `Current weight` column in `portfolio.md` is only as fresh as the last sweep; recompute it now. For each position: shares (from `portfolio.md`) × current price (yfinance, per the canonical price-sourcing rule in `docs/build-plan.md` Shared rules), converted to the base currency declared at the top of `portfolio.md`. Total portfolio value = sum of position values + Cash line. Then report:
    - Total position count
    - Top 5 concentration (% of portfolio)
-   - Sector concentration (any > 35%?)
+   - Sector concentration (any > 35%?). Funds have no sector: report each under its exposure slug on its own line, and never bucket one into a sector because of what it happens to hold. Where a fund's holdings genuinely overlap a directly-held name, that is an overlap finding for `fund-deep-dive`'s allocation logic, computed from the holdings file — not something to assert here from names.
    - Currency exposure (any single non-base currency > 30%?)
    - Cash level
    - Stale theses, per the canonical stale-thesis rule in `docs/build-plan.md` (Shared rules)
@@ -107,4 +111,5 @@ Stale-thesis flags:
 - A stale thesis (per the canonical rule) is not automatically a REVIEW. It just means the next REVIEW or major event triggers a `company-deep-dive` refresh. Don't refresh every thesis on a calendar — refresh when something changed.
 - Sector concentration > 35% in one industry is fine if it's deliberate (a sector you've worked hard on). It's a problem if it's accidental drift. The skill flags; you decide.
 - If two consecutive reviews produce the same WATCH on the same name without new information, that's a signal the WATCH should either escalate to REVIEW or be downgraded to INTACT. Don't leave names parked in WATCH forever.
-- This skill is the right place to ask "do I own too many names?" If you can't recall each thesis from memory while reading the digest, you own too many.
+- This skill is the right place to ask "do I own too many names?" If you can't recall each thesis from memory while reading the digest, you own too many. Count funds separately when you ask it: one broad tracker is one decision, not five hundred, and folding it into the name count makes a deliberately simple book look unmanageable.
+- A sweep that flags a correctly-documented position is worse than one that misses a real problem, because it trains the reader to skim the flag list. The orphan check in step 1 is the one most likely to do that — it fires on a *missing document*, and a document living in the other tier is not missing.

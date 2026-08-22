@@ -1,6 +1,6 @@
 ---
 name: evaluate
-description: Single-entry-point skill for "I want to look at TICKER" without orchestrating the three-step prerequisite chain manually. Determines the relevant industry and sector for the ticker, checks whether frameworks/{industry}.md and sectors/{sector}/primer.md already exist, runs framework-bootstrap and/or sector-primer inline if missing, then runs company-deep-dive. User-facing output is the deep-dive; intermediate artifacts (framework, primer) are written to disk for later refinement. Use when you want to evaluate a name and don't want to orchestrate the framework → primer → deep-dive sequence yourself. Routes funds to fund-deep-dive rather than company-deep-dive: an ETF is an exposure in a wrapper, not a business. Triggered by "evaluate X", "look at X", "let's look at X", "what about {TICKER}" (a ticker, not a general question), "I'm curious about X".
+description: Single-entry-point skill for "I want to look at TICKER" without orchestrating the three-step prerequisite chain manually. Determines the relevant industry and sector for the ticker, checks whether frameworks/{industry}.md and sectors/{sector}/primer.md already exist, runs framework-bootstrap and/or sector-primer inline if missing, then runs company-deep-dive. User-facing output is the deep-dive; intermediate artifacts (framework, primer) are written to disk for later refinement. Use when you want to evaluate a name and don't want to orchestrate the framework → primer → deep-dive sequence yourself. Routes funds to fund-deep-dive rather than company-deep-dive, resolving the exposure slug and bootstrapping the exposure lens inline first, exactly as the company path bootstraps a missing industry framework: an ETF is an exposure in a wrapper, not a business. Triggered by "evaluate X", "look at X", "let's look at X", "what about {TICKER}" (a ticker, not a general question), "I'm curious about X".
 ---
 
 # evaluate
@@ -25,13 +25,21 @@ This skill is a convenience wrapper. It does not replace the discipline of hand-
 
 1. **Classify the ticker — first, is it a company or a fund?**
 
-   If the ticker is an ETF, investment trust or any other pooled vehicle, this is a **fund** and the rest of this skill does not apply: hand off to `fund-deep-dive`, which owns the funds tier and its two lenses (see "Funds tier (canonical)"). Signs you are looking at a fund rather than a business: it tracks a named index, it has an ISIN and a TER, its provider is an asset manager, or a lookup returns "ETF"/"Fund" as the quote type. When genuinely ambiguous, ask rather than guess — analysing a fund with the company skill produces a document about a business that does not exist.
+   If the ticker is an ETF, investment trust or any other pooled vehicle, this is a **fund** and the company path below does not apply: go to step 1f, which resolves the exposure, bootstraps the lens and hands off to `fund-deep-dive` — the skill that owns the funds tier and its two lenses (see "Funds tier (canonical)"). Signs you are looking at a fund rather than a business: it tracks a named index, it has an ISIN and a TER, its provider is an asset manager, or a lookup returns "ETF"/"Fund" as the quote type. When genuinely ambiguous, ask rather than guess — analysing a fund with the company skill produces a document about a business that does not exist.
 
    Otherwise this is a company. Determine:
    - Industry (the framework-level scope: "branded athletic footwear and apparel", "semiconductor equipment", "offshore drilling")
    - Sector slug (the more specific cut for the primer)
 
    Slugify both as lowercase-dashes. The right industry scope is narrow enough to be useful but broad enough to cover 5-10 names — "branded-athletic-footwear-and-apparel" not "global-consumer-discretionary"; "semiconductor-equipment" not "technology".
+
+1f. **Fund path — resolve the exposure, bootstrap the lens, then hand off.** Steps 2-4 run `framework-bootstrap` inline when a company's lens is missing; the fund path does the same or it dead-ends the moment a fund arrives on an exposure nobody has written a framework for. That is the whole reason this step exists rather than a bare handoff.
+
+   - **Resolve the exposure slug** against the exposure-slug registry in `frameworks/README.md`, matching on the **index the fund tracks** — from the rulebook or the fund's own documentation, never the product name. "Tracks MSCI World" is resolved by that registry, not by the words in the wrapper's name; a fund called "Global Leaders" may or may not be developed-market equity, and only the index says which.
+   - **If no registered slug fits, do not stretch one.** A single-country, single-factor, sector or thematic index is a *different* exposure with different return drivers and different anchors, not a sub-case of a broad one. Propose the new slug and a one-line scope for it, and **ask before minting** — the registry is a taxonomy, and silently adding a row to it is the same too-much-autonomy that step 2's umbrella clause refuses on the navigator. Most funds hit no row today, so this is the expected path rather than the exception; the bootstrap run adds the row once the owner has assented.
+   - **Bootstrap the missing lens.** Check `frameworks/{exposure-slug}.md`; if it is absent, run `framework-bootstrap {exposure-slug}` inline in **exposure mode**, which builds from `frameworks/_template-exposure.md` and adds the slug's row to the registry in the same run. Do not let it fall through to the industry template — an asset class is not an industry and that template asks the wrong questions of it. Then confirm `frameworks/etf-vehicle-mechanics.md` exists: it is universal and written once, so a missing one is bootstrapped once and never again.
+   - Per "Concurrent orchestration (canonical)", a lens a peer invocation is concurrently writing counts as present: re-check rather than stopping at the first miss, read it fresh when it lands, and say in the handoff that it arrived mid-run so the thesis records what actually grounded it.
+   - **Hand off to `fund-deep-dive`** with the ISIN (a bare ticker is an ambiguity, not an input — see that skill's Inputs), the resolved exposure slug, the horizon, and the allocation question. Its output, not this skill's, is what the user sees. Everything from step 2 down is the company path; skip it.
 
 2. **Check for an existing framework.** Look for `frameworks/{industry-slug}.md`. Four cases:
 
@@ -67,6 +75,8 @@ This skill is a convenience wrapper. It does not replace the discipline of hand-
 
 The deep-dive summary, plus the brief infrastructure note. Same files-written confirmation as `company-deep-dive` itself.
 
+On the fund path the output is `fund-deep-dive`'s, unchanged, with the same infrastructure note in the same register — naming the exposure slug that was resolved, `frameworks/{exposure-slug}.md` and `frameworks/etf-vehicle-mechanics.md` as created-v1-draft or already-existing, and carrying the same recommendation to hand-edit a v1 lens before any real allocation rests on it.
+
 If the evaluation concludes PASS, the routing is identical to `company-deep-dive`: append to `watchlist.md` "Passed (with reason)" with a PASSED note in the thesis Update log.
 
 ## Notes
@@ -76,4 +86,5 @@ If the evaluation concludes PASS, the routing is identical to `company-deep-dive
 - If you find yourself running `evaluate` on names you don't actually intend to do work on, you're using the system as a screener. It's not a screener. Curiosity passes are fine occasionally; running this on 20 names a week is a sign you've slipped into screening behavior.
 - The auto-generated framework gets a `framework-bootstrap` source tag in its "What I've learned over time" log. When you eventually hand-edit and refine it, append a dated entry noting the human pressure-test pass — that's the calibration data showing the framework went from v1-draft to v1-refined.
 - If the umbrella framework has a Sub-sector navigator but no entry matches this ticker (e.g. a new sub-sector you hadn't anticipated), this skill should stop and ask — silently adding a new row to the navigator and bootstrapping against it is too much autonomy.
+- The exposure slug is the fund path's equivalent of the industry scope, and it goes wrong the same way: too broad and the lens says nothing useful about what you are actually buying; too narrow and you are writing a framework per fund, which is a thesis with a framework's filename. One registered slug should serve every fund tracking that exposure, whoever wraps it.
 - `evaluate` does not invoke `valuation-check` or `thesis-check` afterward. Those are monitoring skills for positions already held. The output of `evaluate` is a thesis + valuation that you then decide whether to act on (via `decision-log`) or pass on (auto-routed to watchlist).

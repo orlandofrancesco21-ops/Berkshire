@@ -149,6 +149,20 @@ Point estimates are for people who have not read this section. What a wealth man
 
 **Sizing implication.** One or two sentences translating the numbers above into how much of this exposure can be held without being forced to sell it. This is the sentence the owner will actually reread.
 
+### History proxy for `scripts/exposure-history.py` — required
+
+The instrument runs on a ticker. Run it on a *fund's* ticker and it computes a distribution from a history shorter than one cycle: a 10-year window on a 12-year fund gives about two independent observations wearing the clothes of hundreds. The proxy is chosen once, here, so every fund deep-dive in this exposure uses the same series and states the same bias — rather than each fund document quietly picking its own.
+
+| Field | Value |
+|---|---|
+| **Ticker the instrument is run on** | {and the command, including `--start` and `--cpi` if the honest run needs them} |
+| **History the feed actually serves** | {the first date the price feed returns, checked rather than assumed — a fund's inception and the date its data begins are frequently different} |
+| **What it substitutes for** | {this exposure, plus the closest true-match ticker and ITS start date, so the size of the substitution is visible instead of implied} |
+| **How it differs from the exposure** | {currency; hedged or unhedged; geographic scope; large/mid/small coverage; total-return vs price-only treatment} |
+| **Direction of the bias** | {which way each difference flatters or penalises the distribution — a proxy whose bias is not written down is worse than no proxy, because the output looks computed} |
+
+**Say plainly what the proxy is not.** If the only long series available is narrower than the exposure — one country, one cap band, one currency — that is a substitution, not a stand-in, and every number the instrument produces from it inherits the substitution. Write the sentence that stops a future reader from citing the proxy's distribution as this exposure's record.
+
 ## Regime and structural-change risks
 
 Why the historical record may not repeat. Each entry states the mechanism, the direction of the bias, and whether it makes the historical record too optimistic or too pessimistic.
