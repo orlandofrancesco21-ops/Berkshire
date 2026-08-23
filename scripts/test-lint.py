@@ -486,6 +486,23 @@ CASES = [
          add_file("library/sources/marks-memo.txt", "extracted text"), expect_fail=False),
     case("a dotfile in the archive is not an orphan",
          add_file("library/sources/.gitkeep", ""), expect_fail=False),
+
+    # QUARANTINE. external/ holds third-party material, is gitignored, and is
+    # one-way: it may read the vault, the vault may not depend on it. All three
+    # directions are planted, because the failure this prevents is invisible on
+    # the machine that has the files.
+    case("a vault document may not link into external/",
+         lambda f: (f.update({"external/someone/holdings.md": "# theirs\n"}),
+                    f.update({"principles/README.md": f["principles/README.md"]
+                              + "\nSee [theirs](../external/someone/holdings.md)\n"}))[0],
+         expect_fail=True, needle="quarantined"),
+    case("content INSIDE external/ is free-form and not schema-checked",
+         add_file("external/someone/notes.md",
+                  "# notes\n\nA [broken link](nowhere-at-all.md) and no schema.\n"),
+         expect_fail=False),
+    case("staging a quarantined path is blocked even if gitignore is bypassed",
+         add_file("external/someone/statement.md", "# private\n"),
+         expect_fail=True, needle="never reach the remote", staged=True),
     case("missing required frontmatter key",
          replace("library/marks-memo.md", "author: Howard Marks\n", ""),
          expect_fail=True, needle="missing required key"),

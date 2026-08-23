@@ -207,6 +207,18 @@ SKIP_PREFIXES = (
 # thing this vault keeps getting bitten by; make it deliberate.
 EXEMPT_PATH_PARTS = ("_example", "_TICKER", "_template.md")
 
+# QUARANTINE. `external/` holds material that is NOT this vault's own work and must
+# never become part of it: third-party portfolios, someone else's statements, data
+# shared in confidence. It is gitignored, so it cannot reach the GitHub remote, and
+# it is exempt from every schema gate, so its contents are free-form.
+#
+# The isolation has to be ONE-WAY and it has to be enforced, because the reference
+# checker resolves against the filesystem (`resolved.exists()`). A vault document
+# linking into `external/` therefore passes the lint on the machine that holds the
+# files and breaks for every clone that does not — the failure appears only where
+# nobody is looking. `check_quarantine` forbids the inbound link outright.
+QUARANTINE_DIR = "external"
+
 
 # ------------------------------------------------------------------- file access
 class Corpus:
@@ -290,12 +302,20 @@ class Corpus:
         return (REPO_ROOT / rel).exists()
 
 
+def is_quarantined(rel: str) -> bool:
+    """True for anything under `external/` — see QUARANTINE_DIR."""
+    return rel == QUARANTINE_DIR or rel.startswith(QUARANTINE_DIR + "/")
+
+
 def is_exempt(rel: str) -> bool:
     # Any file whose BASENAME starts with "_template" is a template, not content:
     # _template.md, _template-exposure.md, _template-fund.md. The earlier literal
     # "_template.md" substring match silently failed to exempt the variants the
     # moment a second template shape existed.
     if Path(rel).name.startswith("_template"):
+        return True
+    # Quarantined material is not this vault's content and is never schema-checked.
+    if is_quarantined(rel):
         return True
     return any(part in rel for part in EXEMPT_PATH_PARTS)
 
@@ -390,6 +410,8 @@ def unquote(target: str) -> str:
 def check_references(corpus: Corpus, errors: list[str]) -> int:
     checked = 0
     for rel in corpus.paths():
+        if is_quarantined(rel):     # free-form by contract; see QUARANTINE_DIR
+            continue
         content = corpus.read(rel)
         for target in extract_references(content):
             if is_skippable_target(target):
@@ -924,6 +946,56 @@ def check_evidence_tags(corpus: Corpus, errors: list[str]) -> None:
                 )
 
 
+def check_quarantine(corpus: Corpus, errors: list[str]) -> None:
+    """The vault may not reach into `external/`. One-way, enforced, both modes.
+
+    `external/` is gitignored third-party material — someone else's portfolio, data
+    held in confidence. Two things must stay true and neither is self-enforcing:
+
+    1. It never reaches the remote. `.gitignore` handles that, and the pre-commit
+       hook runs this file, so a staged path under external/ is caught here too:
+       an ignore rule is one `git add -f` away from being bypassed silently.
+    2. No vault document depends on it. This is the subtle half. `check_references`
+       resolves targets against the FILESYSTEM, so a link into external/ resolves
+       perfectly on the machine holding the files and dangles for every clone that
+       does not — a broken link that only breaks where nobody is looking. Worse,
+       the link itself leaks: a committed path like `external/{subject}/holdings.md`
+       publishes a name and a relationship even when the file behind it never left.
+       Use a placeholder here, not a real folder: this docstring is committed too,
+       and the first draft of it named an actual subject.
+
+    So the barrier is checked, not promised.
+    """
+    for rel in corpus.paths():
+        if is_quarantined(rel):
+            if corpus.staged:
+                errors.append(
+                    f"{rel}: staged for commit, but `{QUARANTINE_DIR}/` is quarantined "
+                    f"and must never reach the remote. Unstage it (`git rm --cached`) "
+                    f"and leave it gitignored."
+                )
+            continue
+        for target in extract_references(corpus.read(rel)):
+            if is_skippable_target(target):
+                continue
+            base = Path(rel).parent
+            for cand in (base / target, Path(target)):
+                try:
+                    norm = Path(*cand.parts).as_posix()
+                    resolved = (REPO_ROOT / norm).resolve()
+                    candidate_rel = resolved.relative_to(REPO_ROOT).as_posix()
+                except ValueError:
+                    continue
+                if is_quarantined(candidate_rel):
+                    errors.append(
+                        f"{rel}: links into quarantined `{target}`. `{QUARANTINE_DIR}/` is "
+                        f"one-way: it may read the vault, the vault may not depend on it. "
+                        f"This link resolves only on machines holding the file, and the "
+                        f"path itself would be committed. Inline what you need instead."
+                    )
+                    break
+
+
 def check_orphan_archives(corpus: Corpus, errors: list[str]) -> None:
     """An archived source that no entry claims is a source the vault cannot cite.
 
@@ -981,7 +1053,12 @@ def main() -> int:
     corpus = Corpus(staged=args.staged)
     errors: list[str] = []
 
-    n_files = len(corpus.paths())
+    # Report the quarantined files SEPARATELY rather than folding them into the
+    # count. "Checked 93 files" when three of them are deliberately unchecked is a
+    # small version of exactly the failure this script exists to prevent.
+    all_paths = corpus.paths()
+    n_quar = sum(1 for r in all_paths if is_quarantined(r))
+    n_files = len(all_paths) - n_quar
     n_refs = check_references(corpus, errors)
     n_ids = check_ids(corpus, errors)
     n_lib = check_library(corpus, errors)
@@ -991,10 +1068,12 @@ def main() -> int:
     check_append_only(corpus, errors)
     check_evidence_tags(corpus, errors)
     check_orphan_archives(corpus, errors)
+    check_quarantine(corpus, errors)
 
     mode = "staged" if args.staged else "working tree"
+    quar = f", {n_quar} quarantined (not checked)" if n_quar else ""
     print(f"Checked {n_files} files ({mode}): {n_refs} references, {n_ids} ID citations, "
-          f"{n_lib} library entries.")
+          f"{n_lib} library entries{quar}.")
 
     if not errors:
         print("All checks pass. [OK]")

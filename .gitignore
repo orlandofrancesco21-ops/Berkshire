@@ -50,3 +50,10 @@ Thumbs.db
 # gitignore hides them from git, not from the quick switcher, search, or graph.
 library/_inbox/
 library/sources/
+
+# Quarantined third-party material (see QUARANTINE_DIR in check-cross-references.py).
+# Someone else's portfolio, statements, or data held in confidence. This repo HAS a
+# GitHub remote, so anything committed can leave the machine - this must not. The lint
+# fails the commit if a path under external/ is ever staged, and if any vault document
+# links into it. Also add external/ to Obsidian: Settings > Files & Links > Excluded files.
+external/
