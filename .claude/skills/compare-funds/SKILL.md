@@ -62,7 +62,12 @@ The precondition is weaker than `fund-deep-dive`'s deliberately: this skill runs
 5. **Run `scripts/fund-metrics.py` and read the output against `frameworks/fund-evaluation.md`.**
 
    ```
-   python scripts/fund-metrics.py {TICKER} {TICKER2} [...] --benchmark {BENCHMARK} --rf {rate} --years {N}
+   python scripts/fund-metrics.py {TICKER} {TICKER2} [...] --benchmark {BENCHMARK} --benchmark-variant {net-tr|gross-tr|price} --currency EUR --rf {rate} --years {N}
+
+   Two flags carry the analytical decisions of step 3 and neither has a default, by design:
+
+   - `--benchmark-variant` is REQUIRED. It is step 3's net-or-gross-or-price choice, made explicit at the point of use instead of assumed. Passing `price` makes the script refuse to print alpha, information ratio or a verdict at all, because against a price index those quantities are inflated by roughly the dividend yield. If the honest answer is `price`, the honest output is no alpha.
+   - `--currency` defaults to the benchmark's own currency, which is rarely what this owner wants. **Pass `EUR`** unless there is a stated reason not to: he is EUR-based, and comparing a EUR-listed UCITS against a US-listed benchmark without conversion reports the FX move as alpha. Measured on two listings of the SAME MSCI World exposure over the three years to 2026-08, the unconverted gap is 3.1 points a year, all of it EUR/USD.
    ```
 
    - **State the risk-free rate with its source and date.** It is an input to Sharpe, to Sortino and to the CAPM regression, and changing it changes the ranking. An undated rate is an anchor that outlives the conditions that produced it (PROD-P5), and every figure carried into the report is stamped per "Price and data sourcing (canonical)" and labelled per "Verification labels (canonical)".

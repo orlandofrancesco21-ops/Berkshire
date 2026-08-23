@@ -12,7 +12,7 @@ Personal long-only, long-term, low-frequency public-markets research system. Pla
 | `frameworks/` | Industry-specific evaluation playbooks | `framework-bootstrap`, `company-deep-dive` |
 | `sectors/` | Sector primers, per-company `thesis.md` + `valuation.md` | `sector-primer`, `company-deep-dive` |
 | `library/` | One distilled entry per absorbed external source | `absorb` only |
-| `funds/` | ETFs and other pooled vehicles: exposure + wrapper, one folder per fund | `fund-deep-dive` only |
+| `funds/` | ETFs and other pooled vehicles: exposure + wrapper, one folder per fund | `fund-deep-dive` (every body section); `compare-funds` (a dated entry appended to `thesis.md`'s Update log, nothing else) |
 
 A fund is not a company: it has no moat, no management allocating capital, and no fair value you can buy below. It has an exposure, a wrapper that costs something certain, and an allocation decision against alternatives. See "Funds tier (canonical)".
 
