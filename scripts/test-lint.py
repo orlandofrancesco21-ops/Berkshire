@@ -316,6 +316,15 @@ def remove(rel: str):
     return _m
 
 
+def add_file(rel: str, body: str):
+    """Plant a file the fixture does not otherwise have — used for the archive scan,
+    which reads the filesystem rather than the markdown corpus."""
+    def _m(files: dict[str, str]) -> None:
+        assert rel not in files, f"fixture drift: {rel!r} already in fixture"
+        files[rel] = body
+    return _m
+
+
 def add_episode(body: str):
     """Write library/ep.md AND its index row, so gap-rule cases can only fail on
     the gap rule."""
@@ -463,6 +472,20 @@ CASES = [
          replace("library/marks-memo.md", "(p. 3) [verified]",
                  "(a sheet of results) [verified]"),
          expect_fail=True, needle="lacks a locator"),
+    case("a compound locator whose LAST part is not its strongest still passes",
+         replace("library/marks-memo.md", "(p. 3) [verified]",
+                 "(sheet Data, rows 1-7) [verified]"), expect_fail=False),
+
+    # sources/ is the post-absorb archive, so a file there that no entry claims is a
+    # source the vault holds and cannot cite. Both directions, because the check
+    # reads the filesystem rather than git and would otherwise be unfalsifiable.
+    case("archived source that no entry claims is caught",
+         add_file("library/sources/unclaimed-dataset.xls", "binary-stand-in"),
+         expect_fail=True, needle="no library entry claims it"),
+    case("an archived source its entry DOES claim passes",
+         add_file("library/sources/marks-memo.txt", "extracted text"), expect_fail=False),
+    case("a dotfile in the archive is not an orphan",
+         add_file("library/sources/.gitkeep", ""), expect_fail=False),
     case("missing required frontmatter key",
          replace("library/marks-memo.md", "author: Howard Marks\n", ""),
          expect_fail=True, needle="missing required key"),

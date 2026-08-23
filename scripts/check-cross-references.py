@@ -484,23 +484,29 @@ def check_ids(corpus: Corpus, errors: list[str]) -> int:
 # otherwise case-insensitive pattern. Without that, "(column of the appendix)" satisfies
 # `col` followed by a one-to-three-letter token, and the gate is back to accepting a
 # gesture while reporting that it checked something.
+# A compound locator names more than one axis — `(sheet Data, col K, 1881-01 to 2026-07)`
+# is one address in three parts, and `(sheet Data, rows 1-7)` is the same idea. So the
+# filler on BOTH sides of the alternation is load-bearing: an earlier version put it only
+# in front, which silently required the matched token to be the last thing before the
+# closing paren, and rejected every compound locator that did not happen to end on its
+# strongest part. It was caught by its own gate on the first real dataset citation.
 LOCATOR_RE = re.compile(
-    r"\((?:"
+    r"\([^)]*?(?:"
     r"p\.?\s*\d+(?:\s*-\s*\d+)?"                                             # p. 3, p. 3-5
     r"|pp\.?\s*\d+\s*-\s*\d+"                                                # pp. 8-9
     r"|\d{1,2}:\d{2}(?::\d{2})?(?:\s*-\s*\d{1,2}:\d{2}(?::\d{2})?)?"         # 1:00, 0:00-0:30
-    r"|§[^)]+"
+    r"|§\s*\S+"
     r"|para\.?\s*\d+"
-    r"|[^)]*\bsec(?:tion)?\.?\s*[\w.]+"
+    r"|\bsec(?:tion)?\.?\s*[\w.]+"
     # -- dataset locators -------------------------------------------------------
-    r"|[^)]*\bsheet\s+(?-i:[A-Z])[\w.-]*"                                    # sheet Data
-    r"|[^)]*\bcol(?:umn)?\.?\s*(?:(?-i:[A-Z]{1,3})|\d+)\b"                   # col K, column 12
-    r"|[^)]*\brow\s*\d+"                                                     # row 1789
-    r"|[^)]*\btable\s*\d+[\w.]*"                                             # table 3, table 2a
-    r"|[^)]*\bexhibit\s*[\w.-]+"
-    r"|[^)]*\bfig(?:ure)?\.?\s*\d+"
-    r"|[^)]*\b\d{4}-\d{2}(?:-\d{2})?\s*(?:to|[–—-])\s*\d{4}-\d{2}(?:-\d{2})?"  # 1881-01 to 2026-07
-    r")\)",
+    r"|\bsheet\s+(?-i:[A-Z])[\w.-]*"                                         # sheet Data
+    r"|\bcol(?:umn)?\.?\s*(?:(?-i:[A-Z]{1,3})|\d+)\b"                        # col K, column 12
+    r"|\brows?\s*\d+"                                                        # row 1789, rows 1-7
+    r"|\btable\s*\d+[\w.]*"                                                  # table 3, table 2a
+    r"|\bexhibit\s*[\w.-]+"
+    r"|\bfig(?:ure)?\.?\s*\d+"
+    r"|\b\d{4}-\d{2}(?:-\d{2})?\s*(?:to|[–—-])\s*\d{4}-\d{2}(?:-\d{2})?"     # 1881-01 to 2026-07
+    r")[^)]*\)",
     re.IGNORECASE,
 )
 # A tag may carry a qualifier inside the bracket — `[partial — relayed from X, origin
@@ -918,6 +924,48 @@ def check_evidence_tags(corpus: Corpus, errors: list[str]) -> None:
                 )
 
 
+def check_orphan_archives(corpus: Corpus, errors: list[str]) -> None:
+    """An archived source that no entry claims is a source the vault cannot cite.
+
+    `library/sources/` is the ARCHIVE: material lands there only once `absorb` has
+    distilled it into an entry. Anything still waiting belongs in `library/_inbox/`.
+    So a file in sources/ that no entry's `archive:` field names means the vault is
+    holding a source with no locators, no verification labels and no provenance —
+    which is exactly the state Shiller's `ie_data.xls` sat in: already being read by
+    `scripts/valuation-conditional.py` while nothing in the corpus could cite it.
+
+    Scanned from the FILESYSTEM in both modes deliberately. sources/ is gitignored,
+    so git never sees it, and a staged-only check here would report green forever.
+    """
+    src_dir = REPO_ROOT / LIBRARY_DIR / "sources"
+    if not src_dir.is_dir():
+        return
+
+    claimed: set[str] = set()
+    for rel in corpus.paths():
+        if not rel.startswith(f"{LIBRARY_DIR}/") or is_exempt(rel):
+            continue
+        if len(Path(rel).parts) != 2 or Path(rel).name == "README.md":
+            continue
+        archive = frontmatter(corpus.read(rel)).get("archive", "")
+        if not archive or archive.lower().startswith("none"):
+            continue
+        for chunk in archive.split(","):
+            name = chunk.strip().split("/")[-1]
+            if name:
+                claimed.add(name)
+
+    for f in sorted(src_dir.iterdir()):
+        if not f.is_file() or f.name.startswith("."):
+            continue
+        if f.name not in claimed:
+            errors.append(
+                f"{LIBRARY_DIR}/sources/{f.name}: archived, but no library entry claims it "
+                f"in `archive:` — the vault holds a source it cannot cite. Absorb it (entry "
+                f"+ index row), or move it to {LIBRARY_DIR}/_inbox/ if it is still waiting."
+            )
+
+
 # ---------------------------------------------------------------------- driver
 def main() -> int:
     ap = argparse.ArgumentParser(description="Repo integrity checks for the berkshire vault.")
@@ -942,6 +990,7 @@ def main() -> int:
     check_ic_sheets(corpus, errors)
     check_append_only(corpus, errors)
     check_evidence_tags(corpus, errors)
+    check_orphan_archives(corpus, errors)
 
     mode = "staged" if args.staged else "working tree"
     print(f"Checked {n_files} files ({mode}): {n_refs} references, {n_ids} ID citations, "
