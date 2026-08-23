@@ -10,10 +10,14 @@ conditional distribution from an absorbed long-history dataset.
 THE TWO HONESTY PROBLEMS, both handled explicitly rather than in a footnote:
 
 1. OVERLAPPING WINDOWS. Monthly observations of a 10-year forward return share
-   119 of their 120 months with their neighbour. A bucket holding 200 monthly
-   observations may contain fewer than two independent decades. Every bucket
-   therefore reports its independent-window count, and the tool refuses to
-   present a bucket as evidence when that count is below 2.
+   119 of their 120 months with their neighbour, so a bucket of 478 observations
+   is nowhere near 478 pieces of evidence. Every bucket therefore reports how
+   many NON-OVERLAPPING windows its own dates actually support — a greedy scan
+   over the dates, not observations divided by window length, because buckets are
+   scattered across the century rather than sitting in one contiguous run. The
+   tool refuses to present a bucket as evidence below 2. Even the reported count
+   overstates independence: valuations are serially correlated, so two disjoint
+   decades drawn from the same regime are not two clean draws.
 
 2. THE VALUATION RATCHET, which is the subtler one. CAPE has trended structurally
    upward — accounting changes, the buyback-versus-dividend shift, sector mix.
@@ -101,6 +105,39 @@ def label(d: float) -> str:
     return f"{year}-{month:02d}"
 
 
+def month_index(d: float) -> int:
+    """Shiller YYYY.MM as a monotone month counter, so the gaps between scattered
+    observations can be measured. .1 is October, same convention as `label`."""
+    year = int(d)
+    frac = round((d - year) * 100)
+    month = 10 if frac == 1 else frac
+    return year * 12 + month
+
+
+def independent_windows(dates, horizon: int) -> int:
+    """How many NON-OVERLAPPING forward windows a set of start dates supports.
+
+    The earlier version divided the observation count by the window length, which
+    silently assumes a bucket's months form one contiguous run. They do not:
+    buckets are scattered across the whole record, so 240 months spread over eight
+    decades carry far more independent evidence than 240/120 = 2 suggests, while
+    240 consecutive months carry exactly 2. On the archived data the two differ by
+    3x to 14x, always in the direction that understates the evidence — and since
+    this count drives the >=2 gate, the error was suppressing buckets that hold a
+    real answer.
+
+    Greedy scan over the sorted dates: take the earliest, skip everything inside
+    its window, repeat. That is the maximum set of disjoint windows.
+    """
+    months = horizon * 12
+    count, next_free = 0, None
+    for m in sorted(month_index(d) for d in dates):
+        if next_free is None or m >= next_free:
+            count += 1
+            next_free = m + months
+    return count
+
+
 def forward_returns(df, horizon: int):
     """Annualised real total return over `horizon` years, from each month."""
     months = horizon * 12
@@ -133,6 +170,7 @@ def assign_buckets(fw, buckets: int, basis: str, min_history_months: int = 240):
         fw = fw.copy()
         fw["pct"] = ranks
         fw["usable"] = True
+        dropped = 0
     else:
         pcts, usable = [], []
         for i in range(len(a)):
@@ -145,9 +183,10 @@ def assign_buckets(fw, buckets: int, basis: str, min_history_months: int = 240):
         fw = fw.copy()
         fw["pct"] = pcts
         fw["usable"] = usable
+        dropped = int((~fw["usable"]).sum())
         fw = fw[fw["usable"]].reset_index(drop=True)
     fw["bucket"] = (fw["pct"] * buckets).clip(0, buckets - 1).astype(int)
-    return fw
+    return fw, dropped
 
 
 def pct_of(xs, q: float) -> float:
@@ -166,11 +205,15 @@ def report(anchor: str, horizon: int, buckets: int, basis: str) -> int:
         print("No complete forward windows in the archived data.")
         return 1
 
-    latest = df.iloc[-1]
+    anchored = df.dropna(subset=["anchor"]).reset_index(drop=True)
+    latest = anchored.iloc[-1]
     print(f"\n{'=' * 74}")
     print(f"FORWARD {horizon}-YEAR REAL TOTAL RETURN, BY STARTING {anchor.upper()}")
     print(f"{'=' * 74}")
     print(f"  Source   library/sources/shiller-ie-data.xls (Shiller ie_data.xls, Data sheet)")
+    print(f"  Universe US LARGE-CAP ONLY - the S&P 500 and the spliced predecessor series")
+    print(f"           behind it. It says nothing about ex-US, small-cap, or any non-equity")
+    print(f"           exposure, and a world or European fund is not this series.")
     print(f"  History  {label(df['date'].iloc[0])} to {label(latest['date'])}"
           f"   |  latest {anchor.upper()}: {latest['anchor']:.2f}")
     print(f"  Windows  {len(fw)} complete, first starting {label(fw['date'].iloc[0])},"
@@ -181,8 +224,12 @@ def report(anchor: str, horizon: int, buckets: int, basis: str) -> int:
              "  (whole-sample ranks: uses information from the future — comparison only)"))
     print(f"  Note     the last {horizon} years have no forward return yet and are excluded.")
 
-    b = assign_buckets(fw, buckets, basis)
-    span_years = (fw["date"].iloc[-1] - fw["date"].iloc[0])
+    b, dropped = assign_buckets(fw, buckets, basis)
+    if dropped:
+        print(f"  Warm-up  the first {dropped} windows ({label(fw['date'].iloc[0])} to"
+              f" {label(fw['date'].iloc[dropped - 1])}) are EXCLUDED: an expanding")
+        print(f"           percentile needs 20 years of prior readings before it means"
+              f" anything. {len(b)} of {len(fw)} windows remain.")
     print(f"\n  {'Bucket':<12} {'Starting ' + anchor.upper():<18} {'n':>5} {'indep':>6}"
           f" {'worst':>8} {'p25':>8} {'median':>8} {'p75':>8} {'best':>8}")
     print(f"  {'-' * 88}")
@@ -191,35 +238,46 @@ def report(anchor: str, horizon: int, buckets: int, basis: str) -> int:
         if sub.empty:
             continue
         rr = sub["fwd"].tolist()
-        indep = len(sub) / (horizon * 12)
+        indep = independent_windows(sub["date"], horizon)
         lo_hi = f"{sub['anchor'].min():.1f} - {sub['anchor'].max():.1f}"
         flag = "" if indep >= 2 else "  <-- too few independent windows to be evidence"
         print(f"  {f'{k * 100 // buckets}-{(k + 1) * 100 // buckets}%':<12} {lo_hi:<18} {len(sub):>5}"
-              f" {indep:>6.1f} {pct_of(rr, 0):>+7.1%} {pct_of(rr, 0.25):>+7.1%}"
+              f" {indep:>6d} {pct_of(rr, 0):>+7.1%} {pct_of(rr, 0.25):>+7.1%}"
               f" {pct_of(rr, 0.50):>+7.1%} {pct_of(rr, 0.75):>+7.1%} {pct_of(rr, 1):>+7.1%}{flag}")
 
-    # Where today sits, on both bases, because the difference is the finding.
+    # Where today sits. The two bases disagree, the disagreement IS the finding, so
+    # both print and the bucket is chosen on whichever basis actually built the table.
     cur = float(latest["anchor"])
-    import numpy as np
-    hist = fw["anchor"].to_numpy()
-    full_pct = float((hist < cur).sum()) / len(hist)
+    hist_windowed = fw["anchor"].to_numpy()          # months carrying a completed window
+    prior_all = anchored["anchor"].to_numpy()[:-1]   # every reading that precedes today
+    pct_full = float((hist_windowed < cur).sum()) / len(hist_windowed)
+    pct_exp = float((prior_all < cur).sum()) / len(prior_all)
+    own = pct_exp if basis == "expanding" else pct_full
     print(f"\n  TODAY: {anchor.upper()} {cur:.2f} at {label(latest['date'])}")
-    print(f"    ranks at the {full_pct:.0%} percentile of all {len(hist)} months that have a"
-          f" forward return")
-    k = min(int(full_pct * buckets), buckets - 1)
+    print(f"    expanding basis  {pct_exp:>4.0%} percentile of the {len(prior_all)} readings"
+          f" that precede it")
+    print(f"    full-sample      {pct_full:>4.0%} percentile of the {len(hist_windowed)} months"
+          f" carrying a completed window")
+    if abs(pct_exp - pct_full) >= 0.01:
+        print(f"    The two differ because the full-sample set stops {horizon} years back - it")
+        print(f"    can only hold months whose window has closed, so it excludes the most")
+        print(f"    recent readings, which are the highest in the record.")
+    print(f"    Bucket below chosen on the {basis} basis, matching the table above.")
+    k = min(int(own * buckets), buckets - 1)
     sub = b[b["bucket"] == k]
     if not sub.empty:
         rr = sub["fwd"].tolist()
-        indep = len(sub) / (horizon * 12)
-        print(f"    that bucket historically returned {pct_of(rr, 0):+.1%} to {pct_of(rr, 1):+.1%}"
+        indep = independent_windows(sub["date"], horizon)
+        print(f"    That bucket historically returned {pct_of(rr, 0):+.1%} to {pct_of(rr, 1):+.1%}"
               f" real, median {pct_of(rr, 0.50):+.1%}")
-        print(f"    on {len(sub)} overlapping windows = ~{indep:.1f} independent decades"
-              + ("" if indep >= 2 else "  — NOT ENOUGH TO BE EVIDENCE, treat as illustration"))
-    if cur > hist.max():
+        print(f"    on {len(sub)} overlapping windows = {indep} independent {horizon}-year"
+              f" windows"
+              + ("" if indep >= 2 else "  - NOT ENOUGH TO BE EVIDENCE, treat as illustration"))
+    if cur > hist_windowed.max():
         print(f"    !! ABOVE EVERY STARTING VALUE THAT HAS A COMPLETED WINDOW"
-              f" (max {hist.max():.2f}). There is no historical analogue; the top bucket"
-              f"\n       is the nearest thing and it understates how far outside the record"
-              f" today sits.")
+              f" (max {hist_windowed.max():.2f}). There is no historical analogue; the top")
+        print(f"       bucket is the nearest thing and it understates how far outside the")
+        print(f"       record today sits.")
 
     print(f"\n  Read this as a distribution to argue inside, not a forecast. Even at a decade")
     print(f"  the starting multiple leaves most of the variance unexplained, and the spread")

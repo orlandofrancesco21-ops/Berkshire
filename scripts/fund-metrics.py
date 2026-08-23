@@ -41,15 +41,26 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 
 TRADING_MONTHS = 12
 
 
+VALID_CCY = re.compile(r"^[A-Z]{3}$")
+
+
 def fx_series(base: str, quote: str, index):
-    """Monthly {base}->{quote} rate aligned to `index`, or None if unavailable."""
+    """Monthly {base}->{quote} rate aligned to `index`, or None if unavailable.
+
+    Refuses anything that is not a 3-letter code. An earlier version accepted an
+    unresolved currency of "?" and built the symbol "USD?=X" — which Yahoo
+    fuzzy-resolves to a real but unrelated instrument, so every price got
+    multiplied by garbage and no warning fired. A malformed pair must fail, never
+    resolve to something.
+    """
     import yfinance as yf
-    if base == quote:
+    if not (VALID_CCY.match(base) and VALID_CCY.match(quote)) or base == quote:
         return None
     h = yf.Ticker(f"{base}{quote}=X").history(period="max", auto_adjust=False)
     if h is None or h.empty:
@@ -76,11 +87,12 @@ def price_series(ticker: str, target_ccy: str | None):
     tk = yf.Ticker(ticker)
     h = tk.history(period="max", auto_adjust=True)
     if h is None or h.empty:
-        return None, None, None
+        return None, None, None, None
     px = h["Close"].dropna().resample("ME").last()
     if px.index.tz is not None:
         px.index = px.index.tz_localize(None)
 
+    tzname = (tk.info or {}).get("exchangeTimezoneName") or "?"
     native = ((tk.info or {}).get("currency") or "").upper() or "?"
     if native == "GBP" and (tk.info or {}).get("currency") == "GBp":
         native = "GBP"
@@ -90,11 +102,11 @@ def price_series(ticker: str, target_ccy: str | None):
         native = "GBP"
 
     if not target_ccy or native in ("?", target_ccy):
-        return px, native, (native == target_ccy or not target_ccy)
+        return px, native, (native == target_ccy or not target_ccy), tzname
     rate = fx_series(native, target_ccy, px.index)
     if rate is None or rate.isna().all():
-        return px, native, False          # caller warns; do not silently pretend
-    return (px * rate).dropna(), native, True
+        return px, native, False, tzname   # caller warns; do not silently pretend
+    return (px * rate).dropna(), native, True, tzname
 
 
 def monthly_returns_from(px):
@@ -145,9 +157,13 @@ def analyse(name, r, rb, rf_monthly):
     ann_ret = float((1 + r).prod() ** (TRADING_MONTHS / n) - 1)
     ann_vol = float(r.std(ddof=1) * np.sqrt(TRADING_MONTHS))
     sharpe = float(ex_f.mean() / ex_f.std(ddof=1) * np.sqrt(TRADING_MONTHS)) if ex_f.std(ddof=1) > 0 else float("nan")
-    downside = r[r < 0]
-    sortino = (float(ex_f.mean() * TRADING_MONTHS / (downside.std(ddof=1) * np.sqrt(TRADING_MONTHS)))
-               if len(downside) > 1 and downside.std(ddof=1) > 0 else float("nan"))
+    # Downside deviation about the SAME target the numerator uses (MAR = risk-free),
+    # over ALL n observations. The earlier version took the sample stdev of only the
+    # negative months — deviations about the mean of the negatives, divided by
+    # n_neg-1 — and paired it with an excess-return numerator, so the two halves sat
+    # on different bases and the ranking between funds changed.
+    dd = float(np.sqrt((np.minimum(ex_f, 0.0) ** 2).mean()) * np.sqrt(TRADING_MONTHS))
+    sortino = float(ex_f.mean() * TRADING_MONTHS / dd) if dd > 0 else float("nan")
 
     active = (r - rb).to_numpy()
     te = float(active.std(ddof=1) * np.sqrt(TRADING_MONTHS))
@@ -170,7 +186,10 @@ def analyse(name, r, rb, rf_monthly):
     up_cap = float(r[up].mean() / rb[up].mean()) if up.sum() > 1 and rb[up].mean() != 0 else float("nan")
     dn_cap = float(r[dn].mean() / rb[dn].mean()) if dn.sum() > 1 and rb[dn].mean() != 0 else float("nan")
 
-    cum = (1 + r).cumprod().to_numpy()
+    # Seed the path at 1.0. Without it the series starts at (1+r_0) and any
+    # drawdown beginning in the window's first month is invisible — an error that
+    # is one-directional, so it always flattered the headline risk number.
+    cum = np.concatenate([[1.0], (1 + r).cumprod().to_numpy()])
     mdd, rec = max_drawdown(cum)
 
     return dict(name=name, n=n, years=n / TRADING_MONTHS, ann_ret=ann_ret, ann_vol=ann_vol,
@@ -185,6 +204,11 @@ def main() -> int:
     ap.add_argument("--benchmark", required=True)
     ap.add_argument("--rf", type=float, default=0.0, help="annual risk-free %%, e.g. 4.0")
     ap.add_argument("--years", type=int, help="limit to the last N years of the common period")
+    ap.add_argument("--benchmark-variant", choices=["net-tr", "gross-tr", "price"], required=True,
+                    help="return variant of the benchmark. A PRICE index excludes dividends, so "
+                         "measuring a total-return fund against one manufactures alpha roughly "
+                         "equal to the dividend yield - and every honesty guard below would "
+                         "still pass it. There is deliberately no default.")
     ap.add_argument("--currency", help="convert every series into this currency before comparing "
                                        "(default: the benchmark's own currency). Mixing currencies "
                                        "silently turns FX moves into alpha.")
@@ -197,21 +221,22 @@ def main() -> int:
     import pandas as pd
     # Resolve the target currency from the benchmark unless told otherwise, then
     # convert every series into it before a single return is computed.
-    bench_px, bench_ccy, _ = price_series(args.benchmark, None)
+    bench_px, bench_ccy, _, bench_tz = price_series(args.benchmark, None)
     if bench_px is None:
         print(f"{args.benchmark}: no price history", file=sys.stderr)
         return 1
     target = (args.currency or bench_ccy or "").upper()
 
-    series, natives, unconverted = {}, {}, []
+    series, natives, unconverted, tzs = {}, {}, [], {}
     for t in args.tickers + [args.benchmark]:
-        px, native, ok = price_series(t, target)
+        px, native, ok, tzname = price_series(t, target)
         if px is None or len(px) < 14:
             print(f"{t}: insufficient price history", file=sys.stderr)
             return 1
         if not ok:
             unconverted.append(f"{t} ({native})")
         natives[t] = native
+        tzs[t] = tzname
         series[t] = monthly_returns_from(px)
 
     df = pd.DataFrame(series).dropna()          # <- the common period, enforced
@@ -235,6 +260,14 @@ def main() -> int:
     mixed = sorted(set(natives.values()))
     print(f"  Currency      : all series converted to {target}"
           + (f"  (native: {', '.join(mixed)})" if len(mixed) > 1 else ""))
+    distinct_tz = sorted({v for v in tzs.values() if v and v != "?"})
+    if len(distinct_tz) > 1:
+        print(f"  !! NON-SYNCHRONOUS CLOSES: {', '.join(distinct_tz)}. Month-end prices are struck")
+        print(f"     hours apart, so beta is biased toward zero and tracking error, information")
+        print(f"     ratio and the years-to-significance line are INFLATED. Measured on two")
+        print(f"     listings of one index: monthly TE 3.4%/yr against 1.0%/yr annually, and beta")
+        print(f"     0.92 where a lead-lag regression recovers 1.00. Treat TE and IR here as")
+        print(f"     upper bounds, and prefer a same-exchange benchmark when one exists.")
     if unconverted:
         print(f"  !! NOT CONVERTED: {', '.join(unconverted)} — no FX series available. Any excess")
         print(f"     return for these is contaminated by currency and must not be read as alpha.")
@@ -252,10 +285,10 @@ def main() -> int:
               f" {m['beta']:>6.2f} {m['r2']:>6.2f} {m['alpha']:>+7.1%}"
               f" {('    --' if m['t_alpha'] != m['t_alpha'] else f'{chr(37)}6.2f' % m['t_alpha'])}{tag}")
 
-    print(f"\n  {'Fund':<12} {'Up-capture':>11} {'Down-capture':>13} {'DD recovery':>13}")
+    print(f"\n  {'Fund':<12} {'Up-capture':>11} {'Down-capture':>13} {'underwater':>13}")
     print(f"  {'-' * 52}")
     for m in rows:
-        rec = f"{m['rec']:.1f}y" if m["rec"] else "not yet"
+        rec = f"{m['rec']:.1f}y" if m["rec"] is not None else "not yet"
         print(f"  {m['name'][:12]:<12} {m['up']:>10.2f}  {m['dn']:>12.2f} {rec:>13}")
 
     print(f"\n  CORRELATION (monthly, common period)")
@@ -266,6 +299,14 @@ def main() -> int:
         print(f"  {c[:12]:<12}" + "".join(f"{corr.loc[c, d]:>10.2f}" for d in cols))
 
     # --- the honesty block: what the numbers above do and do not support --------
+    if args.benchmark_variant == "price":
+        print(f"\n  !! BENCHMARK IS A PRICE INDEX — dividends excluded.")
+        print(f"     Alpha, information ratio and the verdict are UNDEFINED here: a total-return")
+        print(f"     fund beats a price index by roughly its dividend yield for no skill at all,")
+        print(f"     and every guard below would pass it. Re-run against a net- or gross-total-")
+        print(f"     return series before quoting alpha, IR or a conclusion.\n")
+        return 0
+
     print(f"\n  READING THIS")
     for m in rows:
         notes = []
