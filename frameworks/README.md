@@ -23,7 +23,8 @@ A fund deep-dive reads **two** of these: the exposure lens for what the holdings
 | MSCI World, FTSE Developed, S&P Developed BMI — developed markets, large and mid cap, market-cap weighted | `developed-market-equity` | live |
 | MSCI World IMI, FTSE Developed All Cap — the same universe **plus small caps** | none yet | near-substitute, not the same exposure: check the small-cap delta or bootstrap it |
 | MSCI ACWI, FTSE All-World — developed **plus emerging** | none yet | bootstrap |
-| S&P 500, MSCI USA, and any other single-country index | none yet | deliberately **not** `developed-market-equity` — that file states a single-country fund is a different exposure needing its own framework |
+| S&P 500 (and its exact trackers: VUAG/VUSA, CSPX, SXR8, VOO, SPY, IVV) | `sp500` | live — US large-cap, committee-selected, single-country. Deliberately **not** `developed-market-equity` |
+| MSCI USA, Russell 1000, and any other single-country large-cap index | none yet | a *different* single-country index from the S&P 500 (rules-based, different count) — bootstrap its own, do not route to `sp500` |
 | Any factor, sector or thematic index | none yet | different exposure, different anchor; bootstrap |
 
 **When no row fits — and today most funds hit no row — stop rather than stretching the nearest one.** Run `framework-bootstrap` in exposure mode and add the row. Two indices share a slug only if they share a return decomposition *and* an anchor; differing country classification or small-cap treatment is a delta to check inside one framework, but a different asset class is a different file. Whoever creates an exposure framework adds its row here in the same run, or the framework is an orphan no fund deep-dive can find.
