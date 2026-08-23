@@ -46,15 +46,59 @@ import sys
 TRADING_MONTHS = 12
 
 
-def monthly_returns(ticker: str, start=None):
+def fx_series(base: str, quote: str, index):
+    """Monthly {base}->{quote} rate aligned to `index`, or None if unavailable."""
     import yfinance as yf
-    h = yf.Ticker(ticker).history(period="max" if not start else None,
-                                  start=start, auto_adjust=True)
+    if base == quote:
+        return None
+    h = yf.Ticker(f"{base}{quote}=X").history(period="max", auto_adjust=False)
     if h is None or h.empty:
         return None
-    px = h["Close"].dropna()
-    m = px.resample("ME").last()
-    return m.pct_change().dropna()
+    r = h["Close"].dropna().resample("ME").last()
+    r.index = r.index.tz_localize(None) if r.index.tz is not None else r.index
+    return r.reindex(index, method="ffill")
+
+
+def price_series(ticker: str, target_ccy: str | None):
+    """Monthly price series converted into `target_ccy`, plus its native currency.
+
+    THE BUG THIS EXISTS TO PREVENT, measured rather than imagined: over the three
+    years to 2026-08, IWDA.AS (EUR) and URTH (USD) — two listings of the same
+    MSCI World exposure — annualise at +17.2% and +20.3%. The 3.1 points a year
+    between them is entirely EUR/USD, and a currency-blind tool reports it as
+    alpha. For a EUR-base owner comparing European UCITS against US-listed
+    benchmarks that is not an edge case, it is the normal case.
+
+    GBp is pence, not pounds: the London listings quote in 1/100 of GBP and a
+    naive FX conversion is then wrong by two orders of magnitude.
+    """
+    import yfinance as yf
+    tk = yf.Ticker(ticker)
+    h = tk.history(period="max", auto_adjust=True)
+    if h is None or h.empty:
+        return None, None, None
+    px = h["Close"].dropna().resample("ME").last()
+    if px.index.tz is not None:
+        px.index = px.index.tz_localize(None)
+
+    native = ((tk.info or {}).get("currency") or "").upper() or "?"
+    if native == "GBP" and (tk.info or {}).get("currency") == "GBp":
+        native = "GBP"
+    raw = (tk.info or {}).get("currency") or ""
+    if raw == "GBp":                      # pence -> pounds before any conversion
+        px = px / 100.0
+        native = "GBP"
+
+    if not target_ccy or native in ("?", target_ccy):
+        return px, native, (native == target_ccy or not target_ccy)
+    rate = fx_series(native, target_ccy, px.index)
+    if rate is None or rate.isna().all():
+        return px, native, False          # caller warns; do not silently pretend
+    return (px * rate).dropna(), native, True
+
+
+def monthly_returns_from(px):
+    return px.pct_change().dropna()
 
 
 def ols(y, x):
@@ -141,6 +185,9 @@ def main() -> int:
     ap.add_argument("--benchmark", required=True)
     ap.add_argument("--rf", type=float, default=0.0, help="annual risk-free %%, e.g. 4.0")
     ap.add_argument("--years", type=int, help="limit to the last N years of the common period")
+    ap.add_argument("--currency", help="convert every series into this currency before comparing "
+                                       "(default: the benchmark's own currency). Mixing currencies "
+                                       "silently turns FX moves into alpha.")
     args = ap.parse_args()
     try:
         sys.stdout.reconfigure(encoding="utf-8")
@@ -148,13 +195,24 @@ def main() -> int:
         pass
 
     import pandas as pd
-    series = {}
+    # Resolve the target currency from the benchmark unless told otherwise, then
+    # convert every series into it before a single return is computed.
+    bench_px, bench_ccy, _ = price_series(args.benchmark, None)
+    if bench_px is None:
+        print(f"{args.benchmark}: no price history", file=sys.stderr)
+        return 1
+    target = (args.currency or bench_ccy or "").upper()
+
+    series, natives, unconverted = {}, {}, []
     for t in args.tickers + [args.benchmark]:
-        s = monthly_returns(t)
-        if s is None or len(s) < 13:
+        px, native, ok = price_series(t, target)
+        if px is None or len(px) < 14:
             print(f"{t}: insufficient price history", file=sys.stderr)
             return 1
-        series[t] = s
+        if not ok:
+            unconverted.append(f"{t} ({native})")
+        natives[t] = native
+        series[t] = monthly_returns_from(px)
 
     df = pd.DataFrame(series).dropna()          # <- the common period, enforced
     if args.years:
@@ -174,6 +232,12 @@ def main() -> int:
     print(f"{'=' * 78}")
     print(f"  Common period : {span}  ({len(df)} months, {len(df)/12:.1f} years)")
     print(f"  Risk-free     : {args.rf:.2f}%/yr    Basis: monthly total return, dividends reinvested")
+    mixed = sorted(set(natives.values()))
+    print(f"  Currency      : all series converted to {target}"
+          + (f"  (native: {', '.join(mixed)})" if len(mixed) > 1 else ""))
+    if unconverted:
+        print(f"  !! NOT CONVERTED: {', '.join(unconverted)} — no FX series available. Any excess")
+        print(f"     return for these is contaminated by currency and must not be read as alpha.")
     print(f"  Every series is truncated to the overlap above. A longer record for one fund is")
     print(f"  not used, because a comparison across different windows is not a comparison.\n")
 
