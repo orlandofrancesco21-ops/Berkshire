@@ -438,6 +438,31 @@ CASES = [
     case("takeaway without verification tag",
          replace("library/marks-memo.md", "(p. 3) [verified]", "(p. 3)"),
          expect_fail=True, needle="verification tag"),
+
+    # A dataset is addressed by sheet, column, row or date range, never by page.
+    # Both directions matter here: the PRECISE form has to pass — it was a lint
+    # failure before, which made citing a dataset accurately impossible and left
+    # vagueness as the only way through — and the vague form still has to fail.
+    case("dataset locator: sheet + column + date range passes",
+         replace("library/marks-memo.md", "(p. 3) [verified]",
+                 "(sheet Data, col K, 1881-01 to 2026-07) [verified]"), expect_fail=False),
+    case("dataset locator: bare column passes",
+         replace("library/marks-memo.md", "(p. 3) [verified]", "(col M) [verified]"),
+         expect_fail=False),
+    case("dataset locator: date range alone passes",
+         replace("library/marks-memo.md", "(p. 3) [verified]",
+                 "(1881-01 to 2026-07) [verified]"), expect_fail=False),
+    case("gesturing at a dataset is still not a locator",
+         replace("library/marks-memo.md", "(p. 3) [verified]", "(the dataset) [verified]"),
+         expect_fail=True, needle="lacks a locator"),
+    case("`column` plus any word does not smuggle past the column branch",
+         replace("library/marks-memo.md", "(p. 3) [verified]",
+                 "(column of the appendix) [verified]"),
+         expect_fail=True, needle="lacks a locator"),
+    case("`sheet` plus any word does not smuggle past the sheet branch",
+         replace("library/marks-memo.md", "(p. 3) [verified]",
+                 "(a sheet of results) [verified]"),
+         expect_fail=True, needle="lacks a locator"),
     case("missing required frontmatter key",
          replace("library/marks-memo.md", "author: Howard Marks\n", ""),
          expect_fail=True, needle="missing required key"),

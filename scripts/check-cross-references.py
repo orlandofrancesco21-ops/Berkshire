@@ -473,7 +473,36 @@ def check_ids(corpus: Corpus, errors: list[str]) -> int:
 
 
 # ------------------------------------------------- checks 3+4: library entries
-LOCATOR_RE = re.compile(r"\((?:p\.?\s*\d+(?:\s*-\s*\d+)?|pp\.?\s*\d+\s*-\s*\d+|\d{1,2}:\d{2}(?::\d{2})?(?:\s*-\s*\d{1,2}:\d{2}(?::\d{2})?)?|§[^)]+|para\.?\s*\d+|[^)]*\bsec(?:tion)?\.?\s*[\w.]+)\)", re.IGNORECASE)
+# A locator has to be an ADDRESS a reader can navigate to, not a gesture at the source.
+# Prose addresses by page, section or timestamp. A DATASET addresses by sheet, column,
+# row or date range — and none of those forms parsed here, so the accurate citation of
+# Shiller's ie_data.xls was a lint failure and the only way past the gate was to cite it
+# vaguely. A gate that makes the precise form illegal trains people to write the
+# imprecise one.
+#
+# The sheet-name and column-letter branches are deliberately case-SENSITIVE inside an
+# otherwise case-insensitive pattern. Without that, "(column of the appendix)" satisfies
+# `col` followed by a one-to-three-letter token, and the gate is back to accepting a
+# gesture while reporting that it checked something.
+LOCATOR_RE = re.compile(
+    r"\((?:"
+    r"p\.?\s*\d+(?:\s*-\s*\d+)?"                                             # p. 3, p. 3-5
+    r"|pp\.?\s*\d+\s*-\s*\d+"                                                # pp. 8-9
+    r"|\d{1,2}:\d{2}(?::\d{2})?(?:\s*-\s*\d{1,2}:\d{2}(?::\d{2})?)?"         # 1:00, 0:00-0:30
+    r"|§[^)]+"
+    r"|para\.?\s*\d+"
+    r"|[^)]*\bsec(?:tion)?\.?\s*[\w.]+"
+    # -- dataset locators -------------------------------------------------------
+    r"|[^)]*\bsheet\s+(?-i:[A-Z])[\w.-]*"                                    # sheet Data
+    r"|[^)]*\bcol(?:umn)?\.?\s*(?:(?-i:[A-Z]{1,3})|\d+)\b"                   # col K, column 12
+    r"|[^)]*\brow\s*\d+"                                                     # row 1789
+    r"|[^)]*\btable\s*\d+[\w.]*"                                             # table 3, table 2a
+    r"|[^)]*\bexhibit\s*[\w.-]+"
+    r"|[^)]*\bfig(?:ure)?\.?\s*\d+"
+    r"|[^)]*\b\d{4}-\d{2}(?:-\d{2})?\s*(?:to|[–—-])\s*\d{4}-\d{2}(?:-\d{2})?"  # 1881-01 to 2026-07
+    r")\)",
+    re.IGNORECASE,
+)
 # A tag may carry a qualifier inside the bracket — `[partial — relayed from X, origin
 # in Cites]` is better writing than a bare `[partial]` with the reason stranded in
 # prose, and the tag stays machine-readable either way. Requiring the bracket to hold

@@ -97,21 +97,36 @@ def load(anchor_col: str):
     return out.dropna(subset=["real_tr"]).reset_index(drop=True)
 
 
-def label(d: float) -> str:
-    """Shiller dates are YYYY.MM with .1 meaning October, so .1 != January."""
+def shiller_month(d: float) -> int:
+    """Month 1-12 from Shiller's YYYY.MM date.
+
+    An earlier version carried a special case reading `.1` as October, on the
+    worry that a trailing zero is lost. That worry is about the printed STRING;
+    as a float there is no ambiguity, because January is 0.01 and October is
+    0.10. The special case therefore fired on January and relabelled it October,
+    silently, for all 156 Januaries in the file — including the first row, so the
+    tool announced a record starting 1871-10 when Shiller's series starts
+    1871-01. Checked against the workbook's own Date Fraction column (col F,
+    year + (month - 0.5)/12, which is unambiguous): the plain reading below
+    agrees on all 1868 rows and the special-cased one disagreed on 156.
+    """
     year = int(d)
-    frac = round((d - year) * 100)
-    month = 10 if frac == 1 else frac
-    return f"{year}-{month:02d}"
+    month = round((d - year) * 100)
+    if not 1 <= month <= 12:
+        raise ValueError(f"unparseable Shiller date {d!r} -> month {month}")
+    return month
+
+
+def label(d: float) -> str:
+    return f"{int(d)}-{shiller_month(d):02d}"
 
 
 def month_index(d: float) -> int:
-    """Shiller YYYY.MM as a monotone month counter, so the gaps between scattered
-    observations can be measured. .1 is October, same convention as `label`."""
-    year = int(d)
-    frac = round((d - year) * 100)
-    month = 10 if frac == 1 else frac
-    return year * 12 + month
+    """Shiller YYYY.MM as a monotone month counter, so gaps between scattered
+    observations can be measured. Monotonicity is the point: the old January
+    mis-read put Jan 1872 nine months AFTER Feb 1872 on this scale, which
+    scrambled the sort the greedy window scan depends on."""
+    return int(d) * 12 + shiller_month(d)
 
 
 def independent_windows(dates, horizon: int) -> int:
