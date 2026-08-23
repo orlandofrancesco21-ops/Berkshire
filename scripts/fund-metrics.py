@@ -226,7 +226,10 @@ def main() -> int:
             print(f"    {m['name']}: alpha {m['alpha']:+.1%} at t={m['t_alpha']:.2f} over "
                   f"{m['years']:.1f}y with R2 {m['r2']:.2f} — statistically meaningful on this record.")
 
-    print(f"\n  Costs are not in these numbers beyond what price history already reflects, and a")
+    print(f"\n  These are CAPM alphas: one benchmark, no factor controls. A manager selling size,")
+    print(f"  value or momentum beta will show alpha here that a Carhart regression absorbs, so")
+    print(f"  label anything quoted from this tool a CAPM alpha rather than just an alpha.")
+    print(f"  Costs are not in these numbers beyond what price history already reflects, and a")
     print(f"  fee difference is near-certain while an alpha difference usually is not. Settle the")
     print(f"  cost comparison from the wrapper lens before attributing anything to a manager.\n")
     return 0
