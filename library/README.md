@@ -19,6 +19,7 @@ One source per run, end to end. Never batched: a batch is where the completeness
 | Entry | Type | Author | Published | Themes | One-line |
 |---|---|---|---|---|---|
 | [Is It a Bubble?](marks-2025-12-is-it-a-bubble.md) | memo | Howard Marks (Oaktree) | 2025-12-09 | NARC, VAL, CAPA, MOAT, ASYM | A cycle specialist's anatomy of how bubbles form, why the good ones are still bubbles, and why a transformative technology and a profitable investment are different questions. |
+| [The Lead Edge 8](leadedge-2026-about.md) | article | Lead Edge Capital | undated, read 2026-11-16 | MOAT | A growth equity firm's eight-point screen: scale, 25%+ growth at breakeven, 70%+ gross margin, recurring revenue with 90%+ retention, diversified customers, capital efficiency. |
 | [Stock Market Data Used in “Irrational Exuberance”](shiller-ie-data.md) | dataset | Robert J. Shiller | 2026-08 | VAL, NARC, PROD | The 155-year monthly record of US large-cap price, dividends, earnings, CPI and long rates behind CAPE — the primary file, so figures computed from it are verified rather than read off someone else's chart. |
 
 Every entry needs exactly one row here and vice versa; the lint enforces the bijection, so a hand-added row pointing nowhere blocks the commit.
